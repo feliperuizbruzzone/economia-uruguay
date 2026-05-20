@@ -15,6 +15,7 @@ Panel de datos producido: [`data/analysis-data/panel_eaae.csv`](data/analysis-da
 - `data/input-data/eaae/`: archivos originales EAAE descargados desde INE.
 - [`data/analysis-data/panel_eaae.csv`](data/analysis-data/panel_eaae.csv): panel final sistematizado.
 - `docs/`: minutas e informes metodologicos.
+  - [`20260520-datos-eaae.pdf`](docs/methodology/20260520-datos-eaae.pdf)
 - `tests/`: pruebas de regresion y validacion.
 - `CONTEXT.md`: bitacora tecnica y decisiones de trabajo.
 
