@@ -1,0 +1,338 @@
+---
+title: "Pipeline EAAE Uruguay 2001-2024"
+subtitle: "Minuta de avance: panel preliminar, variables solicitadas y decisiones pendientes"
+author: "Felipe Ruiz Bruzzone"
+date: "2026-05-07"
+lang: es
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    smaller: true
+    footer: "EAAE Uruguay | Pipeline reproducible"
+    include-in-header:
+      text: |
+        <style>
+        .reveal table.slide-table,
+        .reveal .slide-table-wrap table {
+          width: 100%;
+          table-layout: fixed;
+          border-collapse: collapse;
+          font-size: 0.54em;
+          line-height: 1.18;
+        }
+        .reveal table.slide-table th,
+        .reveal table.slide-table td,
+        .reveal .slide-table-wrap table th,
+        .reveal .slide-table-wrap table td {
+          padding: 0.32em 0.42em;
+          vertical-align: top;
+          overflow-wrap: anywhere;
+          word-break: normal;
+        }
+        .reveal table.status-table,
+        .reveal table.sample-table,
+        .reveal .slide-table-wrap.wide table {
+          font-size: 0.44em;
+        }
+        .reveal table.summary-table td:first-child {
+          width: 26%;
+          font-weight: 600;
+        }
+        .reveal table.summary-table td:last-child {
+          width: 74%;
+        }
+        .reveal .slide-table-wrap.narrow table {
+          font-size: 0.52em;
+        }
+        .reveal .slide-table-wrap.compact table {
+          font-size: 0.50em;
+        }
+        </style>
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+project_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = TRUE)
+panel_path <- file.path(project_root, "data", "analysis-data", "panel_eaae.csv")
+panel <- read.csv(panel_path, stringsAsFactors = FALSE, check.names = FALSE)
+panel$anno <- as.integer(panel$anno)
+
+slide_table <- function(x, class = "") {
+  knitr::kable(
+    x,
+    format = "html",
+    escape = FALSE,
+    table.attr = sprintf('class="slide-table %s"', class)
+  )
+}
+
+num_cols <- c(
+  "vbp_pp", "vab_pp", "vab_pb", "remuneraciones", "puestos_trabajo",
+  "fbcf", "consumo_capital", "impuestos_netos", "excedente_bruto",
+  "part_salarial", "productividad"
+)
+for (col in intersect(num_cols, names(panel))) {
+  panel[[col]] <- suppressWarnings(as.numeric(panel[[col]]))
+}
+
+display_panel_path <- file.path("data", "analysis-data", "panel_eaae.csv")
+
+status_table <- data.frame(
+  `Variable solicitada` = c(
+    "Stock de capital",
+    "Valor agregado",
+    "Consumo de capital fijo",
+    "FBKF",
+    "Salarios",
+    "Impuestos"
+  ),
+  `Variable en el panel` = c(
+    "stock_capital",
+    "vab_pp; vab_pb",
+    "consumo_capital",
+    "fbcf",
+    "remuneraciones",
+    "impuestos_netos"
+  ),
+  Estado = c(
+    "Pendiente metodologico",
+    "Extraida",
+    "Extraida",
+    "Extraida con faltantes",
+    "Extraida",
+    "Extraida"
+  ),
+  Cobertura = c(
+    "Requiere decision de metodo",
+    "vab_pp: 2001-2024; vab_pb: 2017-2024",
+    "2001-2024",
+    "2001, 2003-2010, 2012-2024",
+    "2001-2024",
+    "2001-2024"
+  ),
+  check.names = FALSE
+)
+
+sector_labels <- c(
+  B = "Mineria",
+  C = "Manufactura",
+  D_E = "Energia, agua y residuos",
+  G = "Comercio",
+  H_J = "Transporte, informacion y comunicaciones",
+  I = "Alojamiento y comidas",
+  K = "Finanzas",
+  L_M_N = "Inmobiliarias, profesionales y apoyo",
+  P = "Ensenanza",
+  Q = "Salud",
+  R_S = "Otros servicios"
+)
+```
+
+# Objetivo
+
+## Objetivo del proyecto
+
+Construir un pipeline reproducible para sistematizar la Encuesta Anual de
+Actividad Economica (EAAE) del INE Uruguay.
+
+- Cobertura del panel: 2001-2024.
+- Objetivo de datos: crear una base ordenada, o tidy, donde cada fila sea un
+  sector economico por año y las columnas sean las variables de interes.
+- Unidad analitica: sector CIIU homologado por año.
+- Producto final: `data/analysis-data/panel_eaae.csv`.
+- Uso previsto: indicadores de ganancia, costo laboral e inversion sectorial.
+
+Los calculos finales previstos son de nivel aritmetico simple y los resultados
+esperados son principalmente series temporales y graficos descriptivos. Por eso,
+el desafio principal no esta en el calculo sino en procesar y homologar todas
+las fuentes consideradas, incluyendo las diferencias de formato internas a cada
+fuente, como ocurre con la EAAE.
+
+## Estructura de los archivos originales
+
+```text
+data/input-data/eaae/
+  Encuesta_de_Actividad_Economica_2001.rar
+    Letra/
+    2 Digitos/
+    4 Digitos/
+  Encuesta_de_Actividad_Economica_2002-2010.rar
+    EAE_C1_YYYY.xls, EAE_C2_YYYY.xls, ...
+  Encuesta_de_Actividad_Economica_2012-2016.rar
+    EAE_C1.1_YYYY.xls, EAE_C2.1_YYYY.xls, ...
+  Encuesta_de_Actividad_Economica_2017-2024.rar
+    C1.1, C2.1, C6, C8 y otros cuadros
+```
+
+## Desafios de sistematizacion
+
+- Los cuadros son `.xls` de formato legado dentro de RAR.
+- Cambian nombres, subcarpetas, filas de encabezado y columnas entre años.
+- 2001 no tiene C1/C1.1; se usa cuadro por letra.
+- La clasificacion cambia de CIIU Rev.3 a Rev.4 entre 2007 y 2008.
+- Algunos cuadros esperados no existen en años publicados.
+
+## Flujo reproducible TIER
+
+```{mermaid}
+flowchart LR
+  A[RAR INE originales] --> B[02_extract_c1.py]
+  A --> C[03_extract_otros.py]
+  B --> D[05_build_panel.py]
+  C --> D
+  D --> E[data/analysis-data/panel_eaae.csv]
+  E --> F[06_validate_panel.py]
+```
+
+# Variables
+
+## Estado de variables solicitadas
+
+```{r status-table}
+slide_table(status_table, "status-table")
+```
+
+## Fuentes de variables incorporadas
+
+::: {.slide-table-wrap .narrow}
+| Variable | Fuente principal | Cobertura |
+|---|---|---|
+| `vab_pp` | 2001 C1 letra; C1/C1.1 | 2001-2024 |
+| `vab_pb` | C1.1 | 2017-2024 |
+| `remuneraciones` | 2001 C1 letra; C1/C1.1 | 2001-2024 |
+| `fbcf` | 2001 C8; 2003-2007 C10; 2008-2024 C6 | parcial |
+| `consumo_capital` | 2001-2011 C2; 2012-2024 C2.1 | 2001-2024 |
+| `impuestos_netos` | 2001-2011 C2; 2012-2024 C2.1 | 2001-2024 |
+:::
+
+# Proceso
+
+## Log del plan de analisis ejecutado
+
+1. Lectura y formalizacion de `CONTEXT.md`.
+2. Instalacion de skills de proyecto y entorno Quarto.
+3. Descarga de 24 RAR originales de INE.
+4. Homologacion CIIU Rev.3/Rev.4 con opcion B.
+5. Integracion especial de 2001 desde cuadros por letra.
+6. Extraccion C1/C1.1: VAB, remuneraciones y puestos.
+7. Extraccion FBKF/FBCF desde C8/C10/C6.
+8. Extraccion `consumo_capital` e `impuestos_netos` desde C2/C2.1.
+9. Construccion y validacion de `panel_eaae.csv`.
+
+## Estructura del panel resultante
+
+```{r panel-summary}
+summary_table <- data.frame(
+  Indicador = c(
+    "Archivo", "Filas", "Años", "Primer año", "Ultimo año",
+    "Sectores homologados", "Columnas"
+  ),
+  Valor = c(
+    display_panel_path,
+    nrow(panel),
+    length(unique(panel$anno)),
+    min(panel$anno),
+    max(panel$anno),
+    paste(sort(unique(panel$seccion)), collapse = ", "),
+    paste(names(panel), collapse = ", ")
+  )
+)
+slide_table(summary_table, "summary-table")
+```
+
+## Muestra de datos
+
+```{r sample}
+slide_table(head(panel, 8), "sample-table")
+```
+
+# Exploracion
+
+## Evolucion del VAB total
+
+```{r vab-total, fig.width=8, fig.height=4.6}
+vab_total <- aggregate(vab_pp ~ anno, data = panel, FUN = sum, na.rm = TRUE)
+plot(
+  vab_total$anno,
+  vab_total$vab_pp / 1e9,
+  type = "o",
+  pch = 19,
+  col = "#2f6f73",
+  xlab = "Año",
+  ylab = "Miles de millones de pesos corrientes",
+  main = "VAB total en sectores incluidos"
+)
+grid()
+```
+
+## FBKF/FBCF sobre VAB
+
+```{r fbcf-ratio, fig.width=8, fig.height=4.6}
+fbcf_total <- aggregate(fbcf ~ anno, data = panel, FUN = sum, na.rm = TRUE)
+vab_total <- aggregate(vab_pp ~ anno, data = panel, FUN = sum, na.rm = TRUE)
+ratio <- merge(vab_total, fbcf_total, by = "anno", all.x = TRUE)
+ratio$tasa_inversion <- ratio$fbcf / ratio$vab_pp
+ratio <- ratio[!ratio$anno %in% c(2002, 2011), ]
+plot(
+  ratio$anno,
+  ratio$tasa_inversion,
+  type = "o",
+  pch = 19,
+  col = "#7a5a1f",
+  xlab = "Año",
+  ylab = "FBKF / VAB",
+  main = "Inversion bruta relativa al VAB"
+)
+grid()
+```
+
+# Pendientes
+
+## Decisiones metodologicas pendientes
+
+::: {.slide-table-wrap .compact}
+| Decision | Opciones sugeridas | Recomendacion tecnica |
+|---|---|---|
+| `stock_capital` | PIM; activos fijos EAAE; BCU/fuente externa | PIM con validacion externa |
+| Stock inicial | año base 2001; promedio inicial; fuente externa | definir antes de calcular |
+| Depreciacion | tasa unica; tasa por sector; tasa por activo | preferir por activo si hay insumos |
+| Faltantes `fbcf` | dejar nulo; interpolar; fuente externa | no imputar sin decision |
+:::
+
+## Datos faltantes a revisar manualmente
+
+::: {.slide-table-wrap .compact}
+| Caso | Situacion | Accion sugerida |
+|---|---|---|
+| 2002 `fbcf` | RAR sin cuadro de FBKF/FBCF identificado | revisar fuente INE o anexo |
+| 2011 `fbcf` | RAR publicado trae solo C1 y C2 | revisar si existe publicacion complementaria |
+| 2008 `D_E` | `vab_pp < remuneraciones` | confirmar contra XLS original |
+| CIIU agregada | `D_E`, `H_J`, `L_M_N`, `R_S` son agregaciones | validar con equipo |
+:::
+
+## Proximos pasos
+
+1. Definir metodo de `stock_capital`.
+2. Resolver tratamiento de faltantes `fbcf` 2002 y 2011.
+3. Preparar nota metodologica de homologacion CIIU.
+4. Agregar tests automatizados para anomalias conocidas.
+5. Validar agregados contra BCU u otra fuente externa.
+
+# Reejecucion
+
+## Comandos utiles
+
+```bash
+python3 command-files/processing-command-files/01_download.py --allow-insecure-ssl
+python3 command-files/processing-command-files/02_extract_c1.py
+python3 command-files/processing-command-files/03_extract_otros.py
+python3 command-files/processing-command-files/05_build_panel.py --force
+python3 command-files/processing-command-files/06_validate_panel.py
+./.tools/bin/quarto render docs/minutes/20260507_minuta_eaae_pipeline.qmd
+```
