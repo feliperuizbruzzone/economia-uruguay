@@ -12,6 +12,8 @@ from xml.sax.saxutils import escape
 MAIN_SHEET = "eaae"
 BRANCH_C_SHEET = "rama-C"
 CHECK_C_SHEET = "check-calidad-C"
+TOTAL_ECONOMY_SHEET = "economia_total"
+CHECK_TOTAL_SHEET = "check-calidad-total"
 
 XML_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"

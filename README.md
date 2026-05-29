@@ -15,7 +15,7 @@ Paneles de datos producidos: `data/analysis-data/YYYYMMDD_panel_eaae.csv` y
 - `command-files/`: scripts de descarga, extraccion, construccion y validacion.
 - `data/input-data/eaae/`: archivos originales EAAE descargados desde INE.
 - `data/analysis-data/YYYYMMDD_panel_eaae.csv`: base completa `panel_eaae`.
-- `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`: libro de revision con hojas `eaae`, `rama-C` y `check-calidad-C`.
+- `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`: libro de revision con hojas `eaae`, `rama-C`, `check-calidad-C`, `economia_total` y `check-calidad-total`.
 - `docs/`: minutas e informes metodologicos.
   - [`20260520-datos-eaae.pdf`](docs/methodology/20260520-datos-eaae.pdf)
 - `tests/`: pruebas de regresion y validacion.

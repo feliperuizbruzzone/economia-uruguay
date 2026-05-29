@@ -574,71 +574,100 @@ def parse_capacidad_instalada() -> None:
 
 def parse_encuesta_industrial() -> None:
     input_dir = INPUT_DIR / "ciu-encuesta-industrial"
-    quarter_words = {"1": 1, "2": 2, "3": 3, "4": 4}
     rows: list[dict[str, object]] = []
 
-    def signed_pct(patterns: list[str], text: str) -> float | None:
-        for pattern in patterns:
-            match = re.search(pattern, text, flags=re.IGNORECASE)
-            if not match:
-                continue
-            verb = match.group(1).lower()
-            value = number_value(match.group(2) + "%")
-            if value is None:
-                return None
-            if (
-                not match.group(2).startswith("-")
-                and ("cayer" in verb or "disminu" in verb or "contracci" in verb)
-            ):
-                return -value
-            return value
-        return None
-
-    for path in sorted(input_dir.glob("*.pdf")):
-        filename = path.name
-        match = re.search(r"([1-4])[- ]trimestre[- ](\d{4})", filename, flags=re.IGNORECASE)
-        if not match:
+    personal_path = input_dir / "Personal-EMI-nueva-trimestral.xlsx"
+    for values in read_xlsx_sheet_rows(personal_path):
+        if not values:
             continue
-        trimestre = quarter_words[match.group(1)]
-        year = int(match.group(2))
-        text = normalize_space(pdf_text(path, 1, 4))
-        sales_value = signed_pct(
-            [
-                r"ventas (?:del núcleo del sector industrial|industriales).*?(aumentaron|crecieron|cayeron|disminuyeron|se mantuvieron relativamente estables).*?\(?(-?\d+(?:,\d+)?)%\)?",
-                r"ventas .*?vol[úu]menes f[íi]sicos.*?(aumentaron|crecieron|cayeron|disminuyeron).*?\(?(-?\d+(?:,\d+)?)%\)?",
-            ],
-            text,
+        parsed_quarter = parse_spanish_quarter_label(values[0])
+        if parsed_quarter is None or len(values) < 2 or values[1] == "":
+            continue
+        year, trimestre = parsed_quarter
+        rows.append(
+            {
+                "fuente": "ciu",
+                "archivo": personal_path.name,
+                "hoja": "PERSONAL",
+                "tabla": "encuesta_industrial_trimestral",
+                "anno": year,
+                "trimestre": trimestre,
+                "variable": "ipoi",
+                "variable_etiqueta": "Índice de personal ocupado en la industria",
+                "sector_destino": "",
+                "sector_destino_etiqueta": "",
+                "valor": xlsx_number_value(values[1]),
+                "unidad": "indice_2021_100",
+            }
         )
-        employment_value = signed_pct(
-            [
-                r"personal ocupado.*?(contracci[óo]n|incremento|aument[óo]|evidenci[óo]).*?\(?(-?\d+(?:,\d+)?)%\)?",
-            ],
-            text,
-        )
-        for variable, label, found in [
-            ("ivfvi", "Índice de volumen físico de las ventas industriales", sales_value),
-            ("ipoi", "Índice de personal ocupado en la industria", employment_value),
-        ]:
+
+    ivfvi_path = input_dir / "IVFV-pordestino-trimestral.xlsx"
+    destination_columns = [
+        (1, "industria", "Industria", "ivfvi_ind"),
+        (2, "exportaciones", "Exportaciones", "ivfvi_exp"),
+        (3, "mercado_interno", "Mercado interno", "ivfvi_mi"),
+    ]
+    sector_order = {sector: order for order, (_, sector, _, _) in enumerate(destination_columns)}
+    for values in read_xlsx_sheet_rows(ivfvi_path):
+        if not values:
+            continue
+        parsed_quarter = parse_spanish_quarter_label(values[0])
+        if parsed_quarter is None:
+            continue
+        year, trimestre = parsed_quarter
+        for index, sector_destino, sector_destino_label, variable in destination_columns:
+            if index >= len(values) or values[index] == "":
+                continue
             rows.append(
                 {
                     "fuente": "ciu",
-                    "archivo": filename,
-                    "tabla": "encuesta_industrial_texto",
+                    "archivo": ivfvi_path.name,
+                    "hoja": "IVFV_DESTINO",
+                    "tabla": "encuesta_industrial_trimestral",
                     "anno": year,
                     "trimestre": trimestre,
                     "variable": variable,
-                    "variable_etiqueta": label,
-                    "medida": "variacion_interanual_extraida_del_texto",
-                    "valor": found,
-                    "unidad": "porcentaje",
-                    "nota": "Los niveles del indice estan en graficos no tabulares; pdftotext no recupera la serie de indice.",
+                    "variable_etiqueta": "Índice de volumen físico de las ventas industriales",
+                    "sector_destino": sector_destino,
+                    "sector_destino_etiqueta": sector_destino_label,
+                    "valor": xlsx_number_value(values[index]),
+                    "unidad": "indice_2021_100",
                 }
             )
+
     write_csv(
         OUTPUT_DIR / "ciu_encuesta_industrial_ipoi_ivfvi.csv",
-        rows,
-        ["fuente", "archivo", "tabla", "anno", "trimestre", "variable", "variable_etiqueta", "medida", "valor", "unidad", "nota"],
+        sorted(
+            rows,
+            key=lambda row: (
+                row["anno"],
+                row["trimestre"],
+                row["variable"],
+                sector_order.get(str(row["sector_destino"]), -1),
+            ),
+        ),
+        [
+            "fuente",
+            "archivo",
+            "hoja",
+            "tabla",
+            "anno",
+            "trimestre",
+            "variable",
+            "variable_etiqueta",
+            "sector_destino",
+            "sector_destino_etiqueta",
+            "valor",
+            "unidad",
+        ],
     )
+
+
+def parse_spanish_quarter_label(value: str) -> tuple[int, int] | None:
+    match = re.match(r"^\s*([1-4])\s*º?\s*trim\s+(\d{4})\s*$", value, flags=re.IGNORECASE)
+    if not match:
+        return None
+    return int(match.group(2)), int(match.group(1))
 
 
 def read_xlsx_sheet_rows(path: Path) -> list[list[str]]:
@@ -677,6 +706,12 @@ def parse_oyanthabal() -> None:
     header = sheet_rows[0]
     unit_row = sheet_rows[2]
     source_row = sheet_rows[3]
+    variable_names = {
+        "GDP": "gdp_current",
+        "GDP $Uy2005 (right axis)": "gdp_2005",
+        "GDP Price index (base 2005)": "gdp_price_index_base_2005",
+        "IPC": "ipc_index_1983_1989",
+    }
     rows: list[dict[str, object]] = []
     for values in sheet_rows[4:]:
         if not values or not values[0]:
@@ -691,7 +726,7 @@ def parse_oyanthabal() -> None:
                     "archivo": path.name,
                     "hoja": "IPI PBI e IPC",
                     "anno": year,
-                    "variable": canonical_variable(name),
+                    "variable": variable_names.get(name, canonical_variable(name)),
                     "variable_etiqueta": name,
                     "valor": xlsx_number_value(values[index]),
                     "unidad": unit_row[index] if index < len(unit_row) else "",

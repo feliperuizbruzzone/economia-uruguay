@@ -15,7 +15,9 @@ from eaae_stock import extract_stock_panel, validate_stock_year
 from eaae_workbook import (
     BRANCH_C_SHEET,
     CHECK_C_SHEET,
+    CHECK_TOTAL_SHEET,
     MAIN_SHEET,
+    TOTAL_ECONOMY_SHEET,
     table_from_dicts,
     write_workbook,
 )
@@ -69,6 +71,13 @@ def safe_divide(numerator: object, denominator: object) -> float | None:
     return float(numerator) / float(denominator)
 
 
+def sum_present(values: list[object]) -> float | None:
+    present = [float(value) for value in values if value not in (None, "")]
+    if not present:
+        return None
+    return sum(present)
+
+
 def add_panel_variables(
     rows: list[dict[str, object]],
     fbcf_rows: list[dict[str, object]],
@@ -118,7 +127,50 @@ def add_panel_variables(
     return output
 
 
-def build_branch_c_quality_checks(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+def build_annual_economy_total(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    additive_columns = [
+        "vbp_pp",
+        "vbp_pb",
+        "vab_pp",
+        "vab_pb",
+        "remuneraciones",
+        "puestos_trabajo",
+        "fbcf",
+        "adquisiciones_importadas",
+        "consumo_capital",
+        "impuestos_netos",
+        "stock_capital",
+    ]
+    rows_by_year: dict[int, list[dict[str, object]]] = {}
+    for row in rows:
+        rows_by_year.setdefault(int(row["anno"]), []).append(row)
+
+    totals: list[dict[str, object]] = []
+    for year, year_rows in sorted(rows_by_year.items()):
+        epocas = sorted({str(row.get("epoca")) for row in year_rows if row.get("epoca") not in (None, "")})
+        ciiu_versions = sorted(
+            {str(row.get("ciiu_version")) for row in year_rows if row.get("ciiu_version") not in (None, "")}
+        )
+        total: dict[str, object] = {
+            "anno": year,
+            "seccion": "economia_total",
+            "epoca": epocas[0] if len(epocas) == 1 else "|".join(epocas),
+            "ciiu_version": ciiu_versions[0] if len(ciiu_versions) == 1 else "|".join(ciiu_versions),
+        }
+        for column in additive_columns:
+            total[column] = sum_present([row.get(column) for row in year_rows])
+        total["excedente_bruto"] = (
+            float(total["vab_pp"]) - float(total["remuneraciones"])
+            if total.get("vab_pp") is not None and total.get("remuneraciones") is not None
+            else None
+        )
+        total["part_salarial"] = safe_divide(total.get("remuneraciones"), total.get("vab_pp"))
+        total["productividad"] = safe_divide(total.get("vab_pp"), total.get("puestos_trabajo"))
+        totals.append(total)
+    return totals
+
+
+def build_annual_quality_checks(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     checks: list[dict[str, object]] = []
     for row in rows:
         vbp_pp = row.get("vbp_pp")
@@ -152,9 +204,10 @@ def write_panel_csv(rows: list[dict[str, object]], output_path: Path) -> None:
 
 def write_panel_workbook(rows: list[dict[str, object]], output_path: Path) -> None:
     # DECISION: The workbook keeps the full panel and a branch-C review subset
-    # in separate sheets so co-investigators can inspect the GitHub artifact
-    # without regenerating filtered files.
+    # plus annual economy totals in separate sheets so co-investigators can
+    # inspect the GitHub artifact without regenerating filtered files.
     branch_c_rows = [row for row in rows if row.get("seccion") == "C"]
+    economy_total_rows = build_annual_economy_total(rows)
     quality_columns = [
         "anno",
         "vab_vbp",
@@ -168,7 +221,12 @@ def write_panel_workbook(rows: list[dict[str, object]], output_path: Path) -> No
             MAIN_SHEET: table_from_dicts(rows, PANEL_COLUMNS),
             BRANCH_C_SHEET: table_from_dicts(branch_c_rows, PANEL_COLUMNS),
             CHECK_C_SHEET: table_from_dicts(
-                build_branch_c_quality_checks(branch_c_rows),
+                build_annual_quality_checks(branch_c_rows),
+                quality_columns,
+            ),
+            TOTAL_ECONOMY_SHEET: table_from_dicts(economy_total_rows, PANEL_COLUMNS),
+            CHECK_TOTAL_SHEET: table_from_dicts(
+                build_annual_quality_checks(economy_total_rows),
                 quality_columns,
             ),
         },

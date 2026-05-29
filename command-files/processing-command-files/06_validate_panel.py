@@ -7,7 +7,12 @@ import logging
 import sys
 from pathlib import Path
 
-from eaae_workbook import MAIN_SHEET, read_sheet_as_dicts
+from eaae_workbook import (
+    CHECK_TOTAL_SHEET,
+    MAIN_SHEET,
+    TOTAL_ECONOMY_SHEET,
+    read_sheet_as_dicts,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_DIR = PROJECT_ROOT / "command-files" / "config"
@@ -24,6 +29,26 @@ from eaae_config import (  # noqa: E402
 LOGGER = logging.getLogger(__name__)
 FBCF_MISSING_YEARS = {2002, 2011}
 STOCK_MISSING_YEARS = {2002, 2011}
+TOTAL_ADDITIVE_COLUMNS = [
+    "vbp_pp",
+    "vbp_pb",
+    "vab_pp",
+    "vab_pb",
+    "remuneraciones",
+    "puestos_trabajo",
+    "fbcf",
+    "adquisiciones_importadas",
+    "consumo_capital",
+    "impuestos_netos",
+    "stock_capital",
+]
+TOTAL_DERIVED_COLUMNS = ["excedente_bruto", "part_salarial", "productividad"]
+TOTAL_QUALITY_COLUMNS = [
+    "vab_vbp",
+    "consumo_intermedio_vbp_menos_vab",
+    "remuneraciones_vab",
+    "stock_vab",
+]
 
 
 def configure_logging() -> None:
@@ -39,6 +64,34 @@ def to_float(value: str) -> float | None:
     return float(value)
 
 
+def safe_divide(numerator: float | None, denominator: float | None) -> float | None:
+    if numerator is None or denominator in (None, 0):
+        return None
+    return numerator / denominator
+
+
+def sum_present(values: list[str]) -> float | None:
+    present = [float(value) for value in values if value != ""]
+    if not present:
+        return None
+    return sum(present)
+
+
+def assert_close(
+    actual: str,
+    expected: float | None,
+    context: str,
+    tolerance: float = 1e-6,
+) -> None:
+    if expected is None:
+        if actual != "":
+            raise AssertionError(f"{context}: expected blank, got {actual}")
+        return
+    actual_float = to_float(actual)
+    if actual_float is None or abs(actual_float - expected) > tolerance * max(1.0, abs(expected)):
+        raise AssertionError(f"{context}: expected {expected}, got {actual}")
+
+
 def read_panel(path: Path) -> list[dict[str, str]]:
     return read_sheet_as_dicts(path, MAIN_SHEET)
 
@@ -46,6 +99,101 @@ def read_panel(path: Path) -> list[dict[str, str]]:
 def read_panel_csv(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as file:
         return list(csv.DictReader(file))
+
+
+def expected_economy_totals(rows: list[dict[str, str]]) -> dict[int, dict[str, float | str | None]]:
+    by_year: dict[int, list[dict[str, str]]] = {}
+    for row in rows:
+        by_year.setdefault(int(row["anno"]), []).append(row)
+
+    totals: dict[int, dict[str, float | str | None]] = {}
+    for year, year_rows in sorted(by_year.items()):
+        epocas = sorted({row["epoca"] for row in year_rows if row["epoca"] != ""})
+        ciiu_versions = sorted(
+            {row["ciiu_version"] for row in year_rows if row["ciiu_version"] != ""}
+        )
+        total: dict[str, float | str | None] = {
+            "seccion": "economia_total",
+            "epoca": epocas[0] if len(epocas) == 1 else "|".join(epocas),
+            "ciiu_version": ciiu_versions[0] if len(ciiu_versions) == 1 else "|".join(ciiu_versions),
+        }
+        for column in TOTAL_ADDITIVE_COLUMNS:
+            total[column] = sum_present([row[column] for row in year_rows])
+        vab_pp = total["vab_pp"] if isinstance(total["vab_pp"], float) else None
+        remuneraciones = (
+            total["remuneraciones"] if isinstance(total["remuneraciones"], float) else None
+        )
+        puestos = total["puestos_trabajo"] if isinstance(total["puestos_trabajo"], float) else None
+        total["excedente_bruto"] = (
+            vab_pp - remuneraciones
+            if vab_pp is not None and remuneraciones is not None
+            else None
+        )
+        total["part_salarial"] = safe_divide(remuneraciones, vab_pp)
+        total["productividad"] = safe_divide(vab_pp, puestos)
+        totals[year] = total
+    return totals
+
+
+def expected_quality_checks(
+    total_rows_by_year: dict[int, dict[str, float | str | None]]
+) -> dict[int, dict[str, float | None]]:
+    checks: dict[int, dict[str, float | None]] = {}
+    for year, row in total_rows_by_year.items():
+        vbp_pp = row["vbp_pp"] if isinstance(row["vbp_pp"], float) else None
+        vab_pp = row["vab_pp"] if isinstance(row["vab_pp"], float) else None
+        remuneraciones = (
+            row["remuneraciones"] if isinstance(row["remuneraciones"], float) else None
+        )
+        stock_capital = row["stock_capital"] if isinstance(row["stock_capital"], float) else None
+        checks[year] = {
+            "vab_vbp": safe_divide(vab_pp, vbp_pp),
+            "consumo_intermedio_vbp_menos_vab": (
+                vbp_pp - vab_pp if vbp_pp is not None and vab_pp is not None else None
+            ),
+            "remuneraciones_vab": safe_divide(remuneraciones, vab_pp),
+            "stock_vab": safe_divide(stock_capital, vab_pp),
+        }
+    return checks
+
+
+def validate_total_workbook_sheets(
+    panel_rows: list[dict[str, str]],
+    total_rows: list[dict[str, str]],
+    check_rows: list[dict[str, str]],
+) -> None:
+    expected_totals = expected_economy_totals(panel_rows)
+    total_by_year = {int(row["anno"]): row for row in total_rows}
+    if sorted(total_by_year) != PANEL_YEARS:
+        raise AssertionError("Workbook economia_total years mismatch")
+    for year, expected in expected_totals.items():
+        actual = total_by_year[year]
+        if actual["seccion"] != expected["seccion"]:
+            raise AssertionError(f"Year {year}: invalid economia_total seccion")
+        if actual["epoca"] != str(expected["epoca"]):
+            raise AssertionError(f"Year {year}: invalid economia_total epoca")
+        if actual["ciiu_version"] != str(expected["ciiu_version"]):
+            raise AssertionError(f"Year {year}: invalid economia_total ciiu_version")
+        for column in TOTAL_ADDITIVE_COLUMNS + TOTAL_DERIVED_COLUMNS:
+            value = expected[column]
+            assert_close(
+                actual[column],
+                value if isinstance(value, float) else None,
+                f"Year {year}: economia_total {column}",
+            )
+
+    expected_checks = expected_quality_checks(expected_totals)
+    check_by_year = {int(row["anno"]): row for row in check_rows}
+    if sorted(check_by_year) != PANEL_YEARS:
+        raise AssertionError("Workbook check-calidad-total years mismatch")
+    for year, expected in expected_checks.items():
+        actual = check_by_year[year]
+        for column in TOTAL_QUALITY_COLUMNS:
+            assert_close(
+                actual[column],
+                expected[column],
+                f"Year {year}: check-calidad-total {column}",
+            )
 
 
 def validate(rows: list[dict[str, str]]) -> None:
@@ -183,6 +331,13 @@ def main() -> int:
     xlsx_rows = read_panel(xlsx_path)
     validate(xlsx_rows)
     LOGGER.info("Workbook validation passed: %s rows", len(xlsx_rows))
+
+    validate_total_workbook_sheets(
+        xlsx_rows,
+        read_sheet_as_dicts(xlsx_path, TOTAL_ECONOMY_SHEET),
+        read_sheet_as_dicts(xlsx_path, CHECK_TOTAL_SHEET),
+    )
+    LOGGER.info("Workbook total economy sheets validation passed")
 
     csv_rows = read_panel_csv(csv_path)
     validate(csv_rows)

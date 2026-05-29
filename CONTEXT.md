@@ -659,11 +659,14 @@ El CSV contiene la base completa `panel_eaae`.
 
 ### Estructura de `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`
 
-El libro contiene tres hojas:
+El libro contiene cinco hojas:
 
 - `eaae`: base completa.
 - `rama-C`: registros de la rama de actividad `C`.
 - `check-calidad-C`: controles anuales para la rama `C`: `vab_vbp`,
+  `consumo_intermedio_vbp_menos_vab`, `remuneraciones_vab` y `stock_vab`.
+- `economia_total`: agregacion anual de todas las variables del panel.
+- `check-calidad-total`: controles anuales para `economia_total`: `vab_vbp`,
   `consumo_intermedio_vbp_menos_vab`, `remuneraciones_vab` y `stock_vab`.
 
 ```
@@ -965,7 +968,7 @@ mkdir -p data/input-data/eaae \
 | May 2026 | Consolidación de minuta: único QMD editable `docs/minutes/20260507_minuta_eaae_pipeline.qmd` | ✓ |
 | May 2026 | Actualización de formato de tablas en la minuta Quarto y renderizado de HTML actualizado | ✓ |
 | May 2026 | Creación de `command-files/analysis-command-files/01_load_panel.R` para cargar `panel_eaae.csv` en R como `panel_eaae` | ✓ |
-| May 2026 | Reemplazo del CSV final por `20260528_panel_eaae.xlsx` con hojas `eaae`, `rama-C` y `check-calidad-C` para revisión en GitHub | ✓ |
+| May 2026 | Reemplazo del CSV final por `20260528_panel_eaae.xlsx` con hojas `eaae`, `rama-C`, `check-calidad-C`, `economia_total` y `check-calidad-total` para revisión en GitHub | ✓ |
 | May 2026 | Salidas fechadas automáticas para CSV completo y XLSX de revisión: `YYYYMMDD_panel_eaae.csv` y `YYYYMMDD_panel_eaae.xlsx` | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
