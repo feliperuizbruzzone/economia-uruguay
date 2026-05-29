@@ -7,13 +7,15 @@ homologada, integrando variables de produccion, valor agregado, trabajo,
 remuneraciones, inversion, adquisiciones importadas, consumo de capital fijo y
 stock de capital.
 
-Panel de datos producido: [`data/analysis-data/panel_eaae.csv`](data/analysis-data/panel_eaae.csv).
+Paneles de datos producidos: `data/analysis-data/YYYYMMDD_panel_eaae.csv` y
+`data/analysis-data/YYYYMMDD_panel_eaae.xlsx`.
 
 ## Estructura
 
 - `command-files/`: scripts de descarga, extraccion, construccion y validacion.
 - `data/input-data/eaae/`: archivos originales EAAE descargados desde INE.
-- [`data/analysis-data/panel_eaae.csv`](data/analysis-data/panel_eaae.csv): panel final sistematizado.
+- `data/analysis-data/YYYYMMDD_panel_eaae.csv`: base completa `panel_eaae`.
+- `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`: libro de revision con hojas `eaae`, `rama-C` y `check-calidad-C`.
 - `docs/`: minutas e informes metodologicos.
   - [`20260520-datos-eaae.pdf`](docs/methodology/20260520-datos-eaae.pdf)
 - `tests/`: pruebas de regresion y validacion.

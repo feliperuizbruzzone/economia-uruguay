@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 
 
@@ -12,7 +13,14 @@ INE_EAAE_SERIES_URL = (
 
 DATA_INPUT_EAAE_DIR = Path("data/input-data/eaae")
 DATA_ANALYSIS_DIR = Path("data/analysis-data")
-PANEL_OUTPUT = DATA_ANALYSIS_DIR / "panel_eaae.csv"
+PANEL_BASENAME = "panel_eaae"
+# DECISION: Each created database version carries the local creation date as a
+# prefix so GitHub reviewers can compare dated CSV/XLSX artifacts explicitly.
+PANEL_DATE_PREFIX = date.today().strftime("%Y%m%d")
+PANEL_CSV_OUTPUT = DATA_ANALYSIS_DIR / f"{PANEL_DATE_PREFIX}_{PANEL_BASENAME}.csv"
+PANEL_XLSX_OUTPUT = DATA_ANALYSIS_DIR / f"{PANEL_DATE_PREFIX}_{PANEL_BASENAME}.xlsx"
+PANEL_OUTPUTS = (PANEL_CSV_OUTPUT, PANEL_XLSX_OUTPUT)
+PANEL_OUTPUT = PANEL_XLSX_OUTPUT
 
 # DECISION: Final panel option B, decided in May 2026. Use a historical
 # 2001-2024 panel with comparable homologated sectors. The final `seccion`

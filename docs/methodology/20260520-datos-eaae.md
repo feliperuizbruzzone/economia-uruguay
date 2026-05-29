@@ -10,9 +10,13 @@ fontsize: 9pt
 
 Este reporte resume la disponibilidad de las variables solicitadas por el
 equipo de investigación en el panel construido a partir de la Encuesta Anual de
-Actividad Económica (EAAE) de Uruguay. El archivo vigente es
-`data/analysis-data/panel_eaae.csv`, con 236 observaciones, 18 columnas y
-cobertura anual 2001-2024 por sección CIIU homologada.
+Actividad Económica (EAAE) de Uruguay. Los archivos vigentes siguen el patrón
+`data/analysis-data/YYYYMMDD_panel_eaae.csv` y
+`data/analysis-data/YYYYMMDD_panel_eaae.xlsx`, con 236 observaciones, 18
+columnas y cobertura anual 2001-2024 por sección CIIU homologada. El CSV
+contiene la base completa. El libro incluye la hoja `eaae` con la base
+completa, `rama-C` con manufactura y `check-calidad-C` con controles anuales
+para esa rama.
 
 El panel ya integra variables de producción, valor agregado, trabajo,
 remuneraciones, inversión, adquisiciones importadas, consumo de capital y stock

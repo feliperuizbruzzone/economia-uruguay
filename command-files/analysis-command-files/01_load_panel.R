@@ -5,9 +5,18 @@ find_project_root <- function(start_dir = getwd()) {
 
   repeat {
     context_path <- file.path(current_dir, "CONTEXT.md")
-    panel_path <- file.path(current_dir, "data", "analysis-data", "panel_eaae.csv")
+    analysis_dir <- file.path(current_dir, "data", "analysis-data")
+    panel_paths <- if (dir.exists(analysis_dir)) {
+      list.files(
+        analysis_dir,
+        pattern = "^[0-9]{8}_panel_eaae\\.xlsx$",
+        full.names = TRUE
+      )
+    } else {
+      character()
+    }
 
-    if (file.exists(context_path) && file.exists(panel_path)) {
+    if (file.exists(context_path) && length(panel_paths) > 0) {
       return(current_dir)
     }
 
@@ -15,7 +24,7 @@ find_project_root <- function(start_dir = getwd()) {
     if (identical(parent_dir, current_dir)) {
       stop(
         "No se encontro la raiz del proyecto con CONTEXT.md y ",
-        "data/analysis-data/panel_eaae.csv.",
+        "un archivo data/analysis-data/YYYYMMDD_panel_eaae.xlsx.",
         call. = FALSE
       )
     }
@@ -25,13 +34,19 @@ find_project_root <- function(start_dir = getwd()) {
 }
 
 project_root <- find_project_root()
-panel_path <- file.path(project_root, "data", "analysis-data", "panel_eaae.csv")
-
-panel_eaae <- read.csv(
-  panel_path,
-  stringsAsFactors = FALSE,
-  check.names = FALSE
+panel_candidates <- list.files(
+  file.path(project_root, "data", "analysis-data"),
+  pattern = "^[0-9]{8}_panel_eaae\\.xlsx$",
+  full.names = TRUE
 )
+panel_path <- sort(panel_candidates, decreasing = TRUE)[1]
+
+if (!requireNamespace("readxl", quietly = TRUE)) {
+  stop("Instale el paquete R `readxl` para cargar el panel Excel.", call. = FALSE)
+}
+
+panel_eaae <- readxl::read_excel(panel_path, sheet = "eaae")
+panel_eaae <- as.data.frame(panel_eaae, stringsAsFactors = FALSE)
 
 panel_eaae$anno <- as.integer(panel_eaae$anno)
 
@@ -62,5 +77,7 @@ message(
   nrow(panel_eaae),
   " filas, ",
   ncol(panel_eaae),
-  " columnas."
+  " columnas desde ",
+  basename(panel_path),
+  "."
 )

@@ -1,0 +1,67 @@
+fuente,archivo,pagina,tabla,variable,variable_etiqueta,anno,valor,unidad
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_industria_en_maq_y_equipos_mill_de_usd,FBKF Industria en Maq. Y Equipos (mill. de USD)*,2018,554.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_industria_en_maq_y_equipos_mill_de_usd,FBKF Industria en Maq. Y Equipos (mill. de USD)*,2019,497.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_industria_en_maq_y_equipos_mill_de_usd,FBKF Industria en Maq. Y Equipos (mill. de USD)*,2020,855.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_industria_en_maq_y_equipos_mill_de_usd,FBKF Industria en Maq. Y Equipos (mill. de USD)*,2021,1135.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_industria_en_maq_y_equipos_mill_de_usd,FBKF Industria en Maq. Y Equipos (mill. de USD)*,2022,980.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_industria_en_maq_y_equipos_mill_de_usd,FBKF Industria en Maq. Y Equipos (mill. de USD)*,2023,1159.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_ind_vab_ind_en_maq_y_equipos_fuente_ine_y_estimaciones_propias,FBKF Ind / VAB Ind. En Maq. y Equipos (Fuente: INE y estimaciones propias)**,2018,14.9,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_ind_vab_ind_en_maq_y_equipos_fuente_ine_y_estimaciones_propias,FBKF Ind / VAB Ind. En Maq. y Equipos (Fuente: INE y estimaciones propias)**,2019,15.4,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_ind_vab_ind_en_maq_y_equipos_fuente_ine_y_estimaciones_propias,FBKF Ind / VAB Ind. En Maq. y Equipos (Fuente: INE y estimaciones propias)**,2020,29.1,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_ind_vab_ind_en_maq_y_equipos_fuente_ine_y_estimaciones_propias,FBKF Ind / VAB Ind. En Maq. y Equipos (Fuente: INE y estimaciones propias)**,2021,32.6,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_ind_vab_ind_en_maq_y_equipos_fuente_ine_y_estimaciones_propias,FBKF Ind / VAB Ind. En Maq. y Equipos (Fuente: INE y estimaciones propias)**,2022,23.7,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,fbkf_ind_vab_ind_en_maq_y_equipos_fuente_ine_y_estimaciones_propias,FBKF Ind / VAB Ind. En Maq. y Equipos (Fuente: INE y estimaciones propias)**,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd,IED Industria (mill. de USD),2018,203.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd,IED Industria (mill. de USD),2019,487.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd,IED Industria (mill. de USD),2020,507.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd,IED Industria (mill. de USD),2021,1420.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd,IED Industria (mill. de USD),2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd,IED Industria (mill. de USD),2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd_sin_zonas_francas,IED Industria (mill. de USD) Sin Zonas Francas,2018,203.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd_sin_zonas_francas,IED Industria (mill. de USD) Sin Zonas Francas,2019,487.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd_sin_zonas_francas,IED Industria (mill. de USD) Sin Zonas Francas,2020,507.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd_sin_zonas_francas,IED Industria (mill. de USD) Sin Zonas Francas,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd_sin_zonas_francas,IED Industria (mill. de USD) Sin Zonas Francas,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,ied_industria_mill_de_usd_sin_zonas_francas,IED Industria (mill. de USD) Sin Zonas Francas,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,proy_industriales_interes_nacional_mill_de_usd,Proy. Industriales - Interés Nacional (mill. de USD)***,2018,149.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,proy_industriales_interes_nacional_mill_de_usd,Proy. Industriales - Interés Nacional (mill. de USD)***,2019,217.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,proy_industriales_interes_nacional_mill_de_usd,Proy. Industriales - Interés Nacional (mill. de USD)***,2020,189.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,proy_industriales_interes_nacional_mill_de_usd,Proy. Industriales - Interés Nacional (mill. de USD)***,2021,55.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,proy_industriales_interes_nacional_mill_de_usd,Proy. Industriales - Interés Nacional (mill. de USD)***,2022,157.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,proy_industriales_interes_nacional_mill_de_usd,Proy. Industriales - Interés Nacional (mill. de USD)***,2023,71.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_base_2002_100,IMEQ Total Economía Base 2002=100,2018,455.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_base_2002_100,IMEQ Total Economía Base 2002=100,2019,451.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_base_2002_100,IMEQ Total Economía Base 2002=100,2020,435.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_base_2002_100,IMEQ Total Economía Base 2002=100,2021,553.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_base_2002_100,IMEQ Total Economía Base 2002=100,2022,596.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_base_2002_100,IMEQ Total Economía Base 2002=100,2023,563.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_sin_zonas_francas,IMEQ Total Economía Sin Zonas Francas,2018,446.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_sin_zonas_francas,IMEQ Total Economía Sin Zonas Francas,2019,443.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_sin_zonas_francas,IMEQ Total Economía Sin Zonas Francas,2020,426.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_sin_zonas_francas,IMEQ Total Economía Sin Zonas Francas,2021,500.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_sin_zonas_francas,IMEQ Total Economía Sin Zonas Francas,2022,570.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_total_economia_sin_zonas_francas,IMEQ Total Economía Sin Zonas Francas,2023,549.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_sector_publico,IMEQ Sector Público,2018,342.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_sector_publico,IMEQ Sector Público,2019,308.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_sector_publico,IMEQ Sector Público,2020,269.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_sector_publico,IMEQ Sector Público,2021,278.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_sector_publico,IMEQ Sector Público,2022,302.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_sector_publico,IMEQ Sector Público,2023,370.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado,IMEQ Privado,2018,475.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado,IMEQ Privado,2019,476.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado,IMEQ Privado,2020,464.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado,IMEQ Privado,2021,600.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado,IMEQ Privado,2022,646.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado,IMEQ Privado,2023,597.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado_sin_zonas_francas,IMEQ Privado sin Zonas Francas,2018,464.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado_sin_zonas_francas,IMEQ Privado sin Zonas Francas,2019,466.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado_sin_zonas_francas,IMEQ Privado sin Zonas Francas,2020,453.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado_sin_zonas_francas,IMEQ Privado sin Zonas Francas,2021,538.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado_sin_zonas_francas,IMEQ Privado sin Zonas Francas,2022,616.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_privado_sin_zonas_francas,IMEQ Privado sin Zonas Francas,2023,580.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_industria_sin_ref_excluye_zonas_francas,IMEQ Industria sin ref. (excluye Zonas Francas),2018,221.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_industria_sin_ref_excluye_zonas_francas,IMEQ Industria sin ref. (excluye Zonas Francas),2019,213.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_industria_sin_ref_excluye_zonas_francas,IMEQ Industria sin ref. (excluye Zonas Francas),2020,211.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_industria_sin_ref_excluye_zonas_francas,IMEQ Industria sin ref. (excluye Zonas Francas),2021,237.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_industria_sin_ref_excluye_zonas_francas,IMEQ Industria sin ref. (excluye Zonas Francas),2022,185.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,3,imeq_fbkf,imeq_industria_sin_ref_excluye_zonas_francas,IMEQ Industria sin ref. (excluye Zonas Francas),2023,207.0,indice_o_nivel

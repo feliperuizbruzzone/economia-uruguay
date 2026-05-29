@@ -1,0 +1,73 @@
+fuente,archivo,pagina,tabla,variable,variable_etiqueta,anno,valor,unidad
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,formacion_bruta_capital_fijo_fbkf,FORMACIÓN BRUTA CAPITAL FIJO (FBKF),2018,9658.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,formacion_bruta_capital_fijo_fbkf,FORMACIÓN BRUTA CAPITAL FIJO (FBKF),2019,8857.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,formacion_bruta_capital_fijo_fbkf,FORMACIÓN BRUTA CAPITAL FIJO (FBKF),2020,8609.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,formacion_bruta_capital_fijo_fbkf,FORMACIÓN BRUTA CAPITAL FIJO (FBKF),2021,10778.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,formacion_bruta_capital_fijo_fbkf,FORMACIÓN BRUTA CAPITAL FIJO (FBKF),2022,13138.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,formacion_bruta_capital_fijo_fbkf,FORMACIÓN BRUTA CAPITAL FIJO (FBKF),2023,2881.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_pib,FBKF / PIB,2018,14.8,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_pib,FBKF / PIB,2019,14.3,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_pib,FBKF / PIB,2020,16.0,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_pib,FBKF / PIB,2021,17.6,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_pib,FBKF / PIB,2022,18.5,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_pib,FBKF / PIB,2023,15.0,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico,FBKF Sector Público,2018,2382.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico,FBKF Sector Público,2019,2421.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico,FBKF Sector Público,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico,FBKF Sector Público,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico,FBKF Sector Público,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico,FBKF Sector Público,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_pib,FBKF Sector Público / PIB,2018,3.7,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_pib,FBKF Sector Público / PIB,2019,3.9,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_pib,FBKF Sector Público / PIB,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_pib,FBKF Sector Público / PIB,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_pib,FBKF Sector Público / PIB,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_pib,FBKF Sector Público / PIB,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_construccion,FBKF Sector Público - construcción,2018,2022.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_construccion,FBKF Sector Público - construcción,2019,2112.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_construccion,FBKF Sector Público - construcción,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_construccion,FBKF Sector Público - construcción,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_construccion,FBKF Sector Público - construcción,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_construccion,FBKF Sector Público - construcción,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_maquinaria_y_equipos,FBKF Sector Público - Maquinaria y Equipos,2018,359.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_maquinaria_y_equipos,FBKF Sector Público - Maquinaria y Equipos,2019,309.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_maquinaria_y_equipos,FBKF Sector Público - Maquinaria y Equipos,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_maquinaria_y_equipos,FBKF Sector Público - Maquinaria y Equipos,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_maquinaria_y_equipos,FBKF Sector Público - Maquinaria y Equipos,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_publico_maquinaria_y_equipos,FBKF Sector Público - Maquinaria y Equipos,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado,FBKF Sector Privado,2018,7451.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado,FBKF Sector Privado,2019,7209.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado,FBKF Sector Privado,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado,FBKF Sector Privado,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado,FBKF Sector Privado,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado,FBKF Sector Privado,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_pib,FBKF Sector Privado / PIB,2018,11.4,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_pib,FBKF Sector Privado / PIB,2019,11.6,porcentaje
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_pib,FBKF Sector Privado / PIB,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_pib,FBKF Sector Privado / PIB,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_pib,FBKF Sector Privado / PIB,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_pib,FBKF Sector Privado / PIB,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_construccion,FBKF Sector Privado - construcción,2018,4579.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_construccion,FBKF Sector Privado - construcción,2019,4243.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_construccion,FBKF Sector Privado - construcción,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_construccion,FBKF Sector Privado - construcción,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_construccion,FBKF Sector Privado - construcción,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_construccion,FBKF Sector Privado - construcción,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_maquinaria_y_equipos,FBKF Sector Privado - Maquinaria y Equipos,2018,2725.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_maquinaria_y_equipos,FBKF Sector Privado - Maquinaria y Equipos,2019,2801.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_maquinaria_y_equipos,FBKF Sector Privado - Maquinaria y Equipos,2020,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_maquinaria_y_equipos,FBKF Sector Privado - Maquinaria y Equipos,2021,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_maquinaria_y_equipos,FBKF Sector Privado - Maquinaria y Equipos,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,fbkf_sector_privado_maquinaria_y_equipos,FBKF Sector Privado - Maquinaria y Equipos,2023,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied,INVERSIÓN EXTRANJERA DIRECTA (IED)*,2018,-11.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied,INVERSIÓN EXTRANJERA DIRECTA (IED)*,2019,2018.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied,INVERSIÓN EXTRANJERA DIRECTA (IED)*,2020,753.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied,INVERSIÓN EXTRANJERA DIRECTA (IED)*,2021,2233.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied,INVERSIÓN EXTRANJERA DIRECTA (IED)*,2022,3910.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied,INVERSIÓN EXTRANJERA DIRECTA (IED)*,2023,1188.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied_sin_upm_ni_montes_del_plata,INVERSIÓN EXTRANJERA DIRECTA (IED) sin UPM ni Montes del Plata *,2018,-11.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied_sin_upm_ni_montes_del_plata,INVERSIÓN EXTRANJERA DIRECTA (IED) sin UPM ni Montes del Plata *,2019,2018.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied_sin_upm_ni_montes_del_plata,INVERSIÓN EXTRANJERA DIRECTA (IED) sin UPM ni Montes del Plata *,2020,753.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied_sin_upm_ni_montes_del_plata,INVERSIÓN EXTRANJERA DIRECTA (IED) sin UPM ni Montes del Plata *,2021,2233.0,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied_sin_upm_ni_montes_del_plata,INVERSIÓN EXTRANJERA DIRECTA (IED) sin UPM ni Montes del Plata *,2022,,indice_o_nivel
+ciu,Inversion-y-capacidad-instalada-Indicadores-Octubre-2022.pdf,2,inversion,inversion_extranjera_directa_ied_sin_upm_ni_montes_del_plata,INVERSIÓN EXTRANJERA DIRECTA (IED) sin UPM ni Montes del Plata *,2023,,indice_o_nivel

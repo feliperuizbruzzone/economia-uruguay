@@ -59,8 +59,17 @@ execute:
 
 ```{r setup}
 project_root <- normalizePath(file.path(getwd(), "..", ".."), mustWork = TRUE)
-panel_path <- file.path(project_root, "data", "analysis-data", "panel_eaae.csv")
-panel <- read.csv(panel_path, stringsAsFactors = FALSE, check.names = FALSE)
+panel_candidates <- list.files(
+  file.path(project_root, "data", "analysis-data"),
+  pattern = "^[0-9]{8}_panel_eaae\\.xlsx$",
+  full.names = TRUE
+)
+panel_path <- sort(panel_candidates, decreasing = TRUE)[1]
+if (!requireNamespace("readxl", quietly = TRUE)) {
+  stop("Instale el paquete R `readxl` para cargar el panel Excel.", call. = FALSE)
+}
+panel <- readxl::read_excel(panel_path, sheet = "eaae")
+panel <- as.data.frame(panel, stringsAsFactors = FALSE)
 panel$anno <- as.integer(panel$anno)
 
 slide_table <- function(x, class = "") {
@@ -81,7 +90,7 @@ for (col in intersect(num_cols, names(panel))) {
   panel[[col]] <- suppressWarnings(as.numeric(panel[[col]]))
 }
 
-display_panel_path <- file.path("data", "analysis-data", "panel_eaae.csv")
+display_panel_path <- file.path("data", "analysis-data", "YYYYMMDD_panel_eaae.xlsx")
 
 status_table <- data.frame(
   `Variable solicitada` = c(
@@ -145,7 +154,8 @@ Actividad Economica (EAAE) del INE Uruguay.
 - Objetivo de datos: crear una base ordenada, o tidy, donde cada fila sea un
   sector economico por año y las columnas sean las variables de interes.
 - Unidad analitica: sector CIIU homologado por año.
-- Producto final: `data/analysis-data/panel_eaae.csv`.
+- Productos finales: `data/analysis-data/YYYYMMDD_panel_eaae.csv` y
+  `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`.
 - Uso previsto: indicadores de ganancia, costo laboral e inversion sectorial.
 
 Los calculos finales previstos son de nivel aritmetico simple y los resultados
@@ -186,8 +196,10 @@ flowchart LR
   A --> C[03_extract_otros.py]
   B --> D[05_build_panel.py]
   C --> D
-  D --> E[data/analysis-data/panel_eaae.csv]
+  D --> E[data/analysis-data/YYYYMMDD_panel_eaae.csv]
+  D --> G[data/analysis-data/YYYYMMDD_panel_eaae.xlsx]
   E --> F[06_validate_panel.py]
+  G --> F
 ```
 
 # Variables
@@ -223,7 +235,8 @@ slide_table(status_table, "status-table")
 6. Extraccion C1/C1.1: VAB, remuneraciones y puestos.
 7. Extraccion FBKF/FBCF desde C8/C10/C6.
 8. Extraccion `consumo_capital` e `impuestos_netos` desde C2/C2.1.
-9. Construccion y validacion de `panel_eaae.csv`.
+9. Construccion y validacion de `YYYYMMDD_panel_eaae.csv` y
+   `YYYYMMDD_panel_eaae.xlsx`.
 
 ## Estructura del panel resultante
 

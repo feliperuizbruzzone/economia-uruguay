@@ -20,10 +20,11 @@ Construir un pipeline de extracción, procesamiento y validación de datos de la
 **Encuesta Anual de Actividad Económica (EAAE)** del Instituto Nacional de
 Estadística (INE) de Uruguay, cubriendo la serie completa **2001–2024**.
 
-El producto final es **un único archivo CSV** (`panel_eaae.csv`) con estructura
-de panel sección CIIU × año, conteniendo las variables prioritarias para
-calcular indicadores de tasa de ganancia, costo laboral y acumulación
-sectorial de capital en Uruguay.
+Los productos finales son **dos archivos fechados**, un CSV completo y un
+libro Excel de revisión (`YYYYMMDD_panel_eaae.csv` y
+`YYYYMMDD_panel_eaae.xlsx`), con estructura de panel sección CIIU × año y las
+variables prioritarias para calcular indicadores de tasa de ganancia, costo
+laboral y acumulación sectorial de capital en Uruguay.
 
 ### Variables objetivo del panel final
 
@@ -70,7 +71,8 @@ Notas validadas:
 - **Lenguaje del pipeline ETL:** Python 3.10+
 - **Lenguaje del análisis estadístico:** R (scripts separados, no parte de este pipeline)
 - **Gestor de entorno Python:** ninguno definido; instalar dependencias con `pip`
-- **Formato de salida final:** un único archivo CSV plano
+- **Formato de salida final:** CSV completo y Excel de revisión, ambos con
+  prefijo `YYYYMMDD`
 
 ---
 
@@ -95,7 +97,8 @@ economia-uruguay/                        ← raíz del proyecto
 │   │       └── ciiu_equivalencias.csv   ← mapeo Rev.3 ↔ Rev.4 (cuando se defina)
 │   │
 │   └── analysis-data/                   ← TIER: datos procesados
-│       └── panel_eaae.csv               ← ÚNICO ARCHIVO DE SALIDA FINAL
+│       ├── YYYYMMDD_panel_eaae.csv      ← BASE COMPLETA FECHADA
+│       └── YYYYMMDD_panel_eaae.xlsx     ← LIBRO DE REVISIÓN FECHADO
 │
 ├── command-files/                       ← TIER: todos los scripts
 │   ├── config/
@@ -122,10 +125,11 @@ economia-uruguay/                        ← raíz del proyecto
 1. **`data/input-data/` es de solo lectura.** Ningún script escribe allí.
    Los RAR se descargan directamente a esa carpeta y nunca se modifican.
 
-2. **El único archivo de salida final** es `data/analysis-data/panel_eaae.csv`.
-   Los archivos intermedios (DataFrames parciales por año) no se persisten
-   en disco salvo que el investigador lo indique; el pipeline los procesa
-   en memoria.
+2. **Los archivos finales de cada versión** son
+   `data/analysis-data/YYYYMMDD_panel_eaae.csv` y
+   `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`. Los archivos intermedios
+   (DataFrames parciales por año) no se persisten en disco salvo que el
+   investigador lo indique; el pipeline los procesa en memoria.
 
 3. **Numeración de scripts:** los scripts de `processing-command-files/`
    tienen prefijo numérico (`01_`, `02_`, …) que indica el orden de ejecución.
@@ -629,7 +633,7 @@ FASE 2 → Extracción del cuadro C1/C1.1 por año
 FASE 3 → Extracción de cuadros adicionales (FBCF, excedente, etc.)
 FASE 4 → CHECKPOINT 1: Validación de la extracción
 FASE 5 → Ensamble del panel y construcción de variables derivadas
-FASE 6 → CHECKPOINT 2: Validación y exportación del panel final → panel_eaae.csv
+FASE 6 → CHECKPOINT 2: Validación y exportación del panel final → YYYYMMDD_panel_eaae.csv + YYYYMMDD_panel_eaae.xlsx
 ```
 
 ### Orden de implementación recomendado dentro de Fases 2–3
@@ -649,7 +653,18 @@ Implementar y validar en este orden antes de continuar:
 
 ## §6. ESPECIFICACIÓN DEL PANEL FINAL
 
-### Estructura de `data/analysis-data/panel_eaae.csv`
+### Estructura de `data/analysis-data/YYYYMMDD_panel_eaae.csv`
+
+El CSV contiene la base completa `panel_eaae`.
+
+### Estructura de `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`
+
+El libro contiene tres hojas:
+
+- `eaae`: base completa.
+- `rama-C`: registros de la rama de actividad `C`.
+- `check-calidad-C`: controles anuales para la rama `C`: `vab_vbp`,
+  `consumo_intermedio_vbp_menos_vab`, `remuneraciones_vab` y `stock_vab`.
 
 ```
 Columnas de identificación:
@@ -839,8 +854,9 @@ serie histórica homologada 2001–2024 con sectores agregados comparables.
 - [x] Homologar secciones Rev.3 hacia `seccion` final sin columnas auxiliares.
 - [x] Escalar variables monetarias por 1000 porque el cuadro publica miles de
   pesos corrientes; `puestos_trabajo` no se escala.
-- [x] No crear tabla auxiliar `panel_eaae_2001.csv`; mantener un único
-  `data/analysis-data/panel_eaae.csv`.
+- [x] No crear tabla auxiliar `panel_eaae_2001.csv`; mantener la salida final
+  fechada en `data/analysis-data/YYYYMMDD_panel_eaae.csv` y
+  `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`.
 
 ---
 
@@ -949,6 +965,8 @@ mkdir -p data/input-data/eaae \
 | May 2026 | Consolidación de minuta: único QMD editable `docs/minutes/20260507_minuta_eaae_pipeline.qmd` | ✓ |
 | May 2026 | Actualización de formato de tablas en la minuta Quarto y renderizado de HTML actualizado | ✓ |
 | May 2026 | Creación de `command-files/analysis-command-files/01_load_panel.R` para cargar `panel_eaae.csv` en R como `panel_eaae` | ✓ |
+| May 2026 | Reemplazo del CSV final por `20260528_panel_eaae.xlsx` con hojas `eaae`, `rama-C` y `check-calidad-C` para revisión en GitHub | ✓ |
+| May 2026 | Salidas fechadas automáticas para CSV completo y XLSX de revisión: `YYYYMMDD_panel_eaae.csv` y `YYYYMMDD_panel_eaae.xlsx` | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

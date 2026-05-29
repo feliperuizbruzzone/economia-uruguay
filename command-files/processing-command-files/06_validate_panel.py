@@ -1,4 +1,4 @@
-"""Validate data/analysis-data/panel_eaae.csv."""
+"""Validate the final EAAE panel CSV and workbook."""
 
 from __future__ import annotations
 
@@ -7,12 +7,18 @@ import logging
 import sys
 from pathlib import Path
 
+from eaae_workbook import MAIN_SHEET, read_sheet_as_dicts
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_DIR = PROJECT_ROOT / "command-files" / "config"
 sys.path.insert(0, str(CONFIG_DIR))
 
-from eaae_config import CIIU_HOMOLOGATED_MINIMUM_SECTIONS, PANEL_OUTPUT, PANEL_YEARS  # noqa: E402
+from eaae_config import (  # noqa: E402
+    CIIU_HOMOLOGATED_MINIMUM_SECTIONS,
+    PANEL_CSV_OUTPUT,
+    PANEL_XLSX_OUTPUT,
+    PANEL_YEARS,
+)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -34,6 +40,10 @@ def to_float(value: str) -> float | None:
 
 
 def read_panel(path: Path) -> list[dict[str, str]]:
+    return read_sheet_as_dicts(path, MAIN_SHEET)
+
+
+def read_panel_csv(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as file:
         return list(csv.DictReader(file))
 
@@ -167,10 +177,16 @@ def validate(rows: list[dict[str, str]]) -> None:
 
 def main() -> int:
     configure_logging()
-    path = PROJECT_ROOT / PANEL_OUTPUT
-    rows = read_panel(path)
-    validate(rows)
-    LOGGER.info("Panel validation passed: %s rows", len(rows))
+    xlsx_path = PROJECT_ROOT / PANEL_XLSX_OUTPUT
+    csv_path = PROJECT_ROOT / PANEL_CSV_OUTPUT
+
+    xlsx_rows = read_panel(xlsx_path)
+    validate(xlsx_rows)
+    LOGGER.info("Workbook validation passed: %s rows", len(xlsx_rows))
+
+    csv_rows = read_panel_csv(csv_path)
+    validate(csv_rows)
+    LOGGER.info("CSV validation passed: %s rows", len(csv_rows))
     return 0
 
 
