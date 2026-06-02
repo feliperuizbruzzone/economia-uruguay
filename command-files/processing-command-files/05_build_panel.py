@@ -10,6 +10,7 @@ from pathlib import Path
 
 from eaae_accounts import extract_accounts_panel, validate_accounts_year
 from eaae_c1 import extract_c1_panel, validate_extracted_year
+from eaae_enterprises import extract_enterprise_counts_panel
 from eaae_fbcf import extract_fbcf_panel, validate_fbcf_year
 from eaae_stock import extract_stock_panel, validate_stock_year
 from eaae_workbook import (
@@ -28,6 +29,7 @@ CONFIG_DIR = PROJECT_ROOT / "command-files" / "config"
 sys.path.insert(0, str(CONFIG_DIR))
 
 from eaae_config import (  # noqa: E402
+    CAPITAL_ADVANCE_TURNOVER_FACTORS,
     PANEL_COLUMNS,
     PANEL_CSV_OUTPUT,
     PANEL_OUTPUTS,
@@ -83,6 +85,7 @@ def add_panel_variables(
     fbcf_rows: list[dict[str, object]],
     accounts_rows: list[dict[str, object]],
     stock_rows: list[dict[str, object]],
+    enterprise_count_rows: list[dict[str, object]],
 ) -> list[dict[str, object]]:
     fbcf_by_key = {
         (int(row["anno"]), str(row["seccion"])): row
@@ -95,6 +98,10 @@ def add_panel_variables(
     stock_by_key = {
         (int(row["anno"]), str(row["seccion"])): row.get("stock_capital")
         for row in stock_rows
+    }
+    enterprise_counts_by_key = {
+        (int(row["anno"]), str(row["seccion"])): row.get("n_empresas")
+        for row in enterprise_count_rows
     }
     output: list[dict[str, object]] = []
     for row in rows:
@@ -109,9 +116,13 @@ def add_panel_variables(
             "adquisiciones_importadas"
         )
         account_row = accounts_by_key.get(account_key, {})
-        enriched["consumo_capital"] = account_row.get("consumo_capital")
+        enriched["consumo_capital_fijo"] = account_row.get("consumo_capital")
         enriched["impuestos_netos"] = account_row.get("impuestos_netos")
         enriched["stock_capital"] = stock_by_key.get(account_key)
+        # DECISION: `n_empresas` is merged only when the methodology PDF
+        # provides exact represented-enterprise counts at source section level.
+        # Years or sections not supported by the PDF evidence remain empty.
+        enriched["n_empresas"] = enterprise_counts_by_key.get(account_key)
         enriched["excedente_bruto"] = (
             float(row["vab_pp"]) - float(row["remuneraciones"])
             if row.get("vab_pp") is not None and row.get("remuneraciones") is not None
@@ -127,17 +138,120 @@ def add_panel_variables(
     return output
 
 
+def add_estimated_vab_pb(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    rows_by_section: dict[str, list[dict[str, object]]] = {}
+    for row in rows:
+        rows_by_section.setdefault(str(row["seccion"]), []).append(row)
+
+    for section_rows in rows_by_section.values():
+        section_rows.sort(key=lambda row: int(row["anno"]))
+        first_observed_year: int | None = None
+        first_observed_ratio: float | None = None
+        for row in section_rows:
+            observed = row.get("vab_pb")
+            if observed not in (None, ""):
+                vab_pp = row.get("vab_pp")
+                if vab_pp not in (None, "", 0):
+                    first_observed_year = int(row["anno"])
+                    first_observed_ratio = float(observed) / float(vab_pp)
+                    break
+
+        # DECISION: Provisional team rule, June 2026. Before the first observed
+        # VAB(pb), backcast by preserving the annual variation of VAB(pp):
+        # vab_pb_est[t-1] = vab_pb_est[t] / (vab_pp[t] / vab_pp[t-1]). This is
+        # algebraically equivalent to applying the first observed VAB(pb)/VAB(pp)
+        # ratio to previous VAB(pp), and handles sections with missing years.
+        for row in section_rows:
+            year = int(row["anno"])
+            observed = row.get("vab_pb")
+            if observed not in (None, ""):
+                row["vab_pb_estimado"] = float(observed)
+                continue
+            vab_pp = row.get("vab_pp")
+            if (
+                first_observed_year is not None
+                and year < first_observed_year
+                and first_observed_ratio is not None
+                and vab_pp not in (None, "")
+            ):
+                row["vab_pb_estimado"] = float(vab_pp) * first_observed_ratio
+
+    return rows
+
+
+def add_estimated_intermediate_consumption(
+    rows: list[dict[str, object]]
+) -> list[dict[str, object]]:
+    for row in rows:
+        vbp_pp = row.get("vbp_pp")
+        vab_pb_estimado = row.get("vab_pb_estimado")
+        if vbp_pp in (None, "") or vab_pb_estimado in (None, ""):
+            continue
+        # DECISION: Provisional team rule, June 2026. Estimate intermediate
+        # consumption as VBP at producer prices minus the observed/backcasted
+        # VAB at basic prices. Keep the suffix `_estimado` because this mixes
+        # valuation concepts and depends on `vab_pb_estimado` before 2017.
+        row["consumo_intermedio_estimado"] = (
+            float(vbp_pp) - float(vab_pb_estimado)
+        )
+    return rows
+
+
+def add_capital_advanced_variables(
+    rows: list[dict[str, object]]
+) -> list[dict[str, object]]:
+    for row in rows:
+        row["capital_variable_adelantado"] = None
+        row["capital_circulante_constante_adelantado"] = None
+        row["capital_total_adelantado"] = None
+
+        factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(str(row.get("seccion")))
+        if factor in (None, 0):
+            continue
+
+        remuneraciones = row.get("remuneraciones")
+        consumo_intermedio = row.get("consumo_intermedio_estimado")
+        stock_capital = row.get("stock_capital")
+
+        # DECISION: Provisional team rule, June 2026. Advance variable capital
+        # and constant circulating capital by dividing annual flows by the
+        # configured turnover factor. With no factor, leave all three advanced
+        # capital variables empty.
+        if remuneraciones not in (None, ""):
+            row["capital_variable_adelantado"] = (
+                float(remuneraciones) / float(factor)
+            )
+        if consumo_intermedio not in (None, ""):
+            row["capital_circulante_constante_adelantado"] = (
+                float(consumo_intermedio) / float(factor)
+            )
+        if (
+            stock_capital not in (None, "")
+            and row["capital_variable_adelantado"] is not None
+            and row["capital_circulante_constante_adelantado"] is not None
+        ):
+            row["capital_total_adelantado"] = (
+                float(stock_capital)
+                + float(row["capital_variable_adelantado"])
+                + float(row["capital_circulante_constante_adelantado"])
+            )
+    return rows
+
+
 def build_annual_economy_total(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     additive_columns = [
         "vbp_pp",
         "vbp_pb",
         "vab_pp",
         "vab_pb",
+        "vab_pb_estimado",
+        "consumo_intermedio_estimado",
         "remuneraciones",
         "puestos_trabajo",
+        "n_empresas",
         "fbcf",
         "adquisiciones_importadas",
-        "consumo_capital",
+        "consumo_capital_fijo",
         "impuestos_netos",
         "stock_capital",
     ]
@@ -166,6 +280,7 @@ def build_annual_economy_total(rows: list[dict[str, object]]) -> list[dict[str, 
         )
         total["part_salarial"] = safe_divide(total.get("remuneraciones"), total.get("vab_pp"))
         total["productividad"] = safe_divide(total.get("vab_pp"), total.get("puestos_trabajo"))
+        add_capital_advanced_variables([total])
         totals.append(total)
     return totals
 
@@ -181,10 +296,8 @@ def build_annual_quality_checks(rows: list[dict[str, object]]) -> list[dict[str,
             {
                 "anno": row.get("anno"),
                 "vab_vbp": safe_divide(vab_pp, vbp_pp),
-                "consumo_intermedio_vbp_menos_vab": (
-                    float(vbp_pp) - float(vab_pp)
-                    if vbp_pp not in (None, "") and vab_pp not in (None, "")
-                    else None
+                "consumo_intermedio_estimado": row.get(
+                    "consumo_intermedio_estimado"
                 ),
                 "remuneraciones_vab": safe_divide(remuneraciones, vab_pp),
                 "stock_vab": safe_divide(stock_capital, vab_pp),
@@ -211,7 +324,7 @@ def write_panel_workbook(rows: list[dict[str, object]], output_path: Path) -> No
     quality_columns = [
         "anno",
         "vab_vbp",
-        "consumo_intermedio_vbp_menos_vab",
+        "consumo_intermedio_estimado",
         "remuneraciones_vab",
         "stock_vab",
     ]
@@ -252,6 +365,7 @@ def main() -> int:
     fbcf_rows = extract_fbcf_panel(args.years)
     accounts_rows = extract_accounts_panel(args.years)
     stock_rows = extract_stock_panel(args.years)
+    enterprise_count_rows = extract_enterprise_counts_panel(args.years)
     by_year: dict[int, list[dict[str, object]]] = {}
     for row in rows:
         by_year.setdefault(int(row["anno"]), []).append(row)
@@ -276,7 +390,16 @@ def main() -> int:
     for year in args.years:
         validate_stock_year(year, stock_by_year.get(year, []))
 
-    panel = add_panel_variables(rows, fbcf_rows, accounts_rows, stock_rows)
+    panel = add_panel_variables(
+        rows,
+        fbcf_rows,
+        accounts_rows,
+        stock_rows,
+        enterprise_count_rows,
+    )
+    panel = add_estimated_vab_pb(panel)
+    panel = add_estimated_intermediate_consumption(panel)
+    panel = add_capital_advanced_variables(panel)
     panel.sort(key=lambda row: (int(row["anno"]), str(row["seccion"])))
     write_panel_csv(panel, csv_output_path)
     write_panel_workbook(panel, xlsx_output_path)

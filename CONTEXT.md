@@ -34,16 +34,46 @@ laboral y acumulación sectorial de capital en Uruguay.
 | `vbp_pb` | C1.1, columna VBP(pb) | directa | 2017–2024 solamente |
 | `vab_pp` | 2001 cuadro 1 letra / C1/C1.1 | directa | 2001–2024 |
 | `vab_pb` | C1.1, columna VAB(pb) | directa | 2017–2024 solamente |
+| `vab_pb_estimado` | `vab_pb` observado 2017–2024 y retroproyección con variación interanual de `vab_pp` | derivada provisoria | 2001–2024 |
+| `consumo_intermedio_estimado` | `vbp_pp - vab_pb_estimado` | derivada provisoria | 2001–2024 |
+| `capital_circulante_constante_adelantado` | `consumo_intermedio_estimado / factor_rotacion` | derivada provisoria | C y economía total; otros sectores NA |
 | `remuneraciones` | 2001 cuadro 1 letra / C1/C1.1 | directa | 2001–2024 |
+| `capital_variable_adelantado` | `remuneraciones / factor_rotacion` | derivada provisoria | C y economía total; otros sectores NA |
 | `puestos_trabajo` | 2001 cuadro 1 letra / C1/C1.1 | directa | 2001–2024 |
+| `n_empresas` | PDF de metodología/diseño muestral EAAE, marco muestral por sección | directa de fuente auxiliar | 2001–2005, 2011 y 2020; otros años NA |
 | `fbcf` | 2001 C8 / 2003–2005 C10 / 2006–2024 C6 | directa | 2001, 2003–2010, 2012–2024 |
 | `adquisiciones_importadas` | subcomponente Importadas en cuadros FBCF | directa | 2001, 2003–2010, 2012–2024 |
-| `consumo_capital` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
+| `consumo_capital_fijo` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
 | `impuestos_netos` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
 | `stock_capital` | 2001 C9 / 2003–2005 C11 / 2006–2024 C7 | directa | 2001, 2003–2010, 2012–2024 |
+| `capital_total_adelantado` | `stock_capital + capital_variable_adelantado + capital_circulante_constante_adelantado` | derivada provisoria | C y economía total donde existe `stock_capital`; otros sectores NA |
 | `variacion_existencias` | 2001 C10 / 2003–2005 C12 | directa identificada, pendiente de extracción | 2001, 2003–2005 |
 | `deuda_industrial` | no encontrada en EAAE | requiere fuente externa | — |
 | `amortizaciones` | derivada / fuente externa | **pendiente — ver §7.1** | — |
+
+### Decisiones provisorias vigentes — Junio 2026
+
+Las siguientes variables derivadas forman parte del panel actual como decisión
+provisoria del equipo:
+
+- `vab_pb_estimado`: usa `vab_pb` observado en 2017–2024 y retroproyección por
+  variación interanual de `vab_pp` para años anteriores.
+- `consumo_intermedio_estimado`: se calcula como `vbp_pp - vab_pb_estimado`.
+- `consumo_capital_fijo`: nombre público de la variable directa de consumo de
+  capital fijo extraída de C2/C2.1; no usar `consumo_capital` como columna final
+  del panel.
+- `capital_variable_adelantado`: se calcula como `remuneraciones /
+  factor_rotacion`.
+- `capital_circulante_constante_adelantado`: se calcula como
+  `consumo_intermedio_estimado / factor_rotacion`.
+- `capital_total_adelantado`: se calcula como `stock_capital +
+  capital_variable_adelantado + capital_circulante_constante_adelantado`.
+
+Los factores de rotación definidos hasta ahora son `6,6` para la rama `C` y
+`4,2` para `economia_total`. Para otros sectores, las variables de capital
+adelantado deben quedar como NA hasta que el equipo defina factores. Si falta
+`stock_capital`, como ocurre en 2002 y 2011, `capital_total_adelantado` queda
+como NA.
 
 Notas validadas:
 - `remuneraciones` incluye aportes patronales. En los cuadros de detalle, el
@@ -54,6 +84,23 @@ Notas validadas:
 - No se encontró en la EAAE una variable de deuda, pasivos, préstamos, crédito
   o endeudamiento sectorial/industrial. Cualquier `deuda_industrial` requiere
   fuente externa.
+- `n_empresas` proviene de los PDF locales de metodología/diseño muestral en
+  `data/input-data/eaae/metodologia`. Solo se integra cuando el PDF permite
+  obtener un desglose exacto por sección compatible con el panel: anexos
+  tabulares 2001–2005, gráfico etiquetado 2011 y gráfico vectorial 2020 cuya
+  suma reconstruida reproduce exactamente el total publicado. 2022 queda como
+  NA porque el gráfico no tiene etiquetas y la reconstrucción vectorial no
+  reproduce el total del marco publicado; 2021 queda NA porque el PDF local está
+  incompleto y no trae el desglose por sección.
+- Las hojas `calculos-propios-total` y `calculos-propios-industrial` del XLSX
+  se agregan como post-proceso en R mediante
+  `command-files/analysis-command-files/02_add_calculos_propios_eaae.R`. No
+  cambian el CSV ni la hoja base `eaae`. Usan tasas de rotación diferenciadas:
+  `4,2` para `economia_total` y `6,6` para la rama industrial `C`. Como
+  `remuneraciones` ya incluye aportes patronales en C1/C1.1,
+  `cargas_patronales` queda en NA y `costo_laboral = remuneraciones`, evitando
+  doble conteo. `productividad_trabajo` queda en NA porque el panel no contiene
+  `vab_precios_constantes`.
 
 ### Granularidad de la base de datos final
 - **Unidad de observación:** sector CIIU homologado × año
@@ -659,15 +706,18 @@ El CSV contiene la base completa `panel_eaae`.
 
 ### Estructura de `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`
 
-El libro contiene cinco hojas:
+El libro contiene cinco hojas base y dos hojas de cálculos propios:
 
 - `eaae`: base completa.
 - `rama-C`: registros de la rama de actividad `C`.
 - `check-calidad-C`: controles anuales para la rama `C`: `vab_vbp`,
-  `consumo_intermedio_vbp_menos_vab`, `remuneraciones_vab` y `stock_vab`.
+  `consumo_intermedio_estimado`, `remuneraciones_vab` y `stock_vab`.
 - `economia_total`: agregacion anual de todas las variables del panel.
 - `check-calidad-total`: controles anuales para `economia_total`: `vab_vbp`,
-  `consumo_intermedio_vbp_menos_vab`, `remuneraciones_vab` y `stock_vab`.
+  `consumo_intermedio_estimado`, `remuneraciones_vab` y `stock_vab`.
+- `calculos-propios-total`: cálculos propios del equipo para la economía total.
+- `calculos-propios-industrial`: cálculos propios del equipo para la rama
+  industrial `C`.
 
 ```
 Columnas de identificación:
@@ -681,15 +731,24 @@ Columnas de variables (pesos uruguayos corrientes):
   vbp_pb        float   Valor Bruto de Producción, precios básicos (NaN antes de 2017)
   vab_pp        float   Valor Agregado Bruto, precios de productor
   vab_pb        float   VAB, precios básicos (NaN antes de 2017)
+  vab_pb_estimado float VAB a precios básicos observado desde 2017 y retroproyectado antes de 2017
+  consumo_intermedio_estimado float Consumo intermedio estimado como vbp_pp - vab_pb_estimado
+  capital_circulante_constante_adelantado float Consumo intermedio estimado dividido por factor de rotación
   remuneraciones float  Remuneraciones al trabajo asalariado
+  capital_variable_adelantado float Remuneraciones divididas por factor de rotación
   puestos_trabajo float Puestos de trabajo ocupados
+  n_empresas   float   Cantidad de empresas representadas en el marco muestral, por sección homologada
   fbcf          float   Formación Bruta de Capital Fijo (NaN donde no disponible)
   adquisiciones_importadas float Adquisiciones importadas dentro de FBCF
-  consumo_capital float Consumo de capital fijo
+  consumo_capital_fijo float Consumo de capital fijo
   impuestos_netos float Impuestos sobre la producción y productos netos de subsidios
   stock_capital float Valor de activos fijos al 31/12 (NaN donde no disponible)
+  capital_total_adelantado float Stock fijo + capital variable adelantado + capital circulante constante adelantado
 
 Columnas derivadas calculadas en pipeline:
+  capital_circulante_constante_adelantado float = consumo_intermedio_estimado / factor_rotacion
+  capital_variable_adelantado float = remuneraciones / factor_rotacion
+  capital_total_adelantado float = stock_capital + capital_variable_adelantado + capital_circulante_constante_adelantado
   excedente_bruto  float  = vab_pp - remuneraciones
   part_salarial    float  = remuneraciones / vab_pp
   productividad    float  = vab_pp / puestos_trabajo
@@ -791,15 +850,77 @@ La EAAE provee el **flujo** de inversión (FBCF/FBKF, extraído desde C8 en 2001
 C10 en 2003–2005 y C6 en 2006–2024) y también una fuente directa para
 `stock_capital`: valor de activos fijos al 31/12. La extracción directa usa C9
 en 2001, C11 en 2003–2005 y C7 desde 2006 en adelante. Los años 2002 y 2011
-quedan sin `stock_capital` porque los RAR publicados no contienen un cuadro de
-valor de activos fijos.
+quedan sin `stock_capital`: en 2002 el RAR contiene `EAE_C9_2002.xls`, pero es
+un cuadro de impuestos, no de activos fijos; en 2011 el RAR publicado solo
+contiene C1 y C2.
 
 La variable `amortizaciones` sigue pendiente. No construirla ni inferirla hasta
 que el investigador defina fuente o método.
 - [ ] ¿Cuál es el año base para K₀?
 - [ ] ¿Tasas de depreciación diferenciadas por clase de activo o tasa única?
 
-### §7.1.b — Variación de existencias / inventarios
+### §7.1.a — VAB a precios básicos estimado
+
+**DECISIÓN PROVISORIA DEL EQUIPO — Junio 2026:** crear `vab_pb_estimado` como
+serie completa 2001–2024. Para 2017–2024, `vab_pb_estimado` replica el
+`vab_pb` observado en C1.1. Para años anteriores se retroproyecta por sección
+homologada usando la variación interanual de `vab_pp`:
+
+`vab_pb_estimado[t-1] = vab_pb_estimado[t] / (vab_pp[t] / vab_pp[t-1])`.
+
+La implementación usa la forma equivalente `vab_pb_estimado[t] =
+vab_pp[t] * (vab_pb/vab_pp)` del primer año observado por sección, para cubrir
+secciones con años intermedios faltantes.
+
+Esta variable es una imputación provisoria para análisis, no reemplaza la
+variable directa `vab_pb`, que debe permanecer vacía antes de 2017.
+
+### §7.1.b — Consumo intermedio estimado
+
+**DECISIÓN PROVISORIA DEL EQUIPO — Junio 2026:** crear
+`consumo_intermedio_estimado` como serie completa 2001–2024, calculada como:
+
+`consumo_intermedio_estimado = vbp_pp - vab_pb_estimado`.
+
+La variable busca aproximar el consumo intermedio/capital circulante constante
+del panel. No es una variable observada directa de la EAAE y depende de
+`vab_pb_estimado` antes de 2017. Dado que combina `vbp_pp` con VAB a precios
+básicos observado o retroproyectado, debe tratarse como cálculo provisorio.
+
+Para evitar confusiones, la variable directa que antes se exponía como
+`consumo_capital` pasa a denominarse `consumo_capital_fijo` en el panel final.
+La extracción puede mantener nombres internos asociados a la configuración de
+C2/C2.1, pero el artefacto final debe usar el nombre explícito con sufijo
+`_fijo`.
+
+### §7.1.c — Capital adelantado
+
+**DECISIÓN PROVISORIA DEL EQUIPO — Junio 2026:** crear variables de capital
+adelantado usando factores fijos de rotación provistos por el equipo:
+
+- `C`: 6,6.
+- `economia_total`: 4,2.
+
+El capital variable adelantado se calcula como:
+
+`capital_variable_adelantado = remuneraciones / factor_rotacion`.
+
+El capital circulante constante adelantado se calcula de forma análoga a partir
+del consumo intermedio estimado:
+
+`capital_circulante_constante_adelantado = consumo_intermedio_estimado / factor_rotacion`.
+
+El capital total adelantado se calcula como:
+
+`capital_total_adelantado = stock_capital + capital_variable_adelantado + capital_circulante_constante_adelantado`.
+
+En el panel por sección solo se calcula para la rama `C`. En la hoja
+`economia_total` se calcula para la economía agregada anual. Para sectores sin
+factor de rotación definido, las tres variables quedan como NA. Si falta alguno
+de los componentes necesarios, por ejemplo `stock_capital` en 2002 y 2011, el
+capital total adelantado queda como NA.
+
+### §7.1.d — Variación de existencias / inventarios
 
 **VERIFICADO — Mayo 2026:** la EAAE usa la denominación `Variación de
 existencias`, no `inventarios`. La fuente directa existe en:
@@ -869,12 +990,16 @@ serie histórica homologada 2001–2024 con sectores agregados comparables.
 |-----|------|-------------|-------------------|
 | 2001 | Estructura | 78 archivos, 3 subcarpetas, sin C1.1; usar cuadro 1 por letra | `subfolder: "Letra"`, `file_pattern: EAE_cu1tpel_01\.xls`, `value_scale` monetario ×1000 |
 | 2002 | FBCF | RAR publicado sin cuadro de Formación Bruta de Capital Fijo | `EAAE_FBCF_CONFIG[2002]["file_pattern"] = None` |
+| 2002 | Stock | `EAE_C9_2002.xls` es cuadro de impuestos, no de activos fijos | `EAAE_STOCK_CONFIG[2002]["file_pattern"] = None` |
 | 2002 | `data_start` | Solo 1 fila vacía → dato en fila 8, no 9 | `data_start_row: 8` |
 | 2004 | `header_row` | Fila 4 vacía extra → encabezado en fila 7 | `header_row: 7` |
 | 2006 | Nombre XLS | Sufijo `-F` en todos los archivos | `file_pattern` con `-F` |
+| 2006 | Cuentas C2 | Layout verificado: impuestos netos col. 5, consumo capital fijo col. 6; col. 7 es VAB y no debe usarse como consumo | `EAAE_ACCOUNTS_CONFIG[2006]` + validación puente C 2005/2008 |
 | 2007 | Subcarpeta | Cuadros duplicados; usar `Forzosas y aleatorias/` | `subfolder` definida |
+| 2007 | Cuentas C2 | Layout verificado: impuestos netos col. 5, consumo capital fijo col. 6; col. 7 es VAB y no debe usarse como consumo | `EAAE_ACCOUNTS_CONFIG[2007]` + validación puente C 2005/2008 |
 | 2011 | Datos | Solo C1 y C2 disponibles (incompleto) | `cuadros: ["C1","C2"]` |
 | 2011 | FBCF | RAR publicado sin cuadro de Formación Bruta de Capital Fijo | `EAAE_FBCF_CONFIG[2011]["file_pattern"] = None` |
+| 2011 | Cuentas C2 | Layout verificado: VAB col. 5, remuneraciones col. 6, impuestos netos col. 7, consumo capital col. 8 | `EAAE_ACCOUNTS_CONFIG[2011]` |
 | 2012 | Nombre XLS | Primera aparición de subíndice decimal `C1.1` | `file_pattern` con `\.1` |
 | 2013–2016 | `data_start` | Fila 3 extra "Valorado a pp..." → dato en fila 9 | `data_start_row: 9` |
 | 2016 | Subcarpeta | Archivos dentro de carpeta con nombre largo | `subfolder` definida |
@@ -957,7 +1082,7 @@ mkdir -p data/input-data/eaae \
 | May 2026 | Integración de 2001 al panel principal desde cuadro 1 por letra con escalado monetario ×1000 | ✓ |
 | May 2026 | Creación de minuta actualizada `docs/minutes/20260507_minuta_eaae_pipeline.qmd` | ✓ |
 | May 2026 | Implementación de `03_extract_otros.py` y extracción de FBCF/FBKF al panel principal | ✓ |
-| May 2026 | Extracción de `consumo_capital` e `impuestos_netos` desde C2/C2.1 e integración al panel | ✓ |
+| May 2026 | Extracción de consumo de capital fijo e `impuestos_netos` desde C2/C2.1 e integración al panel | ✓ |
 | May 2026 | Extracción de `stock_capital` desde cuadros de valor de activos fijos al 31/12 e integración al panel | ✓ |
 | May 2026 | Integración de `vbp_pb` desde C1.1 para 2017–2024 | ✓ |
 | May 2026 | Integración de `adquisiciones_importadas` desde la columna Importadas de cuadros FBCF | ✓ |
@@ -970,6 +1095,12 @@ mkdir -p data/input-data/eaae \
 | May 2026 | Creación de `command-files/analysis-command-files/01_load_panel.R` para cargar `panel_eaae.csv` en R como `panel_eaae` | ✓ |
 | May 2026 | Reemplazo del CSV final por `20260528_panel_eaae.xlsx` con hojas `eaae`, `rama-C`, `check-calidad-C`, `economia_total` y `check-calidad-total` para revisión en GitHub | ✓ |
 | May 2026 | Salidas fechadas automáticas para CSV completo y XLSX de revisión: `YYYYMMDD_panel_eaae.csv` y `YYYYMMDD_panel_eaae.xlsx` | ✓ |
+| Jun 2026 | Decisión provisoria del equipo: creación de `vab_pb_estimado` con `vab_pb` observado desde 2017 y retroproyección por variación interanual de `vab_pp` | ✓ |
+| Jun 2026 | Decisión provisoria del equipo: creación de `consumo_intermedio_estimado = vbp_pp - vab_pb_estimado` y renombre público de `consumo_capital` a `consumo_capital_fijo` | ✓ |
+| Jun 2026 | Decisión provisoria del equipo: creación de `capital_variable_adelantado`, `capital_circulante_constante_adelantado` y `capital_total_adelantado` con factores 6,6 para C y 4,2 para economía total | ✓ |
+| Jun 2026 | Validación específica para manufactura C en 2006–2007: `consumo_capital_fijo/vab_pp` se compara contra la envolvente 2005/2008 para detectar desalineación de columnas C2 | ✓ |
+| Jun 2026 | Integración de `n_empresas` desde PDF de metodología/diseño muestral para años con desglose exacto verificable: 2001–2005, 2011 y 2020 | ✓ |
+| Jun 2026 | Creación del post-proceso R `02_add_calculos_propios_eaae.R` y agregado de hojas `calculos-propios-total` y `calculos-propios-industrial` al XLSX | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

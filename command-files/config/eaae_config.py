@@ -12,6 +12,7 @@ INE_EAAE_SERIES_URL = (
 )
 
 DATA_INPUT_EAAE_DIR = Path("data/input-data/eaae")
+DATA_INPUT_EAAE_METHODOLOGY_DIR = DATA_INPUT_EAAE_DIR / "metodologia"
 DATA_ANALYSIS_DIR = Path("data/analysis-data")
 PANEL_BASENAME = "panel_eaae"
 # DECISION: Each created database version carries the local creation date as a
@@ -36,6 +37,13 @@ EAAE_2001_PANEL_SOURCE = "Letra/EAE_cu1tpel_01.xls"
 # validation requires only the common observed homologated sectors.
 CIIU_HOMOLOGATED_MINIMUM_SECTIONS = {"C", "D_E", "G", "H_J", "I"}
 PANEL_YEARS = list(range(2001, 2025))
+# DECISION: Provisional team rule, June 2026. Advance annual circulating flows
+# by fixed turnover factors where the team provided values. Leave sectors with
+# no configured factor as missing in the final panel.
+CAPITAL_ADVANCE_TURNOVER_FACTORS = {
+    "C": 6.6,
+    "economia_total": 4.2,
+}
 PANEL_COLUMNS = [
     "anno",
     "seccion",
@@ -45,13 +53,19 @@ PANEL_COLUMNS = [
     "vbp_pb",
     "vab_pp",
     "vab_pb",
+    "vab_pb_estimado",
+    "consumo_intermedio_estimado",
+    "capital_circulante_constante_adelantado",
     "remuneraciones",
+    "capital_variable_adelantado",
     "puestos_trabajo",
+    "n_empresas",
     "fbcf",
     "adquisiciones_importadas",
-    "consumo_capital",
+    "consumo_capital_fijo",
     "impuestos_netos",
     "stock_capital",
+    "capital_total_adelantado",
     "excedente_bruto",
     "part_salarial",
     "productividad",
@@ -100,6 +114,128 @@ CIIU_SECTION_HOMOLOGATION = {
         "T": "T",
         "U": "U",
     },
+}
+
+EAAE_ENTERPRISE_METHODOLOGY_SOURCES = {
+    2001: {
+        "pdf": "METODOLOGÍA_EAE-2001.pdf",
+        "method": "text_tables_2001",
+        "ciiu_version": "Rev.3",
+        "expected_total": 93366,
+        "notes": (
+            "Anexo 6: suma de unidades forzosas, marco 20-49, marco 5-19 "
+            "y marco de menos de 5 puestos."
+        ),
+    },
+    2002: {
+        "pdf": "METODOLOGIA_EAE-2002-2003.pdf",
+        "method": "text_table_forced_random",
+        "ciiu_version": "Rev.3",
+        "expected_total": 12298,
+        "notes": "Anexo comun 2002-2003: marco forzoso + marco aleatorio.",
+    },
+    2003: {
+        "pdf": "METODOLOGIA_EAE-2002-2003.pdf",
+        "method": "text_table_forced_random",
+        "ciiu_version": "Rev.3",
+        "expected_total": 12298,
+        "notes": "Anexo comun 2002-2003: marco forzoso + marco aleatorio.",
+    },
+    2004: {
+        "pdf": "METODOLOGÍA_EAE-2004.pdf",
+        "method": "text_table_single_frame",
+        "ciiu_version": "Rev.3",
+        "expected_total": 13993,
+        "notes": "Anexo 2: unidades en el marco por clase o grupo de clases.",
+    },
+    2005: {
+        "pdf": "METODOLOGÍA_EAE-2005.pdf",
+        "method": "text_table_single_frame",
+        "ciiu_version": "Rev.3",
+        "expected_total": 14338,
+        "notes": "Anexo 2: unidades en el marco por clase o grupo de clases.",
+    },
+    2011: {
+        "pdf": "METODOLOGÍA_EAE-2011.pdf",
+        "method": "manual_labeled_graph",
+        "ciiu_version": "Rev.4",
+        "expected_total": 11396,
+        "source_counts": {
+            "B": 28,
+            "C": 2202,
+            "D": 12,
+            "E": 123,
+            "G": 3512,
+            "H": 928,
+            "I": 817,
+            "J": 399,
+            "K": 211,
+            "L": 109,
+            "M": 500,
+            "N": 735,
+            "P": 457,
+            "Q": 740,
+            "R": 244,
+            "S": 379,
+        },
+        "notes": (
+            "Grafico 1 con etiquetas numericas; la suma transcripta coincide "
+            "con el total del marco muestral publicado."
+        ),
+    },
+    2020: {
+        "pdf": "METODOLOGÍA_EAE-2020.pdf",
+        "method": "vector_bar_graph",
+        "ciiu_version": "Rev.4",
+        "expected_total": 11776,
+        "page": 3,
+        "axis_max": 3000,
+        "source_sections": [
+            "B",
+            "C",
+            "D",
+            "E",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "P",
+            "Q",
+            "R",
+            "S",
+        ],
+        "notes": (
+            "Grafico 1 sin etiquetas; se extrae de la geometria vectorial y "
+            "se acepta solo porque los enteros reproducen el total publicado."
+        ),
+    },
+}
+
+EAAE_ENTERPRISE_UNAVAILABLE_YEARS = {
+    2006: "No hay PDF de metodologia en data/input-data/eaae/metodologia.",
+    2007: "El PDF trae muestra teorica/efectiva, no marco por seccion.",
+    2008: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2009: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2010: "El grafico disponible cruza marco y muestra por estrato de tamano, no por seccion.",
+    2012: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2013: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2014: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2015: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2016: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2017: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2018: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2019: "El PDF no trae cantidad de empresas del marco por seccion.",
+    2021: "El PDF local esta incompleto: solo llega al titulo Marco muestral.",
+    2022: (
+        "El grafico no tiene etiquetas y la reconstruccion vectorial no reproduce "
+        "el total publicado; se deja sin dato exacto."
+    ),
+    2023: "No hay PDF de metodologia en data/input-data/eaae/metodologia.",
+    2024: "No hay PDF de metodologia en data/input-data/eaae/metodologia.",
 }
 
 
@@ -655,10 +791,13 @@ def _accounts_config_for_year(year: int) -> dict[str, object]:
             "data_start_row": 11,
             "section_col": 0,
             "division_col": 1,
-            "impuestos_netos_col": 6,
-            "consumo_capital_col": 7,
+            "impuestos_netos_col": 5,
+            "consumo_capital_col": 6,
             "value_scale": 1,
-            "notes": "Cuadro 2 con sufijo -F, cuentas de producción.",
+            "notes": (
+                "Cuadro 2 con sufijo -F, cuentas de producción. Layout verificado: "
+                "impuestos netos en columna 5 y consumo de capital fijo en columna 6."
+            ),
         }
     if year == 2007:
         return {
@@ -667,12 +806,15 @@ def _accounts_config_for_year(year: int) -> dict[str, object]:
             "data_start_row": 11,
             "section_col": 0,
             "division_col": 1,
-            "impuestos_netos_col": 6,
-            "consumo_capital_col": 7,
+            "impuestos_netos_col": 5,
+            "consumo_capital_col": 6,
             "value_scale": 1,
-            "notes": "Cuadro 2 en subcarpeta Forzosas y aleatorias.",
+            "notes": (
+                "Cuadro 2 en subcarpeta Forzosas y aleatorias. Layout verificado: "
+                "impuestos netos en columna 5 y consumo de capital fijo en columna 6."
+            ),
         }
-    if 2008 <= year <= 2011:
+    if 2008 <= year <= 2010:
         return {
             "subfolder": None,
             "file_pattern": rf"EAE_C2_{year}\.xls",
@@ -683,6 +825,22 @@ def _accounts_config_for_year(year: int) -> dict[str, object]:
             "consumo_capital_col": 6,
             "value_scale": 1,
             "notes": "Cuadro 2, cuentas de producción.",
+        }
+    if year == 2011:
+        return {
+            "subfolder": None,
+            "file_pattern": r"EAE_C2_2011\.xls",
+            "data_start_row": 11,
+            "section_col": 0,
+            "division_col": 1,
+            "impuestos_netos_col": 7,
+            "consumo_capital_col": 8,
+            "value_scale": 1,
+            "notes": (
+                "Cuadro 2, cuentas de producción. Layout incompleto 2011 verificado: "
+                "VAB en columna 5, remuneraciones en 6, impuestos netos en 7 y "
+                "consumo de capital fijo en 8."
+            ),
         }
     if year == 2012:
         return {
@@ -761,8 +919,8 @@ def _accounts_config_for_year(year: int) -> dict[str, object]:
 
 # DECISION: For requested taxes and consumption of fixed capital, use the
 # production-account table closest to the panel concept: Cuadro 2 in 2001-2011
-# and Cuadro 2.1 in 2012-2024. Preserve concise final names:
-# `impuestos_netos` and `consumo_capital`.
+# and Cuadro 2.1 in 2012-2024. `consumo_capital` is the internal extraction
+# key; the public panel column is `consumo_capital_fijo`.
 EAAE_ACCOUNTS_CONFIG = {
     year: _accounts_config_for_year(year) for year in PANEL_YEARS
 }
@@ -792,7 +950,10 @@ def _stock_config_for_year(year: int) -> dict[str, object]:
             "division_col": None,
             "stock_capital_col": None,
             "value_scale": 1,
-            "notes": "Sin cuadro de valor de activos fijos identificado.",
+            "notes": (
+                "Sin cuadro de valor de activos fijos identificado. El RAR contiene "
+                "EAE_C9_2002.xls, pero ese cuadro corresponde a impuestos, no a stock."
+            ),
         }
     if 2003 <= year <= 2005:
         return {

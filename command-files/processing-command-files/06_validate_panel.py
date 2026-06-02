@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import csv
 import logging
+import statistics
 import sys
 from pathlib import Path
 
+from eaae_enterprises import expected_enterprise_counts_for_year
 from eaae_workbook import (
     CHECK_TOTAL_SHEET,
     MAIN_SHEET,
@@ -19,6 +21,7 @@ CONFIG_DIR = PROJECT_ROOT / "command-files" / "config"
 sys.path.insert(0, str(CONFIG_DIR))
 
 from eaae_config import (  # noqa: E402
+    CAPITAL_ADVANCE_TURNOVER_FACTORS,
     CIIU_HOMOLOGATED_MINIMUM_SECTIONS,
     PANEL_CSV_OUTPUT,
     PANEL_XLSX_OUTPUT,
@@ -34,18 +37,33 @@ TOTAL_ADDITIVE_COLUMNS = [
     "vbp_pb",
     "vab_pp",
     "vab_pb",
+    "vab_pb_estimado",
+    "consumo_intermedio_estimado",
     "remuneraciones",
     "puestos_trabajo",
+    "n_empresas",
     "fbcf",
     "adquisiciones_importadas",
-    "consumo_capital",
+    "consumo_capital_fijo",
     "impuestos_netos",
     "stock_capital",
 ]
-TOTAL_DERIVED_COLUMNS = ["excedente_bruto", "part_salarial", "productividad"]
+CAPITAL_ADVANCED_COLUMNS = [
+    "capital_variable_adelantado",
+    "capital_circulante_constante_adelantado",
+    "capital_total_adelantado",
+]
+TOTAL_DERIVED_COLUMNS = [
+    "capital_variable_adelantado",
+    "capital_circulante_constante_adelantado",
+    "capital_total_adelantado",
+    "excedente_bruto",
+    "part_salarial",
+    "productividad",
+]
 TOTAL_QUALITY_COLUMNS = [
     "vab_vbp",
-    "consumo_intermedio_vbp_menos_vab",
+    "consumo_intermedio_estimado",
     "remuneraciones_vab",
     "stock_vab",
 ]
@@ -58,8 +76,8 @@ def configure_logging() -> None:
     )
 
 
-def to_float(value: str) -> float | None:
-    if value == "":
+def to_float(value: object) -> float | None:
+    if value in ("", None):
         return None
     return float(value)
 
@@ -78,18 +96,24 @@ def sum_present(values: list[str]) -> float | None:
 
 
 def assert_close(
-    actual: str,
+    actual: object,
     expected: float | None,
     context: str,
     tolerance: float = 1e-6,
 ) -> None:
     if expected is None:
-        if actual != "":
+        if actual not in ("", None):
             raise AssertionError(f"{context}: expected blank, got {actual}")
         return
     actual_float = to_float(actual)
     if actual_float is None or abs(actual_float - expected) > tolerance * max(1.0, abs(expected)):
         raise AssertionError(f"{context}: expected {expected}, got {actual}")
+
+
+def nearly_equal(left: float | None, right: float | None, tolerance: float = 1e-9) -> bool:
+    if left is None or right is None:
+        return False
+    return abs(left - right) <= tolerance * max(1.0, abs(left), abs(right))
 
 
 def read_panel(path: Path) -> list[dict[str, str]]:
@@ -131,8 +155,50 @@ def expected_economy_totals(rows: list[dict[str, str]]) -> dict[int, dict[str, f
         )
         total["part_salarial"] = safe_divide(remuneraciones, vab_pp)
         total["productividad"] = safe_divide(vab_pp, puestos)
+        add_expected_capital_advanced_values(total)
         totals[year] = total
     return totals
+
+
+def add_expected_capital_advanced_values(
+    row: dict[str, float | str | None]
+) -> None:
+    row["capital_variable_adelantado"] = None
+    row["capital_circulante_constante_adelantado"] = None
+    row["capital_total_adelantado"] = None
+
+    factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(str(row.get("seccion")))
+    if factor in (None, 0):
+        return
+
+    remuneraciones = (
+        row["remuneraciones"] if isinstance(row.get("remuneraciones"), float) else None
+    )
+    consumo_intermedio = (
+        row["consumo_intermedio_estimado"]
+        if isinstance(row.get("consumo_intermedio_estimado"), float)
+        else None
+    )
+    stock_capital = (
+        row["stock_capital"] if isinstance(row.get("stock_capital"), float) else None
+    )
+
+    if remuneraciones is not None:
+        row["capital_variable_adelantado"] = remuneraciones / factor
+    if consumo_intermedio is not None:
+        row["capital_circulante_constante_adelantado"] = (
+            consumo_intermedio / factor
+        )
+    if (
+        stock_capital is not None
+        and isinstance(row["capital_variable_adelantado"], float)
+        and isinstance(row["capital_circulante_constante_adelantado"], float)
+    ):
+        row["capital_total_adelantado"] = (
+            stock_capital
+            + row["capital_variable_adelantado"]
+            + row["capital_circulante_constante_adelantado"]
+        )
 
 
 def expected_quality_checks(
@@ -148,8 +214,10 @@ def expected_quality_checks(
         stock_capital = row["stock_capital"] if isinstance(row["stock_capital"], float) else None
         checks[year] = {
             "vab_vbp": safe_divide(vab_pp, vbp_pp),
-            "consumo_intermedio_vbp_menos_vab": (
-                vbp_pp - vab_pp if vbp_pp is not None and vab_pp is not None else None
+            "consumo_intermedio_estimado": (
+                row["consumo_intermedio_estimado"]
+                if isinstance(row["consumo_intermedio_estimado"], float)
+                else None
             ),
             "remuneraciones_vab": safe_divide(remuneraciones, vab_pp),
             "stock_vab": safe_divide(stock_capital, vab_pp),
@@ -196,6 +264,244 @@ def validate_total_workbook_sheets(
             )
 
 
+def validate_accounts_column_alignment(year: int, year_rows: list[dict[str, str]]) -> None:
+    consumo_vab_pairs: list[tuple[float, float]] = []
+    impuestos_vab_pairs: list[tuple[float, float]] = []
+    consumo_rem_pairs: list[tuple[float, float]] = []
+    consumo_vab_ratios: list[float] = []
+
+    for row in year_rows:
+        consumo = to_float(row["consumo_capital_fijo"])
+        impuestos = to_float(row["impuestos_netos"])
+        vab = to_float(row["vab_pp"])
+        remuneraciones = to_float(row["remuneraciones"])
+        if consumo is not None and vab not in (None, 0):
+            consumo_vab_pairs.append((consumo, vab))
+            consumo_vab_ratios.append(consumo / vab)
+        if impuestos is not None and vab is not None:
+            impuestos_vab_pairs.append((impuestos, vab))
+        if consumo is not None and remuneraciones is not None:
+            consumo_rem_pairs.append((consumo, remuneraciones))
+
+    if consumo_vab_pairs and all(
+        nearly_equal(consumo, vab) for consumo, vab in consumo_vab_pairs
+    ):
+        raise AssertionError(
+            f"Year {year}: consumo_capital_fijo equals vab_pp in every section; "
+            "probable accounts column misalignment"
+        )
+    if impuestos_vab_pairs and all(
+        nearly_equal(impuestos, vab) for impuestos, vab in impuestos_vab_pairs
+    ):
+        raise AssertionError(
+            f"Year {year}: impuestos_netos equals vab_pp in every section; "
+            "probable accounts column misalignment"
+        )
+    if consumo_rem_pairs and all(
+        nearly_equal(consumo, remuneraciones)
+        for consumo, remuneraciones in consumo_rem_pairs
+    ):
+        raise AssertionError(
+            f"Year {year}: consumo_capital_fijo equals remuneraciones in every section; "
+            "probable accounts column misalignment"
+        )
+    if consumo_vab_ratios:
+        median_ratio = statistics.median(consumo_vab_ratios)
+        if median_ratio > 0.4:
+            LOGGER.warning(
+                "Year %s: median consumo_capital_fijo/vab_pp is high: %.3f",
+                year,
+                median_ratio,
+            )
+
+
+def validate_manufacturing_capital_consumption_bridge(
+    rows: list[dict[str, str]]
+) -> None:
+    branch_c_by_year = {
+        int(row["anno"]): row for row in rows if row["seccion"] == "C"
+    }
+    required_years = [2005, 2006, 2007, 2008]
+    missing = [year for year in required_years if year not in branch_c_by_year]
+    if missing:
+        raise AssertionError(
+            f"Manufacturing capital-consumption bridge missing years {missing}"
+        )
+
+    ratios: dict[int, float] = {}
+    for year in required_years:
+        row = branch_c_by_year[year]
+        consumo = to_float(row["consumo_capital_fijo"])
+        vab = to_float(row["vab_pp"])
+        if consumo is None or vab in (None, 0):
+            raise AssertionError(
+                f"Year {year}: cannot validate manufacturing consumo_capital_fijo"
+            )
+        ratios[year] = consumo / vab
+
+    benchmark_low = 0.5 * min(ratios[2005], ratios[2008])
+    benchmark_high = 1.5 * max(ratios[2005], ratios[2008])
+    for year in [2006, 2007]:
+        ratio = ratios[year]
+        # DECISION: 2006-2007 C2 layouts put VAB in column 7 and consumption of
+        # fixed capital in column 6. If the wrong column is read, the ratio
+        # consumo_capital_fijo/vab_pp approaches 1. The 2005/2008 envelope keeps
+        # the check tied to neighboring observed years without hardcoding values.
+        if ratio < benchmark_low or ratio > benchmark_high or ratio > 0.5:
+            raise AssertionError(
+                "Manufacturing consumo_capital_fijo anomaly in "
+                f"{year}: ratio consumo/vab={ratio:.3f}, "
+                f"expected between {benchmark_low:.3f} and {benchmark_high:.3f}; "
+                "probable C2 column misalignment"
+            )
+
+
+def validate_estimated_vab_pb(rows: list[dict[str, str]]) -> None:
+    ratios_by_section: dict[str, tuple[int, float]] = {}
+    for row in sorted(rows, key=lambda value: (value["seccion"], int(value["anno"]))):
+        section = row["seccion"]
+        observed = to_float(row["vab_pb"])
+        vab_pp = to_float(row["vab_pp"])
+        if section not in ratios_by_section and observed is not None and vab_pp not in (None, 0):
+            ratios_by_section[section] = (int(row["anno"]), observed / vab_pp)
+
+    for row in rows:
+        year = int(row["anno"])
+        section = row["seccion"]
+        estimate = to_float(row["vab_pb_estimado"])
+        if estimate is None:
+            raise AssertionError(
+                f"Year {year}: null vab_pb_estimado in {section}"
+            )
+        observed = to_float(row["vab_pb"])
+        if year >= 2017:
+            assert_close(
+                row["vab_pb_estimado"],
+                observed,
+                f"Year {year}: vab_pb_estimado must equal observed vab_pb in {section}",
+            )
+            continue
+
+        anchor = ratios_by_section.get(section)
+        if anchor is None:
+            raise AssertionError(
+                f"Year {year}: no observed VAB(pb) anchor for {section}"
+            )
+        anchor_year, anchor_ratio = anchor
+        vab_pp = to_float(row["vab_pp"])
+        expected = (
+            vab_pp * anchor_ratio
+            if year < anchor_year and vab_pp is not None
+            else observed
+        )
+        assert_close(
+            row["vab_pb_estimado"],
+            expected,
+            f"Year {year}: invalid backcasted vab_pb_estimado in {section}",
+        )
+
+
+def validate_estimated_intermediate_consumption(rows: list[dict[str, str]]) -> None:
+    for row in rows:
+        year = int(row["anno"])
+        section = row["seccion"]
+        vbp_pp = to_float(row["vbp_pp"])
+        vab_pb_estimado = to_float(row["vab_pb_estimado"])
+        if vbp_pp is None or vab_pb_estimado is None:
+            raise AssertionError(
+                f"Year {year}: missing inputs for consumo_intermedio_estimado "
+                f"in {section}"
+            )
+        expected = vbp_pp - vab_pb_estimado
+        assert_close(
+            row["consumo_intermedio_estimado"],
+            expected,
+            f"Year {year}: invalid consumo_intermedio_estimado in {section}",
+        )
+        actual = to_float(row["consumo_intermedio_estimado"])
+        if actual is not None and actual < 0:
+            raise AssertionError(
+                f"Year {year}: negative consumo_intermedio_estimado in {section}"
+            )
+
+
+def validate_capital_advanced_variables(rows: list[dict[str, str]]) -> None:
+    for row in rows:
+        year = int(row["anno"])
+        section = row["seccion"]
+        factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(section)
+        if factor in (None, 0):
+            for column in CAPITAL_ADVANCED_COLUMNS:
+                assert_close(
+                    row[column],
+                    None,
+                    f"Year {year}: {column} must be blank without turnover factor in {section}",
+                )
+            continue
+
+        remuneraciones = to_float(row["remuneraciones"])
+        consumo_intermedio = to_float(row["consumo_intermedio_estimado"])
+        stock_capital = to_float(row["stock_capital"])
+        expected_variable = (
+            remuneraciones / factor if remuneraciones is not None else None
+        )
+        expected_circulante = (
+            consumo_intermedio / factor
+            if consumo_intermedio is not None
+            else None
+        )
+        expected_total = (
+            stock_capital + expected_variable + expected_circulante
+            if (
+                stock_capital is not None
+                and expected_variable is not None
+                and expected_circulante is not None
+            )
+            else None
+        )
+        assert_close(
+            row["capital_variable_adelantado"],
+            expected_variable,
+            f"Year {year}: invalid capital_variable_adelantado in {section}",
+        )
+        assert_close(
+            row["capital_circulante_constante_adelantado"],
+            expected_circulante,
+            f"Year {year}: invalid capital_circulante_constante_adelantado in {section}",
+        )
+        assert_close(
+            row["capital_total_adelantado"],
+            expected_total,
+            f"Year {year}: invalid capital_total_adelantado in {section}",
+        )
+
+
+def validate_enterprise_counts(rows: list[dict[str, str]]) -> None:
+    expected_by_year = {
+        year: expected_enterprise_counts_for_year(year)
+        for year in sorted({int(row["anno"]) for row in rows})
+    }
+    for row in rows:
+        year = int(row["anno"])
+        section = row["seccion"]
+        actual = to_float(row["n_empresas"])
+        expected = expected_by_year.get(year, {}).get(section)
+        assert_close(
+            row["n_empresas"],
+            float(expected) if expected is not None else None,
+            f"Year {year}: invalid n_empresas in {section}",
+        )
+        if actual is not None:
+            if actual < 0:
+                raise AssertionError(
+                    f"Year {year}: negative n_empresas in {section}"
+                )
+            if not actual.is_integer():
+                raise AssertionError(
+                    f"Year {year}: non-integer n_empresas in {section}"
+                )
+
+
 def validate(rows: list[dict[str, str]]) -> None:
     years = sorted({int(row["anno"]) for row in rows})
     if years != PANEL_YEARS:
@@ -205,12 +511,19 @@ def validate(rows: list[dict[str, str]]) -> None:
     if len(keys) != len(set(keys)):
         raise AssertionError("Panel has duplicated (anno, seccion) rows")
 
+    validate_estimated_vab_pb(rows)
+    validate_estimated_intermediate_consumption(rows)
+    validate_capital_advanced_variables(rows)
+    validate_enterprise_counts(rows)
+    validate_manufacturing_capital_consumption_bridge(rows)
+
     by_year: dict[int, list[dict[str, str]]] = {}
     for row in rows:
         by_year.setdefault(int(row["anno"]), []).append(row)
 
     totals: dict[int, float] = {}
     for year, year_rows in sorted(by_year.items()):
+        validate_accounts_column_alignment(year, year_rows)
         sections = {row["seccion"] for row in year_rows}
         if len(sections) < 6:
             raise AssertionError(f"Year {year}: only {len(sections)} sections")
@@ -228,7 +541,7 @@ def validate(rows: list[dict[str, str]]) -> None:
             puestos = to_float(row["puestos_trabajo"])
             fbcf = to_float(row["fbcf"])
             adquisiciones_importadas = to_float(row["adquisiciones_importadas"])
-            consumo_capital = to_float(row["consumo_capital"])
+            consumo_capital_fijo = to_float(row["consumo_capital_fijo"])
             impuestos_netos = to_float(row["impuestos_netos"])
             stock_capital = to_float(row["stock_capital"])
             if None in (vbp_pp, vab_pp, remuneraciones, puestos):
@@ -278,13 +591,13 @@ def validate(rows: list[dict[str, str]]) -> None:
                     raise AssertionError(
                         f"Year {year}: negative adquisiciones_importadas in {row['seccion']}"
                     )
-            if consumo_capital is None:
+            if consumo_capital_fijo is None:
                 raise AssertionError(
-                    f"Year {year}: null consumo_capital in {row['seccion']}"
+                    f"Year {year}: null consumo_capital_fijo in {row['seccion']}"
                 )
-            if consumo_capital < 0:
+            if consumo_capital_fijo < 0:
                 raise AssertionError(
-                    f"Year {year}: negative consumo_capital in {row['seccion']}"
+                    f"Year {year}: negative consumo_capital_fijo in {row['seccion']}"
                 )
             if impuestos_netos is None:
                 raise AssertionError(
