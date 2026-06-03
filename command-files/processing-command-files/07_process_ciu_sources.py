@@ -707,29 +707,42 @@ def parse_oyanthabal() -> None:
     unit_row = sheet_rows[2]
     source_row = sheet_rows[3]
     variable_names = {
-        "GDP": "gdp_current",
-        "GDP $Uy2005 (right axis)": "gdp_2005",
-        "GDP Price index (base 2005)": "gdp_price_index_base_2005",
-        "IPC": "ipc_index_1983_1989",
+        ("GDP", "Thousand $Uy"): "gdp_current",
+        ("GDP $Uy2005 (right axis)", "Thousand $Uy 2005"): "gdp_constant_2005",
+        ("GDP Price index (base 2005)", "Base 2005"): "gdp_price_index_base_2005",
+        ("IPC", "1983-1989=100"): "ipc_index_1983_1989",
+        ("IPC", "2005 = 1"): "ipc_index_2005",
     }
     rows: list[dict[str, object]] = []
+    last_year: int | None = None
     for values in sheet_rows[4:]:
-        if not values or not values[0]:
+        if not values:
             continue
-        year = int(float(values[0]))
+        if values[0]:
+            year = int(float(values[0]))
+            last_year = year
+        elif any(value != "" for value in values[1:]) and last_year is not None:
+            # DECISION: The updated Oyanthabal workbook leaves the year cell
+            # blank for the appended IPC-only rows after 2019. Those rows
+            # continue the annual series in order, currently 2020-2024.
+            year = last_year + 1
+            last_year = year
+        else:
+            continue
         for index, name in enumerate(header[1:], start=1):
             if not name or index >= len(values) or values[index] == "":
                 continue
+            unit = unit_row[index] if index < len(unit_row) else ""
             rows.append(
                 {
                     "fuente": "oyanthabal",
                     "archivo": path.name,
                     "hoja": "IPI PBI e IPC",
                     "anno": year,
-                    "variable": variable_names.get(name, canonical_variable(name)),
+                    "variable": variable_names.get((name, unit), canonical_variable(name)),
                     "variable_etiqueta": name,
                     "valor": xlsx_number_value(values[index]),
-                    "unidad": unit_row[index] if index < len(unit_row) else "",
+                    "unidad": unit,
                     "fuente_original": source_row[index] if index < len(source_row) else "",
                 }
             )
