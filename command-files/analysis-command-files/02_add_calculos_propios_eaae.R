@@ -11,8 +11,18 @@ suppressPackageStartupMessages({
 })
 
 analysis_dir <- file.path("data", "analysis-data")
-industrial_sheet <- "calculos-propios-industrial"
-total_sheet <- "calculos-propios-total"
+industrial_sheet <- "resultados-industrial-corrientes"
+total_sheet <- "resultados-total-corrientes"
+industrial_constant_sheet <- "resultados-industrial-constante"
+total_constant_sheet <- "resultados-total-constante"
+industrial_variation_sheet <- "resultados-industrial-var-pct"
+total_variation_sheet <- "resultados-total-var-pct"
+industrial_index_sheet <- "resultados-industrial-ind-2005"
+total_index_sheet <- "resultados-total-ind-2005"
+legacy_result_sheets <- c(
+  "calculos-propios-industrial",
+  "calculos-propios-total"
+)
 rotacion_industria <- 6.6
 rotacion_economia_total <- 4.2
 
@@ -30,6 +40,7 @@ latest_analysis_file <- function(pattern) {
 
 panel_csv_path <- latest_analysis_file("^[0-9]{8}_panel_eaae\\.csv$")
 panel_xlsx_path <- latest_analysis_file("^[0-9]{8}_panel_eaae\\.xlsx$")
+price_index_path <- file.path(analysis_dir, "oyanthabal_indices_precios.csv")
 
 safe_divide <- function(numerator, denominator) {
   result <- numerator / denominator
@@ -68,11 +79,57 @@ numeric_panel_cols <- c(
   "productividad"
 )
 
+constant_result_level_cols <- c(
+  "vbp_pp",
+  "vab_pp",
+  "vab_pb_calculo",
+  "consumo_capital_fijo",
+  "remuneraciones",
+  "costo_laboral",
+  "stock_capital",
+  "ocupados",
+  "ganancia_pb",
+  "ganancia_pp",
+  "consumo_intermedio",
+  "capital_circulante_adelantado",
+  "capital_total_adelantado",
+  "vab_precios_constantes",
+  "productividad_trabajo",
+  "vab_pp_total"
+)
+
 panel <- readr::read_csv(panel_csv_path, show_col_types = FALSE) %>%
   mutate(
     anno = as.integer(anno),
     across(any_of(numeric_panel_cols), as.numeric)
   )
+
+price_indexes_long <- readr::read_csv(price_index_path, show_col_types = FALSE) %>%
+  transmute(
+    anno = as.integer(anno),
+    variable,
+    valor = as.numeric(valor)
+  )
+
+gdp_price_indexes <- price_indexes_long %>%
+  filter(variable == "gdp_price_index_base_2005") %>%
+  transmute(
+    anno,
+    gdp_price_index_base_2005 = valor
+  )
+
+ipc_price_indexes <- price_indexes_long %>%
+  filter(variable == "ipc_index_2005") %>%
+  transmute(
+    anno,
+    ipc_index_2005 = valor
+  )
+
+price_indexes <- full_join(
+  gdp_price_indexes,
+  ipc_price_indexes,
+  by = "anno"
+)
 
 economia_total <- panel %>%
   group_by(anno) %>%
@@ -173,6 +230,133 @@ build_calculos_propios <- function(data, ambito, total_vab, rotacion_valor) {
     )
 }
 
+deflate_to_2005_prices <- function(data, price_indexes) {
+  data %>%
+    left_join(price_indexes, by = "anno") %>%
+    mutate(
+      # DECISION: For constant-price result sheets, labor flows are deflated
+      # with the 2005-fixed CPI. The remaining monetary variables use the GDP
+      # price index base 2005. Years without GDP price index remain NA.
+      vbp_pp = safe_divide(vbp_pp, gdp_price_index_base_2005),
+      vbp_pb = safe_divide(vbp_pb, gdp_price_index_base_2005),
+      vab_pp = safe_divide(vab_pp, gdp_price_index_base_2005),
+      vab_pb = safe_divide(vab_pb, gdp_price_index_base_2005),
+      vab_pb_estimado = safe_divide(vab_pb_estimado, gdp_price_index_base_2005),
+      consumo_intermedio_estimado = safe_divide(
+        consumo_intermedio_estimado,
+        gdp_price_index_base_2005
+      ),
+      capital_circulante_constante_adelantado = safe_divide(
+        capital_circulante_constante_adelantado,
+        gdp_price_index_base_2005
+      ),
+      remuneraciones = safe_divide(remuneraciones, ipc_index_2005),
+      capital_variable_adelantado = safe_divide(
+        capital_variable_adelantado,
+        ipc_index_2005
+      ),
+      fbcf = safe_divide(fbcf, gdp_price_index_base_2005),
+      adquisiciones_importadas = safe_divide(
+        adquisiciones_importadas,
+        gdp_price_index_base_2005
+      ),
+      consumo_capital_fijo = safe_divide(
+        consumo_capital_fijo,
+        gdp_price_index_base_2005
+      ),
+      impuestos_netos = safe_divide(impuestos_netos, gdp_price_index_base_2005),
+      stock_capital = safe_divide(stock_capital, gdp_price_index_base_2005),
+      capital_total_adelantado = safe_divide(
+        capital_total_adelantado,
+        gdp_price_index_base_2005
+      ),
+      excedente_bruto = safe_divide(excedente_bruto, gdp_price_index_base_2005)
+    )
+}
+
+build_resultados_constantes <- function(data, ambito, total_vab_constante, rotacion_valor) {
+  build_calculos_propios(
+    data,
+    ambito,
+    total_vab_constante,
+    rotacion_valor
+  ) %>%
+    mutate(
+      vab_precios_constantes = vab_pp,
+      productividad_trabajo = safe_divide(vab_precios_constantes, ocupados)
+    ) %>%
+    left_join(price_indexes, by = "anno") %>%
+    relocate(
+      gdp_price_index_base_2005,
+      ipc_index_2005,
+      .after = rotacion
+    )
+}
+
+build_variaciones_interanuales <- function(data) {
+  transform_cols <- intersect(constant_result_level_cols, names(data))
+  data %>%
+    arrange(anno) %>%
+    transmute(
+      anno,
+      ambito,
+      seccion,
+      across(
+        all_of(transform_cols),
+        ~ (safe_divide(.x, lag(.x)) - 1) * 100,
+        .names = "{.col}_var_pct"
+      )
+    )
+}
+
+build_indices_2005 <- function(variation_data, base_year = 2005) {
+  variation_data <- variation_data %>% arrange(anno)
+  years <- variation_data$anno
+  base_position <- which(years == base_year)
+  index_data <- variation_data %>%
+    transmute(
+      anno,
+      ambito,
+      seccion
+    )
+
+  if (length(base_position) != 1) {
+    stop("No se encontro exactamente un ano base ", base_year, " en variaciones.")
+  }
+
+  variation_cols <- setdiff(names(variation_data), c("anno", "ambito", "seccion"))
+  for (variation_col in variation_cols) {
+    index_values <- rep(NA_real_, nrow(variation_data))
+    index_values[base_position] <- 1
+
+    if (base_position < nrow(variation_data)) {
+      for (row_index in seq(base_position + 1, nrow(variation_data))) {
+        growth <- variation_data[[variation_col]][[row_index]]
+        previous_index <- index_values[[row_index - 1]]
+        if (!is.na(growth) && !is.na(previous_index)) {
+          index_values[[row_index]] <- previous_index * (1 + growth / 100)
+        }
+      }
+    }
+
+    if (base_position > 1) {
+      for (row_index in seq(base_position - 1, 1)) {
+        next_growth <- variation_data[[variation_col]][[row_index + 1]]
+        next_index <- index_values[[row_index + 1]]
+        denominator <- 1 + next_growth / 100
+        if (!is.na(next_growth) && !is.na(next_index) && denominator != 0) {
+          index_values[[row_index]] <- next_index / denominator
+        }
+      }
+    }
+
+    index_col <- sub("_var_pct$", "_ind_2005", variation_col)
+    index_data[[index_col]] <- index_values
+  }
+
+  index_data
+}
+
 calculos_total <- build_calculos_propios(
   economia_total,
   "economia_total",
@@ -183,6 +367,49 @@ calculos_total <- build_calculos_propios(
 calculos_industrial <- panel %>%
   filter(seccion == "C") %>%
   build_calculos_propios("rama_industrial", vab_total, rotacion_industria)
+
+economia_total_constante <- economia_total %>%
+  deflate_to_2005_prices(price_indexes)
+
+panel_constante <- panel %>%
+  deflate_to_2005_prices(price_indexes)
+
+vab_total_constante <- economia_total_constante %>%
+  transmute(
+    anno,
+    vab_pp_total = vab_pp
+  )
+
+resultados_total_constante <- build_resultados_constantes(
+  economia_total_constante,
+  "economia_total",
+  vab_total_constante,
+  rotacion_economia_total
+)
+
+resultados_industrial_constante <- panel_constante %>%
+  filter(seccion == "C") %>%
+  build_resultados_constantes(
+    "rama_industrial",
+    vab_total_constante,
+    rotacion_industria
+  )
+
+variaciones_total_constante <- build_variaciones_interanuales(
+  resultados_total_constante
+)
+
+variaciones_industrial_constante <- build_variaciones_interanuales(
+  resultados_industrial_constante
+)
+
+indices_total_constante <- build_indices_2005(
+  variaciones_total_constante
+)
+
+indices_industrial_constante <- build_indices_2005(
+  variaciones_industrial_constante
+)
 
 xml_escape <- function(x) {
   x <- as.character(x)
@@ -463,7 +690,17 @@ write_xlsx_workbook <- function(path, sheets) {
 existing_sheet_names <- readxl::excel_sheets(panel_xlsx_path)
 existing_sheet_names <- setdiff(
   existing_sheet_names,
-  c(total_sheet, industrial_sheet)
+  c(
+    total_sheet,
+    industrial_sheet,
+    total_constant_sheet,
+    industrial_constant_sheet,
+    total_variation_sheet,
+    industrial_variation_sheet,
+    total_index_sheet,
+    industrial_index_sheet,
+    legacy_result_sheets
+  )
 )
 
 existing_sheets <- lapply(
@@ -481,7 +718,13 @@ names(existing_sheets) <- existing_sheet_names
 output_sheets <- c(
   existing_sheets,
   setNames(list(calculos_total), total_sheet),
-  setNames(list(calculos_industrial), industrial_sheet)
+  setNames(list(calculos_industrial), industrial_sheet),
+  setNames(list(resultados_total_constante), total_constant_sheet),
+  setNames(list(resultados_industrial_constante), industrial_constant_sheet),
+  setNames(list(variaciones_total_constante), total_variation_sheet),
+  setNames(list(variaciones_industrial_constante), industrial_variation_sheet),
+  setNames(list(indices_total_constante), total_index_sheet),
+  setNames(list(indices_industrial_constante), industrial_index_sheet)
 )
 
 write_xlsx_workbook(panel_xlsx_path, output_sheets)
@@ -489,3 +732,9 @@ write_xlsx_workbook(panel_xlsx_path, output_sheets)
 message("Hojas actualizadas en ", panel_xlsx_path, ":")
 message(" - ", total_sheet)
 message(" - ", industrial_sheet)
+message(" - ", total_constant_sheet)
+message(" - ", industrial_constant_sheet)
+message(" - ", total_variation_sheet)
+message(" - ", industrial_variation_sheet)
+message(" - ", total_index_sheet)
+message(" - ", industrial_index_sheet)

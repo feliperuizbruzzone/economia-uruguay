@@ -92,7 +92,7 @@ Notas validadas:
   NA porque el gráfico no tiene etiquetas y la reconstrucción vectorial no
   reproduce el total del marco publicado; 2021 queda NA porque el PDF local está
   incompleto y no trae el desglose por sección.
-- Las hojas `calculos-propios-total` y `calculos-propios-industrial` del XLSX
+- Las hojas `resultados-total-corrientes` y `resultados-industrial-corrientes` del XLSX
   se agregan como post-proceso en R mediante
   `command-files/analysis-command-files/02_add_calculos_propios_eaae.R`. No
   cambian el CSV ni la hoja base `eaae`. Usan tasas de rotación diferenciadas:
@@ -101,6 +101,20 @@ Notas validadas:
   `cargas_patronales` queda en NA y `costo_laboral = remuneraciones`, evitando
   doble conteo. `productividad_trabajo` queda en NA porque el panel no contiene
   `vab_precios_constantes`.
+- Las hojas `resultados-total-constante` y `resultados-industrial-constante`
+  replican esos cálculos en precios de 2005. `remuneraciones`,
+  `costo_laboral` y `capital_variable_adelantado` se deflactan con
+  `ipc_index_2005`. El resto de las variables monetarias se deflacta con
+  `gdp_price_index_base_2005`. Como la fuente Oyanthabal solo trae
+  `gdp_price_index_base_2005` hasta 2019, las variables reales que dependen de
+  ese deflactor quedan como NA desde 2020 en esas hojas.
+- Las hojas `resultados-total-var-pct` y `resultados-industrial-var-pct`
+  expresan las variables de nivel de los resultados constantes como variación
+  porcentual interanual: `(x[t] / x[t-1] - 1) * 100`. Las hojas
+  `resultados-total-ind-2005` y `resultados-industrial-ind-2005` encadenan esas
+  variaciones con base 2005=1. Se transforman variables de nivel; se excluyen
+  identificadores, deflactores, tasas, participaciones y columnas de variación
+  ya calculadas.
 
 ### Granularidad de la base de datos final
 - **Unidad de observación:** sector CIIU homologado × año
@@ -706,7 +720,7 @@ El CSV contiene la base completa `panel_eaae`.
 
 ### Estructura de `data/analysis-data/YYYYMMDD_panel_eaae.xlsx`
 
-El libro contiene cinco hojas base y dos hojas de cálculos propios:
+El libro contiene cinco hojas base y ocho hojas de resultados propios:
 
 - `eaae`: base completa.
 - `rama-C`: registros de la rama de actividad `C`.
@@ -715,9 +729,22 @@ El libro contiene cinco hojas base y dos hojas de cálculos propios:
 - `economia_total`: agregacion anual de todas las variables del panel.
 - `check-calidad-total`: controles anuales para `economia_total`: `vab_vbp`,
   `consumo_intermedio_estimado`, `remuneraciones_vab` y `stock_vab`.
-- `calculos-propios-total`: cálculos propios del equipo para la economía total.
-- `calculos-propios-industrial`: cálculos propios del equipo para la rama
+- `resultados-total-corrientes`: cálculos propios del equipo para la economía total,
+  en pesos corrientes.
+- `resultados-industrial-corrientes`: cálculos propios del equipo para la rama
   industrial `C`.
+- `resultados-total-constante`: cálculos propios del equipo para la economía total,
+  en precios de 2005.
+- `resultados-industrial-constante`: cálculos propios del equipo para la rama
+  industrial `C`, en precios de 2005.
+- `resultados-total-var-pct`: variaciones interanuales porcentuales de la hoja
+  `resultados-total-constante`.
+- `resultados-industrial-var-pct`: variaciones interanuales porcentuales de la
+  hoja `resultados-industrial-constante`.
+- `resultados-total-ind-2005`: índices encadenados con 2005=1 a partir de
+  `resultados-total-var-pct`.
+- `resultados-industrial-ind-2005`: índices encadenados con 2005=1 a partir de
+  `resultados-industrial-var-pct`.
 
 ```
 Columnas de identificación:
@@ -1100,7 +1127,7 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Decisión provisoria del equipo: creación de `capital_variable_adelantado`, `capital_circulante_constante_adelantado` y `capital_total_adelantado` con factores 6,6 para C y 4,2 para economía total | ✓ |
 | Jun 2026 | Validación específica para manufactura C en 2006–2007: `consumo_capital_fijo/vab_pp` se compara contra la envolvente 2005/2008 para detectar desalineación de columnas C2 | ✓ |
 | Jun 2026 | Integración de `n_empresas` desde PDF de metodología/diseño muestral para años con desglose exacto verificable: 2001–2005, 2011 y 2020 | ✓ |
-| Jun 2026 | Creación del post-proceso R `02_add_calculos_propios_eaae.R` y agregado de hojas `calculos-propios-total` y `calculos-propios-industrial` al XLSX | ✓ |
+| Jun 2026 | Creación del post-proceso R `02_add_calculos_propios_eaae.R` y agregado de hojas de resultados corrientes, constantes, variaciones porcentuales e índices 2005=1 al XLSX | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
