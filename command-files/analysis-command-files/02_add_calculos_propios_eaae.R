@@ -11,6 +11,7 @@ suppressPackageStartupMessages({
 })
 
 analysis_dir <- file.path("data", "analysis-data")
+methodology_sheet <- "metodología"
 industrial_sheet <- "resultados-industrial-corrientes"
 total_sheet <- "resultados-total-corrientes"
 industrial_constant_sheet <- "resultados-industrial-constante"
@@ -79,23 +80,13 @@ numeric_panel_cols <- c(
   "productividad"
 )
 
-constant_result_level_cols <- c(
-  "vbp_pp",
-  "vab_pp",
-  "vab_pb_calculo",
-  "consumo_capital_fijo",
-  "remuneraciones",
-  "costo_laboral",
-  "stock_capital",
-  "ocupados",
-  "ganancia_pb",
-  "ganancia_pp",
-  "consumo_intermedio",
-  "capital_circulante_adelantado",
-  "capital_total_adelantado",
-  "vab_precios_constantes",
-  "productividad_trabajo",
-  "vab_pp_total"
+result_transform_exclude_cols <- c(
+  "anno",
+  "ambito",
+  "seccion",
+  "rotacion",
+  "gdp_price_index_base_2005",
+  "ipc_index_2005"
 )
 
 panel <- readr::read_csv(panel_csv_path, show_col_types = FALSE) %>%
@@ -148,7 +139,48 @@ vab_total <- economia_total %>%
     vab_pp_total = vab_pp
   )
 
-build_calculos_propios <- function(data, ambito, total_vab, rotacion_valor) {
+build_resultados_niveles <- function(
+    data,
+    ambito,
+    total_vab,
+    rotacion_valor,
+    include_total_context = FALSE,
+    include_price_indexes = FALSE,
+    include_productividad = FALSE) {
+  identifier_cols <- c("anno", "ambito", "seccion", "rotacion")
+  price_index_cols <- if (include_price_indexes) {
+    c("gdp_price_index_base_2005", "ipc_index_2005")
+  } else {
+    character()
+  }
+  input_cols <- c(
+    "vbp_pp",
+    "vab_pp",
+    if (include_total_context) "vab_pp_total",
+    "vab_pb_estimado",
+    "consumo_capital_fijo",
+    "costo_laboral",
+    "stock_capital",
+    "puestos_trabajo"
+  )
+  calculated_cols <- c(
+    "ganancia_pb",
+    "ganancia_pp",
+    "consumo_intermedio",
+    "capital_circulante_adelantado",
+    "capital_total_adelantado",
+    "tasa_ganancia_pb",
+    "tasa_ganancia_pp",
+    if (include_total_context) "vab_pp_participacion_total",
+    if (include_productividad) "productividad_trabajo"
+  )
+  output_cols <- c(
+    identifier_cols,
+    price_index_cols,
+    input_cols,
+    calculated_cols
+  )
+
   data %>%
     arrange(anno) %>%
     left_join(total_vab, by = "anno") %>%
@@ -157,13 +189,10 @@ build_calculos_propios <- function(data, ambito, total_vab, rotacion_valor) {
       rotacion = rotacion_valor,
       # DECISION: `remuneraciones` already includes employer contributions in
       # C1/C1.1, so `costo_laboral` uses that total directly. The source does
-      # not expose `cargas_patronales` as a separate panel variable.
-      cargas_patronales = NA_real_,
+      # not expose `cargas_patronales` as a separate panel variable. To keep
+      # result sheets readable, only `costo_laboral` is exposed.
       costo_laboral = remuneraciones,
-      vab_pb_calculo = vab_pb_estimado,
-      ocupados = puestos_trabajo,
-      vab_precios_constantes = NA_real_,
-      ganancia_pb = vab_pb_calculo - consumo_capital_fijo - costo_laboral,
+      ganancia_pb = vab_pb_estimado - consumo_capital_fijo - costo_laboral,
       ganancia_pp = vab_pp - consumo_capital_fijo - costo_laboral,
       # DECISION: The requested identity is VBP - VAB_bruto. In the current
       # panel, the complete observed VBP/VAB pair is at producer prices.
@@ -180,54 +209,10 @@ build_calculos_propios <- function(data, ambito, total_vab, rotacion_valor) {
         ganancia_pp,
         stock_capital + capital_circulante_adelantado
       ),
-      productividad_trabajo = safe_divide(vab_precios_constantes, ocupados),
       vab_pp_participacion_total = safe_divide(vab_pp, vab_pp_total),
-      vbp_pp_indice_interanual = safe_divide(vbp_pp, lag(vbp_pp)) * 100,
-      vab_pp_indice_interanual = safe_divide(vab_pp, lag(vab_pp)) * 100,
-      costo_laboral_indice_interanual = safe_divide(
-        costo_laboral,
-        lag(costo_laboral)
-      ) * 100,
-      stock_capital_indice_interanual = safe_divide(
-        stock_capital,
-        lag(stock_capital)
-      ) * 100,
-      consumo_capital_fijo_indice_interanual = safe_divide(
-        consumo_capital_fijo,
-        lag(consumo_capital_fijo)
-      ) * 100
+      productividad_trabajo = safe_divide(vab_pp, puestos_trabajo)
     ) %>%
-    transmute(
-      anno,
-      ambito,
-      seccion,
-      rotacion,
-      vbp_pp,
-      vab_pp,
-      vab_pb_calculo,
-      consumo_capital_fijo,
-      remuneraciones,
-      cargas_patronales,
-      costo_laboral,
-      stock_capital,
-      ocupados,
-      ganancia_pb,
-      ganancia_pp,
-      consumo_intermedio,
-      capital_circulante_adelantado,
-      capital_total_adelantado,
-      tasa_ganancia_pb,
-      tasa_ganancia_pp,
-      vab_precios_constantes,
-      productividad_trabajo,
-      vab_pp_total,
-      vab_pp_participacion_total,
-      vbp_pp_indice_interanual,
-      vab_pp_indice_interanual,
-      costo_laboral_indice_interanual,
-      stock_capital_indice_interanual,
-      consumo_capital_fijo_indice_interanual
-    )
+    select(any_of(output_cols))
 }
 
 deflate_to_2005_prices <- function(data, price_indexes) {
@@ -274,27 +259,8 @@ deflate_to_2005_prices <- function(data, price_indexes) {
     )
 }
 
-build_resultados_constantes <- function(data, ambito, total_vab_constante, rotacion_valor) {
-  build_calculos_propios(
-    data,
-    ambito,
-    total_vab_constante,
-    rotacion_valor
-  ) %>%
-    mutate(
-      vab_precios_constantes = vab_pp,
-      productividad_trabajo = safe_divide(vab_precios_constantes, ocupados)
-    ) %>%
-    left_join(price_indexes, by = "anno") %>%
-    relocate(
-      gdp_price_index_base_2005,
-      ipc_index_2005,
-      .after = rotacion
-    )
-}
-
 build_variaciones_interanuales <- function(data) {
-  transform_cols <- intersect(constant_result_level_cols, names(data))
+  transform_cols <- setdiff(names(data), result_transform_exclude_cols)
   data %>%
     arrange(anno) %>%
     transmute(
@@ -357,7 +323,70 @@ build_indices_2005 <- function(variation_data, base_year = 2005) {
   index_data
 }
 
-calculos_total <- build_calculos_propios(
+build_metodologia_sheet <- function() {
+  tibble::tribble(
+    ~seccion_contenido, ~nombre, ~tipo, ~aplica_en, ~definicion, ~fuente_formula,
+    "estructura_libro", "metodología", "hoja", "Libro completo", "Referencia de lectura del archivo: describe las hojas y el diccionario de variables.", "Construida por el postproceso R.",
+    "estructura_libro", "eaae", "hoja", "Panel base", "Panel completo con unidad año por sección CIIU homologada.", "CSV fechado del panel EAAE.",
+    "estructura_libro", "rama-C", "hoja", "Panel base", "Subconjunto del panel para la rama industrial, sección C.", "Filtro seccion == C.",
+    "estructura_libro", "check-calidad-C", "hoja", "Validación", "Indicadores anuales de control para la rama industrial.", "Derivada del panel rama-C.",
+    "estructura_libro", "economia_total", "hoja", "Panel base", "Agregado anual de todas las secciones del panel.", "Suma de variables aditivas por año.",
+    "estructura_libro", "check-calidad-total", "hoja", "Validación", "Indicadores anuales de control para la economía total.", "Derivada de economia_total.",
+    "estructura_libro", "resultados-total-corrientes", "hoja", "Resultados", "Insumos y variables calculadas para economía total en valores corrientes.", "Cálculos propios desde economia_total.",
+    "estructura_libro", "resultados-industrial-corrientes", "hoja", "Resultados", "Insumos y variables calculadas para la rama industrial en valores corrientes.", "Cálculos propios desde rama-C.",
+    "estructura_libro", "resultados-total-constante", "hoja", "Resultados", "Insumos y variables calculadas para economía total en precios de 2005.", "Deflacta corrientes con índices Oyanthabal.",
+    "estructura_libro", "resultados-industrial-constante", "hoja", "Resultados", "Insumos y variables calculadas para industria en precios de 2005.", "Deflacta corrientes con índices Oyanthabal.",
+    "estructura_libro", "resultados-total-var-pct", "hoja", "Resultados", "Variación porcentual interanual de los resultados constantes de economía total.", "(x[t] / x[t-1] - 1) * 100.",
+    "estructura_libro", "resultados-industrial-var-pct", "hoja", "Resultados", "Variación porcentual interanual de los resultados constantes de industria.", "(x[t] / x[t-1] - 1) * 100.",
+    "estructura_libro", "resultados-total-ind-2005", "hoja", "Resultados", "Índices encadenados de economía total con base 2005=1.", "Base 2005=1 y encadenamiento por variaciones interanuales.",
+    "estructura_libro", "resultados-industrial-ind-2005", "hoja", "Resultados", "Índices encadenados de industria con base 2005=1.", "Base 2005=1 y encadenamiento por variaciones interanuales.",
+    "diccionario_variables", "anno", "identificador", "Todas las hojas", "Año de referencia.", "Fuente EAAE; entero anual.",
+    "diccionario_variables", "seccion", "identificador", "Panel base y resultados", "Sección CIIU homologada; C identifica industria y economia_total identifica el agregado anual.", "Homologación del panel.",
+    "diccionario_variables", "ambito", "identificador", "Hojas resultados-*", "Ámbito analítico de la hoja: economia_total o rama_industrial.", "Asignado por el postproceso R.",
+    "diccionario_variables", "epoca", "metadato", "Panel base", "Período o etapa de formato de la fuente EAAE usada para extraer el dato.", "Pipeline EAAE.",
+    "diccionario_variables", "ciiu_version", "metadato", "Panel base", "Versión CIIU de referencia de los datos originales u homologados.", "Pipeline EAAE.",
+    "diccionario_variables", "rotacion", "parámetro", "Hojas resultados-*", "Factor de rotación usado para adelantar capital circulante.", "4,2 en economía total; 6,6 en industria.",
+    "diccionario_variables", "vbp_pp", "original", "Panel base y resultados", "Valor bruto de producción a precios productor.", "EAAE C1/C1.1; en constantes se deflacta con gdp_price_index_base_2005.",
+    "diccionario_variables", "vbp_pb", "original", "Panel base", "Valor bruto de producción a precios básicos.", "EAAE C1.1; disponible desde 2017.",
+    "diccionario_variables", "vab_pp", "original", "Panel base y resultados", "Valor agregado bruto a precios productor.", "EAAE C1/C1.1; en constantes se deflacta con gdp_price_index_base_2005.",
+    "diccionario_variables", "vab_pb", "original", "Panel base", "Valor agregado bruto a precios básicos observado.", "EAAE C1.1; disponible desde 2017.",
+    "diccionario_variables", "remuneraciones", "original", "Panel base", "Remuneraciones totales registradas en C1/C1.1, incluyendo aportes patronales según validación del equipo.", "EAAE C1/C1.1.",
+    "diccionario_variables", "puestos_trabajo", "original", "Panel base y resultados", "Cantidad de puestos de trabajo u ocupados reportados.", "EAAE C1/C1.1; se mantiene como cantidad en hojas constantes.",
+    "diccionario_variables", "n_empresas", "auxiliar", "Panel base", "Cantidad total de empresas representadas cuando el diseño muestral permite extraerla al nivel del panel.", "PDF de metodología/diseño muestral EAAE.",
+    "diccionario_variables", "fbcf", "original", "Panel base", "Formación bruta de capital fijo.", "Cuadros FBCF EAAE.",
+    "diccionario_variables", "adquisiciones_importadas", "original", "Panel base", "Subcomponente importado de las adquisiciones de capital.", "Cuadros FBCF EAAE.",
+    "diccionario_variables", "consumo_capital_fijo", "original", "Panel base y resultados", "Consumo del stock de capital fijo.", "EAAE C2/C2.1; en constantes se deflacta con gdp_price_index_base_2005.",
+    "diccionario_variables", "impuestos_netos", "original", "Panel base", "Impuestos netos asociados a las cuentas del sector.", "EAAE C2/C2.1.",
+    "diccionario_variables", "stock_capital", "original", "Panel base y resultados", "Stock de capital fijo.", "Cuadros de stock EAAE; en constantes se deflacta con gdp_price_index_base_2005.",
+    "diccionario_variables", "vab_pb_estimado", "calculada_panel", "Panel base y resultados", "Serie completa de VAB a precios básicos: usa VAB(pb) observado desde 2017 y retroproyección previa por VAB(pp).", "Antes de 2017 preserva la variación interanual de vab_pp.",
+    "diccionario_variables", "consumo_intermedio_estimado", "calculada_panel", "Panel base", "Consumo intermedio estimado del panel.", "vbp_pp - vab_pb_estimado.",
+    "diccionario_variables", "capital_variable_adelantado", "calculada_panel", "Panel base", "Capital variable adelantado del panel.", "remuneraciones / factor_rotacion.",
+    "diccionario_variables", "capital_circulante_constante_adelantado", "calculada_panel", "Panel base", "Capital circulante constante adelantado del panel.", "consumo_intermedio_estimado / factor_rotacion.",
+    "diccionario_variables", "capital_total_adelantado", "calculada_panel", "Panel base y resultados", "Capital total adelantado.", "En panel: stock_capital + capital_variable_adelantado + capital_circulante_constante_adelantado. En resultados: stock_capital + capital_circulante_adelantado.",
+    "diccionario_variables", "excedente_bruto", "calculada_panel", "Panel base", "Excedente bruto aproximado a precios productor.", "vab_pp - remuneraciones.",
+    "diccionario_variables", "part_salarial", "calculada_panel", "Panel base", "Participación salarial en el VAB a precios productor.", "remuneraciones / vab_pp.",
+    "diccionario_variables", "productividad", "calculada_panel", "Panel base", "Productividad media a precios productor corrientes.", "vab_pp / puestos_trabajo.",
+    "diccionario_variables", "vab_vbp", "validación", "check-calidad-*", "Relación entre VAB y VBP a precios productor.", "vab_pp / vbp_pp.",
+    "diccionario_variables", "remuneraciones_vab", "validación", "check-calidad-*", "Peso de remuneraciones sobre VAB a precios productor.", "remuneraciones / vab_pp.",
+    "diccionario_variables", "stock_vab", "validación", "check-calidad-*", "Relación entre stock de capital y VAB a precios productor.", "stock_capital / vab_pp.",
+    "diccionario_variables", "gdp_price_index_base_2005", "deflactor", "Hojas constantes", "Índice de precios implícito del PIB con base 2005.", "Oyanthabal; usado para variables monetarias no laborales.",
+    "diccionario_variables", "ipc_index_2005", "deflactor", "Hojas constantes", "Índice de precios al consumo con base 2005.", "Oyanthabal; usado para costo_laboral.",
+    "diccionario_variables", "costo_laboral", "calculada_resultados", "Hojas resultados-*", "Costo laboral operativo usado en ganancias.", "Igual a remuneraciones; no se separan cargas patronales para evitar doble conteo.",
+    "diccionario_variables", "ganancia_pb", "calculada_resultados", "Hojas resultados-*", "Ganancia calculada a precios básicos.", "vab_pb_estimado - consumo_capital_fijo - costo_laboral.",
+    "diccionario_variables", "ganancia_pp", "calculada_resultados", "Hojas resultados-*", "Ganancia calculada a precios productor.", "vab_pp - consumo_capital_fijo - costo_laboral.",
+    "diccionario_variables", "consumo_intermedio", "calculada_resultados", "Hojas resultados-*", "Consumo intermedio usado en resultados propios.", "vbp_pp - vab_pp.",
+    "diccionario_variables", "capital_circulante_adelantado", "calculada_resultados", "Hojas resultados-*", "Capital circulante adelantado para el cálculo de tasa de ganancia.", "(costo_laboral + consumo_intermedio) / rotacion.",
+    "diccionario_variables", "tasa_ganancia_pb", "calculada_resultados", "Hojas resultados-*", "Tasa de ganancia a precios básicos.", "ganancia_pb / (stock_capital + capital_circulante_adelantado).",
+    "diccionario_variables", "tasa_ganancia_pp", "calculada_resultados", "Hojas resultados-*", "Tasa de ganancia a precios productor.", "ganancia_pp / (stock_capital + capital_circulante_adelantado).",
+    "diccionario_variables", "vab_pp_total", "contexto_sectorial", "Resultados industriales", "VAB total de la economía usado como denominador de participación sectorial.", "Economía total por año.",
+    "diccionario_variables", "vab_pp_participacion_total", "calculada_resultados", "Resultados industriales", "Participación del VAB industrial en el VAB total.", "vab_pp / vab_pp_total.",
+    "diccionario_variables", "productividad_trabajo", "calculada_resultados", "Hojas constantes y transformaciones", "Productividad del trabajo calculada en precios constantes.", "vab_pp constante / puestos_trabajo.",
+    "diccionario_variables", "*_var_pct", "transformación", "Hojas resultados-*-var-pct", "Sufijo de variables expresadas como variación porcentual interanual.", "(x[t] / x[t-1] - 1) * 100 desde resultados constantes.",
+    "diccionario_variables", "*_ind_2005", "transformación", "Hojas resultados-*-ind-2005", "Sufijo de variables expresadas como índice con base 2005=1.", "Encadenamiento desde variaciones interanuales."
+  )
+}
+
+calculos_total <- build_resultados_niveles(
   economia_total,
   "economia_total",
   vab_total,
@@ -366,7 +395,12 @@ calculos_total <- build_calculos_propios(
 
 calculos_industrial <- panel %>%
   filter(seccion == "C") %>%
-  build_calculos_propios("rama_industrial", vab_total, rotacion_industria)
+  build_resultados_niveles(
+    "rama_industrial",
+    vab_total,
+    rotacion_industria,
+    include_total_context = TRUE
+  )
 
 economia_total_constante <- economia_total %>%
   deflate_to_2005_prices(price_indexes)
@@ -380,19 +414,24 @@ vab_total_constante <- economia_total_constante %>%
     vab_pp_total = vab_pp
   )
 
-resultados_total_constante <- build_resultados_constantes(
+resultados_total_constante <- build_resultados_niveles(
   economia_total_constante,
   "economia_total",
   vab_total_constante,
-  rotacion_economia_total
+  rotacion_economia_total,
+  include_price_indexes = TRUE,
+  include_productividad = TRUE
 )
 
 resultados_industrial_constante <- panel_constante %>%
   filter(seccion == "C") %>%
-  build_resultados_constantes(
+  build_resultados_niveles(
     "rama_industrial",
     vab_total_constante,
-    rotacion_industria
+    rotacion_industria,
+    include_total_context = TRUE,
+    include_price_indexes = TRUE,
+    include_productividad = TRUE
   )
 
 variaciones_total_constante <- build_variaciones_interanuales(
@@ -691,6 +730,7 @@ existing_sheet_names <- readxl::excel_sheets(panel_xlsx_path)
 existing_sheet_names <- setdiff(
   existing_sheet_names,
   c(
+    methodology_sheet,
     total_sheet,
     industrial_sheet,
     total_constant_sheet,
@@ -715,7 +755,10 @@ existing_sheets <- lapply(
 )
 names(existing_sheets) <- existing_sheet_names
 
+metodologia <- build_metodologia_sheet()
+
 output_sheets <- c(
+  setNames(list(metodologia), methodology_sheet),
   existing_sheets,
   setNames(list(calculos_total), total_sheet),
   setNames(list(calculos_industrial), industrial_sheet),
@@ -730,6 +773,7 @@ output_sheets <- c(
 write_xlsx_workbook(panel_xlsx_path, output_sheets)
 
 message("Hojas actualizadas en ", panel_xlsx_path, ":")
+message(" - ", methodology_sheet)
 message(" - ", total_sheet)
 message(" - ", industrial_sheet)
 message(" - ", total_constant_sheet)

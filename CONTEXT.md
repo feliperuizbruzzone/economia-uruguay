@@ -92,29 +92,36 @@ Notas validadas:
   NA porque el gráfico no tiene etiquetas y la reconstrucción vectorial no
   reproduce el total del marco publicado; 2021 queda NA porque el PDF local está
   incompleto y no trae el desglose por sección.
-- Las hojas `resultados-total-corrientes` y `resultados-industrial-corrientes` del XLSX
-  se agregan como post-proceso en R mediante
+- La hoja inicial `metodología` del XLSX se genera en el post-proceso R. Resume
+  la estructura del libro y contiene un diccionario de variables que distingue
+  identificadores, variables originales, auxiliares, validaciones, deflactores y
+  variables calculadas.
+- Las hojas `resultados-total-corrientes` y `resultados-industrial-corrientes`
+  del XLSX se agregan como post-proceso en R mediante
   `command-files/analysis-command-files/02_add_calculos_propios_eaae.R`. No
   cambian el CSV ni la hoja base `eaae`. Usan tasas de rotación diferenciadas:
   `4,2` para `economia_total` y `6,6` para la rama industrial `C`. Como
-  `remuneraciones` ya incluye aportes patronales en C1/C1.1,
-  `cargas_patronales` queda en NA y `costo_laboral = remuneraciones`, evitando
-  doble conteo. `productividad_trabajo` queda en NA porque el panel no contiene
-  `vab_precios_constantes`.
+  `remuneraciones` ya incluye aportes patronales en C1/C1.1, el costo laboral
+  operativo se expone directamente como `costo_laboral = remuneraciones`; no se
+  agrega una columna separada `cargas_patronales` para evitar columnas vacías.
+  Estas hojas contienen niveles corrientes: insumos usados en los cálculos y
+  variables calculadas, sin columnas interanuales ni duplicados propios de la
+  economía total.
 - Las hojas `resultados-total-constante` y `resultados-industrial-constante`
-  replican esos cálculos en precios de 2005. `remuneraciones`,
-  `costo_laboral` y `capital_variable_adelantado` se deflactan con
+  replican esos cálculos en precios de 2005. `costo_laboral` se deflacta con
   `ipc_index_2005`. El resto de las variables monetarias se deflacta con
-  `gdp_price_index_base_2005`. Como la fuente Oyanthabal solo trae
-  `gdp_price_index_base_2005` hasta 2019, las variables reales que dependen de
-  ese deflactor quedan como NA desde 2020 en esas hojas.
+  `gdp_price_index_base_2005`; `puestos_trabajo` se mantiene como cantidad. Como
+  la fuente Oyanthabal solo trae `gdp_price_index_base_2005` hasta 2019, las
+  variables reales que dependen de ese deflactor quedan como NA desde 2020 en
+  esas hojas. `productividad_trabajo` se calcula en las hojas constantes como
+  `vab_pp / puestos_trabajo`.
 - Las hojas `resultados-total-var-pct` y `resultados-industrial-var-pct`
-  expresan las variables de nivel de los resultados constantes como variación
+  expresan las columnas analíticas de los resultados constantes como variación
   porcentual interanual: `(x[t] / x[t-1] - 1) * 100`. Las hojas
   `resultados-total-ind-2005` y `resultados-industrial-ind-2005` encadenan esas
-  variaciones con base 2005=1. Se transforman variables de nivel; se excluyen
-  identificadores, deflactores, tasas, participaciones y columnas de variación
-  ya calculadas.
+  variaciones con base 2005=1. Se excluyen identificadores, `rotacion` y
+  deflactores; se transforman los insumos y variables calculadas presentes en
+  la hoja constante correspondiente.
 
 ### Granularidad de la base de datos final
 - **Unidad de observación:** sector CIIU homologado × año
