@@ -46,7 +46,7 @@ laboral y acumulación sectorial de capital en Uruguay.
 | `consumo_capital_fijo` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
 | `impuestos_netos` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
 | `stock_capital` | 2001 C9 / 2003–2005 C11 / 2006–2024 C7 | directa | 2001, 2003–2010, 2012–2024 |
-| `stock_capital_imputado` | `stock_capital` si existe; si no, `consumo_capital_fijo * (factor_rotacion / 100)` cuando hay factor definido | derivada provisoria | 2001–2024 donde exista stock original o imputación definida |
+| `stock_capital_imputado` | `stock_capital` si existe; si no, imputación con factor histórico `stock_capital / consumo_capital_fijo` | derivada provisoria | 2001–2024 donde exista stock original o imputación definida |
 | `capital_total_adelantado` | `stock_capital_imputado + capital_variable_adelantado + capital_circulante_constante_adelantado` | derivada provisoria | C y economía total donde existe `stock_capital_imputado`; otros sectores NA |
 | `variacion_existencias` | 2001 C10 / 2003–2005 C12 | directa identificada, pendiente de extracción | 2001, 2003–2005 |
 | `deuda_industrial` | no encontrada en EAAE | requiere fuente externa | — |
@@ -68,8 +68,10 @@ provisoria del equipo:
 - `capital_circulante_constante_adelantado`: se calcula como
   `consumo_intermedio_estimado / factor_rotacion`.
 - `stock_capital_imputado`: es la serie operativa de stock; replica
-  `stock_capital` cuando existe y, cuando falta, se calcula como
-  `consumo_capital_fijo * (factor_rotacion / 100)` si hay factor definido.
+  `stock_capital` cuando existe y, cuando falta en 2002 o 2011, se imputa con
+  el consumo de capital fijo disponible y un factor histórico calculado como el
+  promedio porcentual de `stock_capital / consumo_capital_fijo` en la misma
+  sección o total.
 - `capital_total_adelantado`: se calcula como `stock_capital_imputado +
   capital_variable_adelantado + capital_circulante_constante_adelantado`.
 
@@ -77,8 +79,9 @@ Los factores de rotación definidos hasta ahora son `6,6` para la rama `C` y
 `4,2` para `economia_total`. Para otros sectores, las variables de capital
 adelantado deben quedar como NA hasta que el equipo defina factores. Si falta
 `stock_capital`, como ocurre en 2002 y 2011, el panel conserva esa columna
-original como NA, pero completa `stock_capital_imputado` mediante imputación para
-la rama `C` y la hoja `economia_total` cuando existe `consumo_capital_fijo`.
+original como NA, pero completa `stock_capital_imputado` mediante la regla de
+imputación histórica cuando existe `consumo_capital_fijo` y observaciones de
+referencia válidas.
 No se registra una tercera variable auxiliar de stock.
 
 En las hojas `resultados-total-corrientes` y
@@ -794,7 +797,7 @@ Columnas de variables (pesos uruguayos corrientes):
   consumo_capital_fijo float Consumo de capital fijo
   impuestos_netos float Impuestos sobre la producción y productos netos de subsidios
   stock_capital float Valor de activos fijos al 31/12 (NaN donde no disponible)
-  stock_capital_imputado float Stock fijo operativo = stock_capital si existe; si no, imputación definida
+  stock_capital_imputado float Stock fijo operativo = stock_capital si existe; si no, imputación histórica definida
   capital_total_adelantado float Stock fijo + capital variable adelantado + capital circulante constante adelantado
   vab_bcu_corriente float VAB corriente BCU en pesos corrientes, solo en hojas resultados-*-corrientes
   vab_eaae_bcu_pct float Comparación EAAE/BCU del VAB corriente: vab_pp / vab_bcu_corriente * 100, solo en hojas resultados-*-corrientes
@@ -802,7 +805,7 @@ Columnas de variables (pesos uruguayos corrientes):
 Columnas derivadas calculadas en pipeline:
   capital_circulante_constante_adelantado float = consumo_intermedio_estimado / factor_rotacion
   capital_variable_adelantado float = remuneraciones / factor_rotacion
-  stock_capital_imputado float = stock_capital si existe; si no, consumo_capital_fijo * (factor_rotacion / 100) cuando hay factor definido
+  stock_capital_imputado float = stock_capital si existe; para 2002, consumo_capital_fijo * promedio_pct(stock_capital/consumo_capital_fijo, 2003-2005) / 100; para 2011, consumo_capital_fijo * promedio_pct(stock_capital/consumo_capital_fijo, 2012-2024) / 100
   capital_total_adelantado float = stock_capital_imputado + capital_variable_adelantado + capital_circulante_constante_adelantado
   excedente_bruto  float  = vab_pp - remuneraciones
   part_salarial    float  = remuneraciones / vab_pp
@@ -913,11 +916,22 @@ La imputación provisoria de faltantes no modifica `stock_capital`. Para
 mantener simple el panel, solo se registran dos variables de stock:
 `stock_capital`, original, y `stock_capital_imputado`, operativa. Esta última
 replica `stock_capital` cuando existe. Para 2002 y 2011, cuando falta
-`stock_capital` pero existe `consumo_capital_fijo`, el equipo decidió completar
-`stock_capital_imputado = consumo_capital_fijo * (factor_rotacion / 100)`.
-Esta regla se aplica a la rama industrial `C` con factor `6,6` y a
-`economia_total` con factor `4,2`. Para otros sectores no se imputa stock hasta
-que exista decisión de factor.
+`stock_capital` pero existe `consumo_capital_fijo`, el equipo decidió imputar
+con un factor histórico de relación stock/consumo de capital fijo, calculado en
+la misma sección o en `economia_total`:
+
+- Para 2002: `factor_pct = promedio(stock_capital / consumo_capital_fijo) * 100`
+  en 2003–2005.
+- Para 2011: `factor_pct = promedio(stock_capital / consumo_capital_fijo) * 100`
+  en 2012–2024.
+- Imputación: `stock_capital_imputado = consumo_capital_fijo * (factor_pct / 100)`.
+
+Si no hay observaciones válidas de `stock_capital` y `consumo_capital_fijo` en
+la ventana de referencia correspondiente, `stock_capital_imputado` queda como
+NA. Esta regla reemplaza la imputación anterior basada en
+`factor_rotacion / 100`; los factores de rotación `6,6` para `C` y `4,2` para
+`economia_total` se mantienen solamente para adelantar capital variable y
+capital circulante.
 
 La variable `amortizaciones` sigue pendiente. No construirla ni inferirla hasta
 que el investigador defina fuente o método.
@@ -983,8 +997,9 @@ En el panel por sección solo se calcula para la rama `C`. En la hoja
 `economia_total` se calcula para la economía agregada anual. Para sectores sin
 factor de rotación definido, las tres variables quedan como NA. Si falta el
 stock original en 2002 o 2011 pero existe `consumo_capital_fijo`,
-`capital_total_adelantado` usa `stock_capital_imputado`; si no existe stock
-original ni imputación posible, queda como NA.
+`capital_total_adelantado` usa `stock_capital_imputado` imputado con la regla
+histórica de stock/consumo; si no existe stock original ni imputación posible,
+queda como NA.
 
 ### §7.1.d — Variación de existencias / inventarios
 
@@ -1164,7 +1179,7 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Decisión provisoria del equipo: creación de `vab_pb_estimado` con `vab_pb` observado desde 2017 y retroproyección por variación interanual de `vab_pp` | ✓ |
 | Jun 2026 | Decisión provisoria del equipo: creación de `consumo_intermedio_estimado = vbp_pp - vab_pb_estimado` y renombre público de `consumo_capital` a `consumo_capital_fijo` | ✓ |
 | Jun 2026 | Decisión provisoria del equipo: creación de `capital_variable_adelantado`, `capital_circulante_constante_adelantado` y `capital_total_adelantado` con factores 6,6 para C y 4,2 para economía total | ✓ |
-| Jun 2026 | Decisión provisoria del equipo: simplificación a dos variables de stock; `stock_capital_imputado` replica el stock original cuando existe e imputa faltantes desde `consumo_capital_fijo * (factor_rotacion / 100)` | ✓ |
+| Jun 2026 | Decisión provisoria del equipo: simplificación a dos variables de stock; `stock_capital_imputado` replica el stock original cuando existe e imputa 2002 y 2011 con factores históricos de `stock_capital / consumo_capital_fijo` | ✓ |
 | Jun 2026 | Incorporación en resultados corrientes de `vab_bcu_corriente` como referencia externa simple de BCU y `vab_eaae_bcu_pct` como comparación EAAE/BCU, integrando datos preliminares disponibles | ✓ |
 | Jun 2026 | Validación específica para manufactura C en 2006–2007: `consumo_capital_fijo/vab_pp` se compara contra la envolvente 2005/2008 para detectar desalineación de columnas C2 | ✓ |
 | Jun 2026 | Integración de `n_empresas` desde PDF de metodología/diseño muestral para años con desglose exacto verificable: 2001–2005, 2011 y 2020 | ✓ |

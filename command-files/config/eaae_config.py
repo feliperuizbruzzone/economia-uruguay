@@ -44,6 +44,16 @@ CAPITAL_ADVANCE_TURNOVER_FACTORS = {
     "C": 6.6,
     "economia_total": 4.2,
 }
+# DECISION: Provisional team rule, June 2026. When original capital stock is
+# missing for 2002 or 2011, impute the operative stock from the available
+# fixed-capital consumption and a historical stock/consumption factor. The
+# factor is computed within the same section, expressed as a percentage:
+# mean(stock_capital / consumo_capital_fijo) * 100. The imputed stock is
+# consumo_capital_fijo * (factor_pct / 100).
+STOCK_CAPITAL_IMPUTATION_WINDOWS = {
+    2002: (2003, 2005),
+    2011: (2012, 2024),
+}
 PANEL_COLUMNS = [
     "anno",
     "seccion",

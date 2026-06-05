@@ -35,6 +35,7 @@ from eaae_config import (  # noqa: E402
     PANEL_OUTPUTS,
     PANEL_XLSX_OUTPUT,
     PANEL_YEARS,
+    STOCK_CAPITAL_IMPUTATION_WINDOWS,
 )
 
 
@@ -197,6 +198,32 @@ def add_estimated_intermediate_consumption(
     return rows
 
 
+def stock_capital_imputation_factor_pct(
+    rows: list[dict[str, object]],
+    target_year: int,
+    section: str,
+) -> float | None:
+    window = STOCK_CAPITAL_IMPUTATION_WINDOWS.get(target_year)
+    if window is None:
+        return None
+    start_year, end_year = window
+    ratios_pct: list[float] = []
+    for row in rows:
+        if str(row.get("seccion")) != section:
+            continue
+        year = int(row["anno"])
+        if year < start_year or year > end_year:
+            continue
+        stock_capital = row.get("stock_capital")
+        consumo_capital = row.get("consumo_capital_fijo")
+        if stock_capital in (None, "") or consumo_capital in (None, "", 0):
+            continue
+        ratios_pct.append((float(stock_capital) / float(consumo_capital)) * 100)
+    if not ratios_pct:
+        return None
+    return sum(ratios_pct) / len(ratios_pct)
+
+
 def add_stock_capital_imputation(
     rows: list[dict[str, object]]
 ) -> list[dict[str, object]]:
@@ -207,18 +234,22 @@ def add_stock_capital_imputation(
         if stock_capital not in (None, ""):
             continue
 
-        factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(str(row.get("seccion")))
+        year = int(row["anno"])
+        section = str(row.get("seccion"))
+        factor_pct = stock_capital_imputation_factor_pct(rows, year, section)
         consumo_capital = row.get("consumo_capital_fijo")
-        if factor in (None, 0) or consumo_capital in (None, ""):
+        if factor_pct in (None, 0) or consumo_capital in (None, ""):
             continue
 
         # DECISION: Provisional team rule, June 2026. Keep only two stock
         # columns: `stock_capital` as the original source value and
         # `stock_capital_imputado` as the operative stock series. The operative
         # series copies the original stock when available; when missing but
-        # fixed-capital consumption exists, it imputes the stock as
-        # consumo_capital_fijo * (sector_turnover / 100).
-        imputed = float(consumo_capital) * (float(factor) / 100)
+        # fixed-capital consumption exists, it imputes the stock from the
+        # historical same-section stock/consumption ratio. The factor is stored
+        # conceptually as a percentage, so the formula is consumo_capital_fijo *
+        # (factor_pct / 100).
+        imputed = float(consumo_capital) * (float(factor_pct) / 100)
         row["stock_capital_imputado"] = imputed
 
     return rows
@@ -307,9 +338,9 @@ def build_annual_economy_total(rows: list[dict[str, object]]) -> list[dict[str, 
         )
         total["part_salarial"] = safe_divide(total.get("remuneraciones"), total.get("vab_pp"))
         total["productividad"] = safe_divide(total.get("vab_pp"), total.get("puestos_trabajo"))
-        add_stock_capital_imputation([total])
-        add_capital_advanced_variables([total])
         totals.append(total)
+    add_stock_capital_imputation(totals)
+    add_capital_advanced_variables(totals)
     return totals
 
 

@@ -26,6 +26,7 @@ from eaae_config import (  # noqa: E402
     PANEL_CSV_OUTPUT,
     PANEL_XLSX_OUTPUT,
     PANEL_YEARS,
+    STOCK_CAPITAL_IMPUTATION_WINDOWS,
 )
 
 
@@ -91,6 +92,32 @@ def safe_divide(numerator: float | None, denominator: float | None) -> float | N
     return numerator / denominator
 
 
+def stock_capital_imputation_factor_pct(
+    rows: list[dict[str, float | str | None]],
+    target_year: int,
+    section: str,
+) -> float | None:
+    window = STOCK_CAPITAL_IMPUTATION_WINDOWS.get(target_year)
+    if window is None:
+        return None
+    start_year, end_year = window
+    ratios_pct: list[float] = []
+    for row in rows:
+        if str(row.get("seccion")) != section:
+            continue
+        year = int(row["anno"])
+        if year < start_year or year > end_year:
+            continue
+        stock_capital = to_float(row.get("stock_capital"))
+        consumo_capital = to_float(row.get("consumo_capital_fijo"))
+        if stock_capital is None or consumo_capital in (None, 0):
+            continue
+        ratios_pct.append((stock_capital / consumo_capital) * 100)
+    if not ratios_pct:
+        return None
+    return sum(ratios_pct) / len(ratios_pct)
+
+
 def sum_present(values: list[str]) -> float | None:
     present = [float(value) for value in values if value != ""]
     if not present:
@@ -140,6 +167,7 @@ def expected_economy_totals(rows: list[dict[str, str]]) -> dict[int, dict[str, f
             {row["ciiu_version"] for row in year_rows if row["ciiu_version"] != ""}
         )
         total: dict[str, float | str | None] = {
+            "anno": year,
             "seccion": "economia_total",
             "epoca": epocas[0] if len(epocas) == 1 else "|".join(epocas),
             "ciiu_version": ciiu_versions[0] if len(ciiu_versions) == 1 else "|".join(ciiu_versions),
@@ -158,34 +186,38 @@ def expected_economy_totals(rows: list[dict[str, str]]) -> dict[int, dict[str, f
         )
         total["part_salarial"] = safe_divide(remuneraciones, vab_pp)
         total["productividad"] = safe_divide(vab_pp, puestos)
-        add_expected_stock_capital_imputation(total)
-        add_expected_capital_advanced_values(total)
         totals[year] = total
+    total_rows = list(totals.values())
+    add_expected_stock_capital_imputation(total_rows)
+    for total in total_rows:
+        add_expected_capital_advanced_values(total)
     return totals
 
 
 def add_expected_stock_capital_imputation(
-    row: dict[str, float | str | None]
+    rows: list[dict[str, float | str | None]]
 ) -> None:
-    row["stock_capital_imputado"] = row.get("stock_capital")
+    for row in rows:
+        row["stock_capital_imputado"] = row.get("stock_capital")
 
-    stock_capital = (
-        row["stock_capital"] if isinstance(row.get("stock_capital"), float) else None
-    )
-    if stock_capital is not None:
-        return
+        stock_capital = (
+            row["stock_capital"] if isinstance(row.get("stock_capital"), float) else None
+        )
+        if stock_capital is not None:
+            continue
 
-    factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(str(row.get("seccion")))
-    consumo_capital = (
-        row["consumo_capital_fijo"]
-        if isinstance(row.get("consumo_capital_fijo"), float)
-        else None
-    )
-    if factor in (None, 0) or consumo_capital is None:
-        return
+        year = int(row["anno"])
+        section = str(row.get("seccion"))
+        factor_pct = stock_capital_imputation_factor_pct(rows, year, section)
+        consumo_capital = (
+            row["consumo_capital_fijo"]
+            if isinstance(row.get("consumo_capital_fijo"), float)
+            else None
+        )
+        if factor_pct in (None, 0) or consumo_capital is None:
+            continue
 
-    imputed = consumo_capital * (factor / 100)
-    row["stock_capital_imputado"] = imputed
+        row["stock_capital_imputado"] = consumo_capital * (factor_pct / 100)
 
 
 def add_expected_capital_advanced_values(
@@ -469,11 +501,15 @@ def validate_stock_capital_imputation(rows: list[dict[str, str]]) -> None:
         section = row["seccion"]
         stock_capital = to_float(row["stock_capital"])
         consumo_capital = to_float(row["consumo_capital_fijo"])
-        factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(section)
+        factor_pct = stock_capital_imputation_factor_pct(rows, year, section)
 
         expected_stock = stock_capital
-        if expected_stock is None and consumo_capital is not None and factor not in (None, 0):
-            expected_stock = consumo_capital * (factor / 100)
+        if (
+            expected_stock is None
+            and consumo_capital is not None
+            and factor_pct not in (None, 0)
+        ):
+            expected_stock = consumo_capital * (factor_pct / 100)
 
         assert_close(
             row["stock_capital_imputado"],

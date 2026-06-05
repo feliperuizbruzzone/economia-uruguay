@@ -108,6 +108,11 @@ industrial_corrientes <- read_result_sheet(
   "resultados-industrial-corrientes",
   "Industria"
 )
+total_constante <- read_result_sheet(
+  panel_xlsx_path,
+  "resultados-total-constante",
+  "Economía total"
+)
 total_indice <- read_result_sheet(
   panel_xlsx_path,
   "resultados-total-ind-2005",
@@ -126,7 +131,27 @@ industrial_constante <- read_result_sheet(
 rama_c <- read_panel_sheet(panel_xlsx_path, "rama-C")
 
 corrientes <- bind_rows(total_corrientes, industrial_corrientes)
+constantes <- bind_rows(total_constante, industrial_constante)
 indices_2005 <- bind_rows(total_indice, industrial_indice)
+
+representatividad_bcu <- corrientes %>%
+  select(anno, ambito_label, vab_eaae_bcu_pct) %>%
+  filter(!is.na(vab_eaae_bcu_pct))
+
+fig_00 <- ggplot(representatividad_bcu, aes(anno, vab_eaae_bcu_pct)) +
+  geom_hline(yintercept = 100, linewidth = 0.3, color = "grey70") +
+  geom_line(color = "#1B4E89", linewidth = 0.95) +
+  geom_point(color = "#1B4E89", size = 1.7) +
+  facet_wrap(~ ambito_label, ncol = 1) +
+  scale_y_continuous(labels = label_percent(scale = 1, accuracy = 1)) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  labs(
+    title = "Representatividad de la serie EAAE en relación a PBI BCU",
+    subtitle = "VAB corriente EAAE sobre VAB corriente BCU, multiplicado por 100",
+    y = "EAAE / BCU",
+    caption = "Fuente: elaboración propia con panel EAAE y BCU."
+  ) +
+  theme_eaae()
 
 tasas_ganancia <- corrientes %>%
   select(anno, ambito_label, tasa_ganancia_pb, tasa_ganancia_pp) %>%
@@ -229,7 +254,7 @@ fig_04 <- build_decomposition_plot(
   "Descomposición del VAB: industria"
 )
 
-capital_componentes <- corrientes %>%
+capital_componentes <- constantes %>%
   select(
     anno,
     ambito_label,
@@ -271,9 +296,9 @@ fig_05 <- ggplot(capital_componentes, aes(anno, valor, color = serie)) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Capital adelantado y componentes",
-    subtitle = "Niveles corrientes; usa stock observado o imputado según disponibilidad",
-    y = "Miles de millones de pesos corrientes",
-    caption = "Fuente: elaboración propia con panel EAAE."
+    subtitle = "Niveles en precios de 2005; usa stock observado o imputado según disponibilidad",
+    y = "Miles de millones de pesos de 2005",
+    caption = "Fuente: elaboración propia con panel EAAE y deflactores Oyanthabal."
   ) +
   theme_eaae()
 
@@ -352,7 +377,7 @@ fig_07 <- ggplot(inversion_industrial, aes(anno)) +
         big.mark = ".",
         decimal.mark = ","
       ),
-      name = "Inversión constante"
+      name = "Inversión a precios constantes UYU 2005"
     )
   ) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
@@ -406,6 +431,7 @@ fig_08 <- ggplot(indices_resultados, aes(anno, valor, color = serie)) +
   theme_eaae()
 
 figures <- c(
+  "01_representatividad_eaae_bcu_corrientes.png" = save_plot(fig_00, "01_representatividad_eaae_bcu_corrientes.png"),
   "01_tasa_ganancia_corrientes.png" = save_plot(fig_01, "01_tasa_ganancia_corrientes.png"),
   "02_ganancia_indice_2005.png" = save_plot(fig_02, "02_ganancia_indice_2005.png"),
   "03_descomposicion_vab_total_corrientes.png" = save_plot(fig_03, "03_descomposicion_vab_total_corrientes.png"),
@@ -425,57 +451,64 @@ report_lines <- c(
   "",
   "## Criterios de lectura",
   "",
-  "- Las tasas de ganancia, la descomposición del VAB, el capital adelantado y la participación industrial se muestran en valores corrientes para conservar la cobertura hasta 2024.",
-  "- Las ganancias indexadas usan las hojas de resultados en precios constantes y se expresan con base 2005=1.",
+  "- La representatividad EAAE/BCU compara el VAB corriente EAAE contra el VAB corriente BCU disponible en las hojas de resultados corrientes.",
+  "- Las tasas de ganancia, la descomposición del VAB y la participación industrial se muestran en valores corrientes para conservar la cobertura hasta 2024.",
+  "- Las ganancias indexadas y el capital adelantado usan las hojas de resultados en precios constantes.",
   "- La inversión manufacturera usa `fbcf` de la rama C y se deflacta con `gdp_price_index_base_2005`; la relación de inversión sobre VAB usa el VAB industrial constante.",
   "- Las series en precios constantes e índices dependen del `gdp_price_index_base_2005`, disponible hasta 2019; por eso esas figuras no fuerzan continuidad después de ese año.",
-  "- El capital adelantado usa `stock_capital_imputado`, que replica `stock_capital` cuando existe e imputa faltantes definidos.",
+  "- El capital adelantado usa `stock_capital_imputado`, que replica `stock_capital` cuando existe e imputa 2002 y 2011 con factores históricos de `stock_capital / consumo_capital_fijo`.",
   "",
   "## Figuras",
   "",
-  "### 1. Tasa de ganancia",
+  "### 1. Representatividad de la serie EAAE en relación a PBI BCU",
+  "",
+  "Compara el VAB corriente EAAE con el VAB corriente de referencia de BCU para economía total e industria.",
+  "",
+  paste0("![Representatividad EAAE/BCU](", relative_fig("01_representatividad_eaae_bcu_corrientes.png"), ")"),
+  "",
+  "### 2. Tasa de ganancia",
   "",
   "La tasa se calcula como ganancia sobre `stock_capital_imputado + capital_circulante_adelantado`. Se presentan las variantes a precios básicos y a precios productor.",
   "",
   paste0("![Tasa de ganancia](", relative_fig("01_tasa_ganancia_corrientes.png"), ")"),
   "",
-  "### 2. Ganancia en índice 2005=1",
+  "### 3. Ganancia en índice 2005=1",
   "",
   "Compara la dinámica real de la ganancia a precios básicos y productor. La base común facilita comparar economía total e industria aunque sus niveles difieran.",
   "",
   paste0("![Ganancia en índice 2005=1](", relative_fig("02_ganancia_indice_2005.png"), ")"),
   "",
-  "### 3. Descomposición del VAB: economía total",
+  "### 4. Descomposición del VAB: economía total",
   "",
   "Distribuye el VAB a precios productor entre costo laboral, consumo de capital fijo y ganancia a precios productor.",
   "",
   paste0("![Descomposición del VAB total](", relative_fig("03_descomposicion_vab_total_corrientes.png"), ")"),
   "",
-  "### 4. Descomposición del VAB: industria",
+  "### 5. Descomposición del VAB: industria",
   "",
   "Replica la misma descomposición para la rama industrial, permitiendo evaluar si su estructura difiere de la economía total.",
   "",
   paste0("![Descomposición del VAB industrial](", relative_fig("04_descomposicion_vab_industria_corrientes.png"), ")"),
   "",
-  "### 5. Capital adelantado y componentes",
+  "### 6. Capital adelantado y componentes",
   "",
-  "Muestra el stock de capital, el capital circulante adelantado y el capital total adelantado. Las escalas se separan por ámbito para no ocultar la dinámica industrial.",
+  "Muestra el stock de capital, el capital circulante adelantado y el capital total adelantado en precios de 2005. Las escalas se separan por ámbito para no ocultar la dinámica industrial.",
   "",
   paste0("![Capital adelantado y componentes](", relative_fig("05_capital_adelantado_corrientes.png"), ")"),
   "",
-  "### 6. Participación industrial en el VAB total",
+  "### 7. Participación industrial en el VAB total",
   "",
   "Mide el peso de la industria manufacturera dentro del VAB total de la economía.",
   "",
   paste0("![Participación industrial](", relative_fig("06_participacion_industria_vab_corrientes.png"), ")"),
   "",
-  "### 7. Inversión manufacturera",
+  "### 8. Inversión manufacturera",
   "",
   "Muestra la FBCF industrial en precios de 2005 en el eje derecho y la misma inversión como porcentaje del VAB manufacturero en el eje izquierdo.",
   "",
   paste0("![Inversión manufacturera](", relative_fig("07_inversion_manufacturera_constante.png"), ")"),
   "",
-  "### 8. Resultados en índices",
+  "### 9. Resultados en índices",
   "",
   "Compara en dos paneles, economía total e industria, la evolución del VAB, la masa salarial, la ganancia y el capital adelantado en índices con base 2005=1.",
   "",
