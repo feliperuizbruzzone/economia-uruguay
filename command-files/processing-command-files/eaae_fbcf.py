@@ -37,6 +37,11 @@ from eaae_config import (  # noqa: E402
 
 
 LOGGER = logging.getLogger(__name__)
+FBCF_VALUE_COLUMNS = [
+    "fbcf",
+    "adquisiciones_importadas",
+    "adquisiciones_origen_importado",
+]
 
 
 def find_fbcf_member(year: int, members: list[str]) -> str | None:
@@ -82,6 +87,22 @@ def read_fbcf_source_rows(year: int, xls_path: Path) -> list[dict[str, object]]:
     division_col = config["division_col"]
     fbcf_col = int(config["fbcf_col"])
     adquisiciones_importadas_col = int(config["adquisiciones_importadas_col"])
+    adquisiciones_origen_importado_config = config.get(
+        "adquisiciones_origen_importado_col"
+    )
+    adquisiciones_origen_importado_col = (
+        int(adquisiciones_origen_importado_config)
+        if adquisiciones_origen_importado_config is not None
+        else None
+    )
+    if (
+        adquisiciones_origen_importado_col is not None
+        and adquisiciones_origen_importado_col >= sheet.ncols
+    ):
+        raise RuntimeError(
+            f"Year {year}: configured adquisiciones_origen_importado_col="
+            f"{adquisiciones_origen_importado_col} exceeds FBCF sheet columns"
+        )
     scale = float(config.get("value_scale", 1))
 
     rows: list[dict[str, object]] = []
@@ -91,6 +112,11 @@ def read_fbcf_source_rows(year: int, xls_path: Path) -> list[dict[str, object]]:
             continue
         fbcf = to_number(sheet.cell_value(row_idx, fbcf_col))
         importadas = to_number(sheet.cell_value(row_idx, adquisiciones_importadas_col))
+        origen_importado = (
+            to_number(sheet.cell_value(row_idx, adquisiciones_origen_importado_col))
+            if adquisiciones_origen_importado_col is not None
+            else None
+        )
         row: dict[str, object] = {
             "seccion_fuente": section,
             "fbcf": fbcf * scale if fbcf is not None else None,
@@ -98,6 +124,11 @@ def read_fbcf_source_rows(year: int, xls_path: Path) -> list[dict[str, object]]:
             # zero value for that acquisition channel, not a missing source.
             "adquisiciones_importadas": (
                 (importadas if importadas is not None else 0.0) * scale
+            ),
+            "adquisiciones_origen_importado": (
+                (origen_importado if origen_importado is not None else 0.0) * scale
+                if adquisiciones_origen_importado_col is not None
+                else None
             ),
         }
         if division_col is not None:
@@ -138,7 +169,7 @@ def extract_fbcf_year(
     present: dict[str, set[str]] = defaultdict(set)
     for row in select_additive_rows(source_rows):
         section = homologate_ciiu_section(str(row["seccion_fuente"]), version)
-        for column in ["fbcf", "adquisiciones_importadas"]:
+        for column in FBCF_VALUE_COLUMNS:
             value = row.get(column)
             if value is not None:
                 sums[section][column] += float(value)
@@ -147,7 +178,7 @@ def extract_fbcf_year(
     records: list[dict[str, object]] = []
     for section in sorted(sums):
         record: dict[str, object] = {"anno": year, "seccion": section}
-        for column in ["fbcf", "adquisiciones_importadas"]:
+        for column in FBCF_VALUE_COLUMNS:
             record[column] = (
                 sums[section][column] if column in present[section] else None
             )
@@ -178,6 +209,7 @@ def validate_fbcf_year(year: int, rows: list[dict[str, object]]) -> None:
     for row in rows:
         value = row.get("fbcf")
         importadas = row.get("adquisiciones_importadas")
+        origen_importado = row.get("adquisiciones_origen_importado")
         if value is None:
             raise AssertionError(f"Year {year}: null FBCF in {row['seccion']}")
         if float(value) < 0:
@@ -189,4 +221,14 @@ def validate_fbcf_year(year: int, rows: list[dict[str, object]]) -> None:
         if float(importadas) < 0:
             raise AssertionError(
                 f"Year {year}: negative adquisiciones_importadas in {row['seccion']}"
+            )
+        if EAAE_FBCF_CONFIG[year]["adquisiciones_origen_importado_col"] is None:
+            continue
+        if origen_importado is None:
+            raise AssertionError(
+                f"Year {year}: null adquisiciones_origen_importado in {row['seccion']}"
+            )
+        if float(origen_importado) < 0:
+            raise AssertionError(
+                f"Year {year}: negative adquisiciones_origen_importado in {row['seccion']}"
             )

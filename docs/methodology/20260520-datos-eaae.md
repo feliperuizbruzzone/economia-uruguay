@@ -37,7 +37,10 @@ la EAAE y requerirían fuentes externas.
 | Valor agregado, precios de productor | `vab_pp` | 2001-2024 | 2001 C1 letra; 2002-2016 C1; 2017-2024 C1.1. |
 | Consumo de capital fijo | `consumo_capital` | 2001-2024 | 2001-2011 C2; 2012-2024 C2.1. |
 | FBKF / FBCF | `fbcf` | 2001, 2003-2010, 2012-2024 | 2001 C8; 2003-2005 C10; 2006-2024 C6. Sin fuente en 2002 y 2011. |
+| FBKF en maquinaria y equipos | `fbkf_maq_eq` | 2001, 2003-2010, 2012-2024 | Componente de maquinaria y equipos de la FBKF: 2001 C11; 2003-2005 C13; 2006-2024 C8. Sin fuente en 2002 y 2011. |
 | Adquisiciones importadas | `adquisiciones_importadas` | 2001, 2003-2010, 2012-2024 | Subcomponente `Importadas` dentro de adquisiciones de activo fijo en cuadros FBCF: 2001 C8; 2003-2005 C10; 2006-2024 C6. |
+| Adquisiciones en plaza de origen importado | `adquisiciones_origen_importado` | 2004-2010, 2012-2024 | Subcomponente `En plaza / Origen Imp.` dentro de adquisiciones de activo fijo en cuadros FBCF; columna K cuando existe. |
+| Importaciones de maquinaria | `importaciones_maquinaria` | 2004-2010, 2012-2024 | `adquisiciones_importadas + adquisiciones_origen_importado`; queda vacía cuando falta alguno de los componentes. |
 | Remuneraciones | `remuneraciones` | 2001-2024 | 2001 C1 letra; 2002-2016 C1; 2017-2024 C1.1. Incluye aportes patronales. |
 
 ## Puntos metodológicos relevantes
@@ -46,10 +49,12 @@ la EAAE y requerirían fuentes externas.
   salarios y aportes patronales. No equivale a sueldos y salarios puros.
 - `stock_capital` es una variable directa de la EAAE: valor de activos fijos al
   31/12. No fue construido con método de inventario permanente.
+- `fbkf_maq_eq` mide el componente de maquinaria y equipos dentro de la FBKF,
+  manteniendo separada la variable `fbcf` total.
 - `adquisiciones_importadas` mide la columna `Importadas` de las adquisiciones
-  de activo fijo. Desde 2006 existe además `En plaza: Origen Imp.`, que podría
-  servir para otra medida más amplia de bienes de capital de origen importado,
-  pero no fue sumada a la variable actual.
+  de activo fijo. `adquisiciones_origen_importado` mide `En plaza: Origen Imp.`
+  cuando la fuente trae esa apertura. `importaciones_maquinaria` suma ambos
+  componentes y queda vacía en años sin apertura de origen.
 - `inventarios` no está integrado al panel. La EAAE usa la denominación
   `Variación de existencias`; solo se identificó para 2001 y 2003-2005.
 - No se encontró una variable de deuda industrial, pasivos, préstamos o crédito

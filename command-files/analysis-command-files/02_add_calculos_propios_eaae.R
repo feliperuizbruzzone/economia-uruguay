@@ -74,7 +74,10 @@ numeric_panel_cols <- c(
   "puestos_trabajo",
   "n_empresas",
   "fbcf",
+  "fbkf_maq_eq",
   "adquisiciones_importadas",
+  "adquisiciones_origen_importado",
+  "importaciones_maquinaria",
   "consumo_capital_fijo",
   "impuestos_netos",
   "stock_capital",
@@ -205,6 +208,11 @@ build_resultados_niveles <- function(
     "costo_laboral",
     "stock_capital",
     "stock_capital_imputado",
+    "fbcf",
+    "fbkf_maq_eq",
+    "adquisiciones_importadas",
+    "adquisiciones_origen_importado",
+    "importaciones_maquinaria",
     "puestos_trabajo"
   )
   calculated_cols <- c(
@@ -304,8 +312,17 @@ deflate_to_2005_prices <- function(data, price_indexes) {
         ipc_index_2005
       ),
       fbcf = safe_divide(fbcf, gdp_price_index_base_2005),
+      fbkf_maq_eq = safe_divide(fbkf_maq_eq, gdp_price_index_base_2005),
       adquisiciones_importadas = safe_divide(
         adquisiciones_importadas,
+        gdp_price_index_base_2005
+      ),
+      adquisiciones_origen_importado = safe_divide(
+        adquisiciones_origen_importado,
+        gdp_price_index_base_2005
+      ),
+      importaciones_maquinaria = safe_divide(
+        importaciones_maquinaria,
         gdp_price_index_base_2005
       ),
       consumo_capital_fijo = safe_divide(
@@ -421,7 +438,10 @@ build_metodologia_sheet <- function() {
     "diccionario_variables", "puestos_trabajo", "original", "Panel base y resultados", "Cantidad de puestos de trabajo u ocupados reportados.", "EAAE C1/C1.1; se mantiene como cantidad en hojas constantes.",
     "diccionario_variables", "n_empresas", "auxiliar", "Panel base", "Cantidad total de empresas representadas cuando el diseño muestral permite extraerla al nivel del panel.", "PDF de metodología/diseño muestral EAAE.",
     "diccionario_variables", "fbcf", "original", "Panel base", "Formación bruta de capital fijo.", "Cuadros FBCF EAAE.",
+    "diccionario_variables", "fbkf_maq_eq", "original", "Panel base y resultados", "Subtotal de formación bruta de capital fijo en maquinaria y equipos.", "Cuadros de componentes de FBKF: 2001 C11; 2003-2005 C13; 2006-2024 C8. Sin fuente en 2002 y 2011.",
     "diccionario_variables", "adquisiciones_importadas", "original", "Panel base", "Subcomponente importado de las adquisiciones de capital.", "Cuadros FBCF EAAE.",
+    "diccionario_variables", "adquisiciones_origen_importado", "original", "Panel base y resultados", "Adquisiciones en plaza de origen importado.", "Columna K, Origen Imp., dentro de En plaza en cuadros FBCF cuando existe: 2004-2010 y 2012-2024.",
+    "diccionario_variables", "importaciones_maquinaria", "calculada_panel", "Panel base y resultados", "Medida amplia de adquisiciones de maquinaria importada.", "adquisiciones_importadas + adquisiciones_origen_importado; queda vacía cuando falta alguno de los dos componentes.",
     "diccionario_variables", "consumo_capital_fijo", "original", "Panel base y resultados", "Consumo del stock de capital fijo.", "EAAE C2/C2.1; en constantes se deflacta con gdp_price_index_base_2005.",
     "diccionario_variables", "impuestos_netos", "original", "Panel base", "Impuestos netos asociados a las cuentas del sector.", "EAAE C2/C2.1.",
     "diccionario_variables", "stock_capital", "original", "Panel base y resultados", "Stock de capital fijo original.", "Cuadros de stock EAAE; en constantes se deflacta con gdp_price_index_base_2005.",

@@ -71,7 +71,10 @@ PANEL_COLUMNS = [
     "puestos_trabajo",
     "n_empresas",
     "fbcf",
+    "fbkf_maq_eq",
     "adquisiciones_importadas",
+    "adquisiciones_origen_importado",
+    "importaciones_maquinaria",
     "consumo_capital_fijo",
     "impuestos_netos",
     "stock_capital",
@@ -595,6 +598,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": None,
             "fbcf_col": 2,
             "adquisiciones_importadas_col": 9,
+            "adquisiciones_origen_importado_col": None,
             "value_scale": 1000,
             "notes": (
                 "Cuadro 8 Total del País por sección; valores monetarios en "
@@ -610,6 +614,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": None,
             "fbcf_col": None,
             "adquisiciones_importadas_col": None,
+            "adquisiciones_origen_importado_col": None,
             "value_scale": 1,
             "notes": "Sin cuadro de FBKF/FBCF identificado en los 4 XLS publicados.",
         }
@@ -622,6 +627,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10 if year >= 2004 else None,
             "value_scale": 1,
             "notes": "Cuadro 10, Formación Bruta de Capital Fijo.",
         }
@@ -634,6 +640,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6-F, Formación Bruta de Capital Fijo.",
         }
@@ -646,6 +653,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6 en subcarpeta Forzosas y aleatorias.",
         }
@@ -658,6 +666,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6, Formación Bruta de Capital Fijo.",
         }
@@ -670,6 +679,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": None,
             "fbcf_col": None,
             "adquisiciones_importadas_col": None,
+            "adquisiciones_origen_importado_col": None,
             "value_scale": 1,
             "notes": "Sin cuadro de FBKF/FBCF; el RAR publicado contiene solo C1 y C2.",
         }
@@ -682,6 +692,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6, Formación Bruta de Capital Fijo.",
         }
@@ -694,6 +705,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6 en subcarpeta 2016.",
         }
@@ -706,6 +718,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6, Formación Bruta de Capital Fijo.",
         }
@@ -718,6 +731,7 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
             "division_col": 1,
             "fbcf_col": 3,
             "adquisiciones_importadas_col": 7,
+            "adquisiciones_origen_importado_col": 10,
             "value_scale": 1,
             "notes": "Cuadro 6, Formación Bruta de Capital Fijo.",
         }
@@ -726,9 +740,160 @@ def _fbcf_config_for_year(year: int) -> dict[str, object]:
 
 # DECISION: FBKF/FBCF is not in C4 for the verified 2008-2024 files; C4 is
 # remunerations. Use the first Total column in the FBCF tables: 2001 Cuadro 8,
-# 2003-2005 Cuadro 10, and 2006-2024 Cuadro 6 (2006 has suffix -F). Leave
-# 2002 and 2011 empty because no FBCF table is present in the published RAR.
+# 2003-2005 Cuadro 10, and 2006-2024 Cuadro 6 (2006 has suffix -F). The
+# "En plaza / Origen Imp." component is column K where present: 2004-2010 and
+# 2012-2024. Leave 2002 and 2011 empty because no FBCF table is present in the
+# published RAR; leave 2001 and 2003 empty for that component because the
+# source has no national/imported split within in-plaza acquisitions.
 EAAE_FBCF_CONFIG = {year: _fbcf_config_for_year(year) for year in PANEL_YEARS}
+
+
+def _fbkf_maq_eq_config_for_year(year: int) -> dict[str, object]:
+    if year == 2001:
+        return {
+            "subfolder": "Letra",
+            "file_pattern": r"EAE_cu11tpel_01\.xls",
+            "data_start_row": 13,
+            "section_col": 0,
+            "division_col": None,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1000,
+            "notes": (
+                "Cuadro 11 Total del País por sección; valores monetarios en "
+                "miles de pesos corrientes."
+            ),
+        }
+    if year == 2002:
+        return {
+            "subfolder": None,
+            "file_pattern": None,
+            "data_start_row": None,
+            "section_col": None,
+            "division_col": None,
+            "fbkf_maq_eq_col": None,
+            "value_scale": 1,
+            "notes": "Sin cuadro de componentes de FBKF identificado en los 4 XLS publicados.",
+        }
+    if year == 2003:
+        return {
+            "subfolder": None,
+            "file_pattern": r"EAE_C13_2003\.xls",
+            "data_start_row": 9,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 5,
+            "value_scale": 1,
+            "notes": "Cuadro 13, Formación Bruta de Capital Fijo por componentes.",
+        }
+    if 2004 <= year <= 2005:
+        return {
+            "subfolder": None,
+            "file_pattern": rf"EAE_C13_{year}\.xls",
+            "data_start_row": 10,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 5,
+            "value_scale": 1,
+            "notes": "Cuadro 13, Formación Bruta de Capital Fijo por componentes.",
+        }
+    if year == 2006:
+        return {
+            "subfolder": None,
+            "file_pattern": r"EAE_C8-F_2006\.xls",
+            "data_start_row": 10,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8-F, Formación Bruta de Capital Fijo por componentes.",
+        }
+    if year == 2007:
+        return {
+            "subfolder": "Forzosas y aleatorias",
+            "file_pattern": r"EAE_C8_2007\.xls",
+            "data_start_row": 10,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8 en subcarpeta Forzosas y aleatorias.",
+        }
+    if 2008 <= year <= 2010:
+        return {
+            "subfolder": None,
+            "file_pattern": rf"EAE_C8_{year}\.xls",
+            "data_start_row": 10,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8, Formación Bruta de Capital Fijo por componentes.",
+        }
+    if year == 2011:
+        return {
+            "subfolder": None,
+            "file_pattern": None,
+            "data_start_row": None,
+            "section_col": None,
+            "division_col": None,
+            "fbkf_maq_eq_col": None,
+            "value_scale": 1,
+            "notes": "Sin cuadro de componentes de FBKF; el RAR publicado contiene solo C1 y C2.",
+        }
+    if 2012 <= year <= 2015:
+        return {
+            "subfolder": None,
+            "file_pattern": rf"EAE_C8_{year}\.xls",
+            "data_start_row": 10,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8, Formación Bruta de Capital Fijo por componentes.",
+        }
+    if year == 2016:
+        return {
+            "subfolder": "Encuesta de Actividad Económica 2016",
+            "file_pattern": r"EAE_C8_2016\.xls",
+            "data_start_row": 10,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8 en subcarpeta 2016.",
+        }
+    if 2017 <= year <= 2019:
+        return {
+            "subfolder": f"Encuesta de Actividad Económica {year}",
+            "file_pattern": rf"EAE_C8_{year}\.xls",
+            "data_start_row": 9,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8, Formación Bruta de Capital Fijo por componentes.",
+        }
+    if 2020 <= year <= 2024:
+        return {
+            "subfolder": None,
+            "file_pattern": rf"EAE_C8_{year}\.xls",
+            "data_start_row": 9,
+            "section_col": 0,
+            "division_col": 1,
+            "fbkf_maq_eq_col": 4,
+            "value_scale": 1,
+            "notes": "Cuadro 8, Formación Bruta de Capital Fijo por componentes.",
+        }
+    raise ValueError(f"No FBKF machinery/equipment configuration for year {year}")
+
+
+# DECISION: `fbkf_maq_eq` extracts the machinery/equipment component of gross
+# fixed-capital formation from the component table: 2001 C11, 2003-2005 C13,
+# and 2006-2024 C8 (2006 has suffix -F). Leave 2002 and 2011 empty because no
+# compatible component table is present in the published RAR.
+EAAE_FBKF_MAQ_EQ_CONFIG = {
+    year: _fbkf_maq_eq_config_for_year(year) for year in PANEL_YEARS
+}
 
 
 def _accounts_config_for_year(year: int) -> dict[str, object]:

@@ -12,6 +12,7 @@ from eaae_accounts import extract_accounts_panel, validate_accounts_year
 from eaae_c1 import extract_c1_panel, validate_extracted_year
 from eaae_enterprises import extract_enterprise_counts_panel
 from eaae_fbcf import extract_fbcf_panel, validate_fbcf_year
+from eaae_fbkf_maq_eq import extract_fbkf_maq_eq_panel, validate_fbkf_maq_eq_year
 from eaae_stock import extract_stock_panel, validate_stock_year
 from eaae_workbook import (
     BRANCH_C_SHEET,
@@ -81,9 +82,16 @@ def sum_present(values: list[object]) -> float | None:
     return sum(present)
 
 
+def sum_required(values: list[object]) -> float | None:
+    if any(value in (None, "") for value in values):
+        return None
+    return sum(float(value) for value in values)
+
+
 def add_panel_variables(
     rows: list[dict[str, object]],
     fbcf_rows: list[dict[str, object]],
+    fbkf_maq_eq_rows: list[dict[str, object]],
     accounts_rows: list[dict[str, object]],
     stock_rows: list[dict[str, object]],
     enterprise_count_rows: list[dict[str, object]],
@@ -91,6 +99,10 @@ def add_panel_variables(
     fbcf_by_key = {
         (int(row["anno"]), str(row["seccion"])): row
         for row in fbcf_rows
+    }
+    fbkf_maq_eq_by_key = {
+        (int(row["anno"]), str(row["seccion"])): row.get("fbkf_maq_eq")
+        for row in fbkf_maq_eq_rows
     }
     accounts_by_key = {
         (int(row["anno"]), str(row["seccion"])): row
@@ -113,8 +125,23 @@ def add_panel_variables(
         account_key = (int(row["anno"]), str(row["seccion"]))
         fbcf_row = fbcf_by_key.get(account_key, {})
         enriched["fbcf"] = fbcf_row.get("fbcf")
+        enriched["fbkf_maq_eq"] = fbkf_maq_eq_by_key.get(account_key)
         enriched["adquisiciones_importadas"] = fbcf_row.get(
             "adquisiciones_importadas"
+        )
+        enriched["adquisiciones_origen_importado"] = fbcf_row.get(
+            "adquisiciones_origen_importado"
+        )
+        # DECISION: `importaciones_maquinaria` is the broader imported capital
+        # acquisition measure requested by the team: direct imported
+        # acquisitions plus in-plaza acquisitions of imported origin. If the
+        # source lacks the origin-imported split, keep the sum empty rather
+        # than treating the missing component as zero.
+        enriched["importaciones_maquinaria"] = sum_required(
+            [
+                enriched["adquisiciones_importadas"],
+                enriched["adquisiciones_origen_importado"],
+            ]
         )
         account_row = accounts_by_key.get(account_key, {})
         enriched["consumo_capital_fijo"] = account_row.get("consumo_capital")
@@ -308,7 +335,10 @@ def build_annual_economy_total(rows: list[dict[str, object]]) -> list[dict[str, 
         "puestos_trabajo",
         "n_empresas",
         "fbcf",
+        "fbkf_maq_eq",
         "adquisiciones_importadas",
+        "adquisiciones_origen_importado",
+        "importaciones_maquinaria",
         "consumo_capital_fijo",
         "impuestos_netos",
         "stock_capital",
@@ -368,7 +398,12 @@ def build_annual_quality_checks(rows: list[dict[str, object]]) -> list[dict[str,
 def write_panel_csv(rows: list[dict[str, object]], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=PANEL_COLUMNS, extrasaction="ignore")
+        writer = csv.DictWriter(
+            file,
+            fieldnames=PANEL_COLUMNS,
+            extrasaction="ignore",
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
@@ -422,6 +457,7 @@ def main() -> int:
 
     rows = extract_c1_panel(args.years)
     fbcf_rows = extract_fbcf_panel(args.years)
+    fbkf_maq_eq_rows = extract_fbkf_maq_eq_panel(args.years)
     accounts_rows = extract_accounts_panel(args.years)
     stock_rows = extract_stock_panel(args.years)
     enterprise_count_rows = extract_enterprise_counts_panel(args.years)
@@ -436,6 +472,12 @@ def main() -> int:
         fbcf_by_year.setdefault(int(row["anno"]), []).append(row)
     for year in args.years:
         validate_fbcf_year(year, fbcf_by_year.get(year, []))
+
+    fbkf_maq_eq_by_year: dict[int, list[dict[str, object]]] = {}
+    for row in fbkf_maq_eq_rows:
+        fbkf_maq_eq_by_year.setdefault(int(row["anno"]), []).append(row)
+    for year in args.years:
+        validate_fbkf_maq_eq_year(year, fbkf_maq_eq_by_year.get(year, []))
 
     accounts_by_year: dict[int, list[dict[str, object]]] = {}
     for row in accounts_rows:
@@ -452,6 +494,7 @@ def main() -> int:
     panel = add_panel_variables(
         rows,
         fbcf_rows,
+        fbkf_maq_eq_rows,
         accounts_rows,
         stock_rows,
         enterprise_count_rows,

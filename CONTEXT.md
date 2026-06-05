@@ -42,7 +42,10 @@ laboral y acumulación sectorial de capital en Uruguay.
 | `puestos_trabajo` | 2001 cuadro 1 letra / C1/C1.1 | directa | 2001–2024 |
 | `n_empresas` | PDF de metodología/diseño muestral EAAE, marco muestral por sección | directa de fuente auxiliar | 2001–2005, 2011 y 2020; otros años NA |
 | `fbcf` | 2001 C8 / 2003–2005 C10 / 2006–2024 C6 | directa | 2001, 2003–2010, 2012–2024 |
+| `fbkf_maq_eq` | componente maquinaria y equipos de la FBKF | directa | 2001, 2003–2010, 2012–2024 |
 | `adquisiciones_importadas` | subcomponente Importadas en cuadros FBCF | directa | 2001, 2003–2010, 2012–2024 |
+| `adquisiciones_origen_importado` | subcomponente En plaza / Origen Imp. en cuadros FBCF | directa | 2004–2010, 2012–2024 |
+| `importaciones_maquinaria` | `adquisiciones_importadas + adquisiciones_origen_importado` | derivada | 2004–2010, 2012–2024 |
 | `consumo_capital_fijo` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
 | `impuestos_netos` | 2001–2011 C2 / 2012–2024 C2.1 | directa | 2001–2024 |
 | `stock_capital` | 2001 C9 / 2003–2005 C11 / 2006–2024 C7 | directa | 2001, 2003–2010, 2012–2024 |
@@ -328,7 +331,9 @@ Consumo intermedio    C2 letra    C3            C3        C3
 Consumo capital fijo  C2 letra    C2            C2/C2.1   C2.1
 Impuestos netos       C2 letra    C2            C2/C2.1   C2.1
 FBCF                  C8 letra    C10/C6        C6        C6
+FBKF maq. y eq.       C11 letra   C13/C8        C8        C8
 Adq. importadas       C8 letra    C10/C6        C6        C6
+Adq. plaza orig. imp. —           C10/C6        C6        C6
 Stock capital         C9 letra    C11/C7        C7        C7
 Variación existencias C10 letra   C12/—         —         —
 Excedente explot.     C2 letra    C6            C2/C2.1   C2.1
@@ -339,9 +344,16 @@ Puestos detalle       —           C7/C8         —         —
 ATENCIÓN: los números de cuadro difieren entre épocas. En los XLS verificados,
 `C4` no es FBCF en 2008–2024 sino remuneraciones; la FBCF está en `C6`.
 El pipeline resuelve esto desde `EAAE_FBCF_CONFIG` en `eaae_config.py`.
+`fbkf_maq_eq` se extrae desde la tabla de componentes de la FBKF: C11 en 2001,
+C13 en 2003–2005 y C8 en 2006–2024; queda vacía en 2002 y 2011 porque no se
+identificó cuadro compatible.
 También se verificó que FBCF y `adquisiciones_importadas` usan C10 en
 2003–2005, C6-F en 2006, y C6 desde 2007 en adelante. 2002 y 2011 no tienen
 cuadro FBCF/adquisiciones en los RAR publicados.
+La columna `adquisiciones_origen_importado` usa la apertura `En plaza / Origen
+Imp.` (columna K) cuando existe: 2004–2010 y 2012–2024. En 2001 y 2003 la
+fuente trae `En plaza` pero no desagrega origen nacional/importado, por lo que
+esa variable y `importaciones_maquinaria` quedan vacías para esos años.
 También se verificó que `C5` en 2006–2024 corresponde a impuestos y que `C8`
 en 2017–2024 corresponde a FBCF por componentes, no a variación de
 existencias. Un escaneo completo de encabezados y celdas de todos los XLS de
@@ -794,7 +806,10 @@ Columnas de variables (pesos uruguayos corrientes):
   puestos_trabajo float Puestos de trabajo ocupados
   n_empresas   float   Cantidad de empresas representadas en el marco muestral, por sección homologada
   fbcf          float   Formación Bruta de Capital Fijo (NaN donde no disponible)
+  fbkf_maq_eq   float   Subtotal de FBKF en maquinaria y equipos (NaN donde no disponible)
   adquisiciones_importadas float Adquisiciones importadas dentro de FBCF
+  adquisiciones_origen_importado float Adquisiciones en plaza de origen importado dentro de FBCF
+  importaciones_maquinaria float adquisiciones_importadas + adquisiciones_origen_importado
   consumo_capital_fijo float Consumo de capital fijo
   impuestos_netos float Impuestos sobre la producción y productos netos de subsidios
   stock_capital float Valor de activos fijos al 31/12 (NaN donde no disponible)

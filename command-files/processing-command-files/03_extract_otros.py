@@ -10,6 +10,7 @@ from pathlib import Path
 
 from eaae_accounts import extract_accounts_year, validate_accounts_year
 from eaae_fbcf import extract_fbcf_year, validate_fbcf_year
+from eaae_fbkf_maq_eq import extract_fbkf_maq_eq_year, validate_fbkf_maq_eq_year
 from eaae_stock import extract_stock_year, validate_stock_year
 
 
@@ -47,6 +48,7 @@ def main() -> int:
     args = parse_args()
 
     fbcf_counter: Counter[int] = Counter()
+    fbkf_maq_eq_counter: Counter[int] = Counter()
     accounts_counter: Counter[int] = Counter()
     stock_counter: Counter[int] = Counter()
     for year in args.years:
@@ -54,6 +56,15 @@ def main() -> int:
         validate_fbcf_year(year, fbcf_rows)
         fbcf_counter[year] = len(fbcf_rows)
         LOGGER.info("Year %s: extracted %s FBCF sections", year, len(fbcf_rows))
+
+        fbkf_maq_eq_rows = extract_fbkf_maq_eq_year(year)
+        validate_fbkf_maq_eq_year(year, fbkf_maq_eq_rows)
+        fbkf_maq_eq_counter[year] = len(fbkf_maq_eq_rows)
+        LOGGER.info(
+            "Year %s: extracted %s FBKF machinery/equipment sections",
+            year,
+            len(fbkf_maq_eq_rows),
+        )
 
         accounts_rows = extract_accounts_year(year)
         validate_accounts_year(year, accounts_rows)
@@ -74,8 +85,9 @@ def main() -> int:
         )
 
     LOGGER.info(
-        "Additional-table extraction completed: fbcf=%s accounts=%s stock=%s",
+        "Additional-table extraction completed: fbcf=%s fbkf_maq_eq=%s accounts=%s stock=%s",
         dict(fbcf_counter),
+        dict(fbkf_maq_eq_counter),
         dict(accounts_counter),
         dict(stock_counter),
     )

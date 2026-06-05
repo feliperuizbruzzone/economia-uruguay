@@ -23,6 +23,8 @@ sys.path.insert(0, str(CONFIG_DIR))
 from eaae_config import (  # noqa: E402
     CAPITAL_ADVANCE_TURNOVER_FACTORS,
     CIIU_HOMOLOGATED_MINIMUM_SECTIONS,
+    EAAE_FBCF_CONFIG,
+    EAAE_FBKF_MAQ_EQ_CONFIG,
     PANEL_CSV_OUTPUT,
     PANEL_XLSX_OUTPUT,
     PANEL_YEARS,
@@ -44,7 +46,10 @@ TOTAL_ADDITIVE_COLUMNS = [
     "puestos_trabajo",
     "n_empresas",
     "fbcf",
+    "fbkf_maq_eq",
     "adquisiciones_importadas",
+    "adquisiciones_origen_importado",
+    "importaciones_maquinaria",
     "consumo_capital_fijo",
     "impuestos_netos",
     "stock_capital",
@@ -634,7 +639,12 @@ def validate(rows: list[dict[str, str]]) -> None:
             remuneraciones = to_float(row["remuneraciones"])
             puestos = to_float(row["puestos_trabajo"])
             fbcf = to_float(row["fbcf"])
+            fbkf_maq_eq = to_float(row["fbkf_maq_eq"])
             adquisiciones_importadas = to_float(row["adquisiciones_importadas"])
+            adquisiciones_origen_importado = to_float(
+                row["adquisiciones_origen_importado"]
+            )
+            importaciones_maquinaria = to_float(row["importaciones_maquinaria"])
             consumo_capital_fijo = to_float(row["consumo_capital_fijo"])
             impuestos_netos = to_float(row["impuestos_netos"])
             stock_capital = to_float(row["stock_capital"])
@@ -667,9 +677,19 @@ def validate(rows: list[dict[str, str]]) -> None:
             if year in FBCF_MISSING_YEARS:
                 if row["fbcf"] != "":
                     raise AssertionError(f"Year {year}: unexpected FBCF value")
+                if row["fbkf_maq_eq"] != "":
+                    raise AssertionError(f"Year {year}: unexpected fbkf_maq_eq value")
                 if row["adquisiciones_importadas"] != "":
                     raise AssertionError(
                         f"Year {year}: unexpected adquisiciones_importadas value"
+                    )
+                if row["adquisiciones_origen_importado"] != "":
+                    raise AssertionError(
+                        f"Year {year}: unexpected adquisiciones_origen_importado value"
+                    )
+                if row["importaciones_maquinaria"] != "":
+                    raise AssertionError(
+                        f"Year {year}: unexpected importaciones_maquinaria value"
                     )
             else:
                 if fbcf is None:
@@ -685,6 +705,44 @@ def validate(rows: list[dict[str, str]]) -> None:
                 if adquisiciones_importadas < 0:
                     raise AssertionError(
                         f"Year {year}: negative adquisiciones_importadas in {row['seccion']}"
+                    )
+                if EAAE_FBCF_CONFIG[year]["adquisiciones_origen_importado_col"] is None:
+                    if row["adquisiciones_origen_importado"] != "":
+                        raise AssertionError(
+                            f"Year {year}: unexpected adquisiciones_origen_importado value"
+                        )
+                    if row["importaciones_maquinaria"] != "":
+                        raise AssertionError(
+                            f"Year {year}: unexpected importaciones_maquinaria value"
+                        )
+                else:
+                    if adquisiciones_origen_importado is None:
+                        raise AssertionError(
+                            f"Year {year}: null adquisiciones_origen_importado in {row['seccion']}"
+                        )
+                    if adquisiciones_origen_importado < 0:
+                        raise AssertionError(
+                            f"Year {year}: negative adquisiciones_origen_importado in {row['seccion']}"
+                        )
+                    expected_importaciones_maquinaria = (
+                        adquisiciones_importadas + adquisiciones_origen_importado
+                    )
+                    assert_close(
+                        row["importaciones_maquinaria"],
+                        expected_importaciones_maquinaria,
+                        f"Year {year}: invalid importaciones_maquinaria in {row['seccion']}",
+                    )
+            if EAAE_FBKF_MAQ_EQ_CONFIG[year]["file_pattern"] is None:
+                if row["fbkf_maq_eq"] != "":
+                    raise AssertionError(f"Year {year}: unexpected fbkf_maq_eq value")
+            else:
+                if fbkf_maq_eq is None:
+                    raise AssertionError(
+                        f"Year {year}: null fbkf_maq_eq in {row['seccion']}"
+                    )
+                if fbcf is not None and fbkf_maq_eq - fbcf > max(1.0, abs(fbcf) * 1e-6):
+                    raise AssertionError(
+                        f"Year {year}: fbkf_maq_eq > fbcf in {row['seccion']}"
                     )
             if consumo_capital_fijo is None:
                 raise AssertionError(
