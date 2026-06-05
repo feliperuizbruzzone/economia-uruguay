@@ -67,6 +67,9 @@ TOTAL_QUALITY_COLUMNS = [
     "remuneraciones_vab",
     "stock_vab",
 ]
+STOCK_CAPITAL_CALCULATION_COLUMNS = [
+    "stock_capital_imputado",
+]
 
 
 def configure_logging() -> None:
@@ -155,9 +158,34 @@ def expected_economy_totals(rows: list[dict[str, str]]) -> dict[int, dict[str, f
         )
         total["part_salarial"] = safe_divide(remuneraciones, vab_pp)
         total["productividad"] = safe_divide(vab_pp, puestos)
+        add_expected_stock_capital_imputation(total)
         add_expected_capital_advanced_values(total)
         totals[year] = total
     return totals
+
+
+def add_expected_stock_capital_imputation(
+    row: dict[str, float | str | None]
+) -> None:
+    row["stock_capital_imputado"] = row.get("stock_capital")
+
+    stock_capital = (
+        row["stock_capital"] if isinstance(row.get("stock_capital"), float) else None
+    )
+    if stock_capital is not None:
+        return
+
+    factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(str(row.get("seccion")))
+    consumo_capital = (
+        row["consumo_capital_fijo"]
+        if isinstance(row.get("consumo_capital_fijo"), float)
+        else None
+    )
+    if factor in (None, 0) or consumo_capital is None:
+        return
+
+    imputed = consumo_capital * (factor / 100)
+    row["stock_capital_imputado"] = imputed
 
 
 def add_expected_capital_advanced_values(
@@ -180,7 +208,9 @@ def add_expected_capital_advanced_values(
         else None
     )
     stock_capital = (
-        row["stock_capital"] if isinstance(row.get("stock_capital"), float) else None
+        row["stock_capital_imputado"]
+        if isinstance(row.get("stock_capital_imputado"), float)
+        else None
     )
 
     if remuneraciones is not None:
@@ -211,7 +241,11 @@ def expected_quality_checks(
         remuneraciones = (
             row["remuneraciones"] if isinstance(row["remuneraciones"], float) else None
         )
-        stock_capital = row["stock_capital"] if isinstance(row["stock_capital"], float) else None
+        stock_capital = (
+            row["stock_capital_imputado"]
+            if isinstance(row.get("stock_capital_imputado"), float)
+            else None
+        )
         checks[year] = {
             "vab_vbp": safe_divide(vab_pp, vbp_pp),
             "consumo_intermedio_estimado": (
@@ -242,7 +276,11 @@ def validate_total_workbook_sheets(
             raise AssertionError(f"Year {year}: invalid economia_total epoca")
         if actual["ciiu_version"] != str(expected["ciiu_version"]):
             raise AssertionError(f"Year {year}: invalid economia_total ciiu_version")
-        for column in TOTAL_ADDITIVE_COLUMNS + TOTAL_DERIVED_COLUMNS:
+        for column in (
+            TOTAL_ADDITIVE_COLUMNS
+            + STOCK_CAPITAL_CALCULATION_COLUMNS
+            + TOTAL_DERIVED_COLUMNS
+        ):
             value = expected[column]
             assert_close(
                 actual[column],
@@ -425,6 +463,25 @@ def validate_estimated_intermediate_consumption(rows: list[dict[str, str]]) -> N
             )
 
 
+def validate_stock_capital_imputation(rows: list[dict[str, str]]) -> None:
+    for row in rows:
+        year = int(row["anno"])
+        section = row["seccion"]
+        stock_capital = to_float(row["stock_capital"])
+        consumo_capital = to_float(row["consumo_capital_fijo"])
+        factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(section)
+
+        expected_stock = stock_capital
+        if expected_stock is None and consumo_capital is not None and factor not in (None, 0):
+            expected_stock = consumo_capital * (factor / 100)
+
+        assert_close(
+            row["stock_capital_imputado"],
+            expected_stock,
+            f"Year {year}: invalid stock_capital_imputado in {section}",
+        )
+
+
 def validate_capital_advanced_variables(rows: list[dict[str, str]]) -> None:
     for row in rows:
         year = int(row["anno"])
@@ -441,7 +498,7 @@ def validate_capital_advanced_variables(rows: list[dict[str, str]]) -> None:
 
         remuneraciones = to_float(row["remuneraciones"])
         consumo_intermedio = to_float(row["consumo_intermedio_estimado"])
-        stock_capital = to_float(row["stock_capital"])
+        stock_capital = to_float(row["stock_capital_imputado"])
         expected_variable = (
             remuneraciones / factor if remuneraciones is not None else None
         )
@@ -513,6 +570,7 @@ def validate(rows: list[dict[str, str]]) -> None:
 
     validate_estimated_vab_pb(rows)
     validate_estimated_intermediate_consumption(rows)
+    validate_stock_capital_imputation(rows)
     validate_capital_advanced_variables(rows)
     validate_enterprise_counts(rows)
     validate_manufacturing_capital_consumption_bridge(rows)
@@ -544,6 +602,7 @@ def validate(rows: list[dict[str, str]]) -> None:
             consumo_capital_fijo = to_float(row["consumo_capital_fijo"])
             impuestos_netos = to_float(row["impuestos_netos"])
             stock_capital = to_float(row["stock_capital"])
+            stock_capital_imputado = to_float(row["stock_capital_imputado"])
             if None in (vbp_pp, vab_pp, remuneraciones, puestos):
                 raise AssertionError(f"Year {year}: null key value in {row['seccion']}")
             if vbp_pp < vab_pp:
@@ -617,6 +676,10 @@ def validate(rows: list[dict[str, str]]) -> None:
                     raise AssertionError(
                         f"Year {year}: negative stock_capital in {row['seccion']}"
                     )
+            if stock_capital_imputado is not None and stock_capital_imputado < 0:
+                raise AssertionError(
+                    f"Year {year}: negative stock_capital_imputado in {row['seccion']}"
+                )
             total += vab_pp
         totals[year] = total
 

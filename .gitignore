@@ -13,7 +13,11 @@ __pycache__/
 .RData
 .Rproj.user/
 
-output/
+output/*
+!output/figures/
+output/figures/*
+!output/figures/eaae/
+!output/figures/eaae/*.png
 *.log
 *.tmp
 

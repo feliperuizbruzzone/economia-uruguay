@@ -197,6 +197,33 @@ def add_estimated_intermediate_consumption(
     return rows
 
 
+def add_stock_capital_imputation(
+    rows: list[dict[str, object]]
+) -> list[dict[str, object]]:
+    for row in rows:
+        row["stock_capital_imputado"] = row.get("stock_capital")
+
+        stock_capital = row.get("stock_capital")
+        if stock_capital not in (None, ""):
+            continue
+
+        factor = CAPITAL_ADVANCE_TURNOVER_FACTORS.get(str(row.get("seccion")))
+        consumo_capital = row.get("consumo_capital_fijo")
+        if factor in (None, 0) or consumo_capital in (None, ""):
+            continue
+
+        # DECISION: Provisional team rule, June 2026. Keep only two stock
+        # columns: `stock_capital` as the original source value and
+        # `stock_capital_imputado` as the operative stock series. The operative
+        # series copies the original stock when available; when missing but
+        # fixed-capital consumption exists, it imputes the stock as
+        # consumo_capital_fijo * (sector_turnover / 100).
+        imputed = float(consumo_capital) * (float(factor) / 100)
+        row["stock_capital_imputado"] = imputed
+
+    return rows
+
+
 def add_capital_advanced_variables(
     rows: list[dict[str, object]]
 ) -> list[dict[str, object]]:
@@ -211,7 +238,7 @@ def add_capital_advanced_variables(
 
         remuneraciones = row.get("remuneraciones")
         consumo_intermedio = row.get("consumo_intermedio_estimado")
-        stock_capital = row.get("stock_capital")
+        stock_capital = row.get("stock_capital_imputado")
 
         # DECISION: Provisional team rule, June 2026. Advance variable capital
         # and constant circulating capital by dividing annual flows by the
@@ -280,6 +307,7 @@ def build_annual_economy_total(rows: list[dict[str, object]]) -> list[dict[str, 
         )
         total["part_salarial"] = safe_divide(total.get("remuneraciones"), total.get("vab_pp"))
         total["productividad"] = safe_divide(total.get("vab_pp"), total.get("puestos_trabajo"))
+        add_stock_capital_imputation([total])
         add_capital_advanced_variables([total])
         totals.append(total)
     return totals
@@ -291,7 +319,7 @@ def build_annual_quality_checks(rows: list[dict[str, object]]) -> list[dict[str,
         vbp_pp = row.get("vbp_pp")
         vab_pp = row.get("vab_pp")
         remuneraciones = row.get("remuneraciones")
-        stock_capital = row.get("stock_capital")
+        stock_capital = row.get("stock_capital_imputado")
         checks.append(
             {
                 "anno": row.get("anno"),
@@ -399,6 +427,7 @@ def main() -> int:
     )
     panel = add_estimated_vab_pb(panel)
     panel = add_estimated_intermediate_consumption(panel)
+    panel = add_stock_capital_imputation(panel)
     panel = add_capital_advanced_variables(panel)
     panel.sort(key=lambda row: (int(row["anno"]), str(row["seccion"])))
     write_panel_csv(panel, csv_output_path)

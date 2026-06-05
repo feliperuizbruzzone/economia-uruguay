@@ -36,6 +36,14 @@ read_result_sheet <- function(workbook_path, sheet_name, ambito_label) {
     )
 }
 
+read_panel_sheet <- function(workbook_path, sheet_name) {
+  readxl::read_excel(workbook_path, sheet = sheet_name) %>%
+    mutate(
+      anno = as.integer(anno),
+      across(any_of(c("fbcf", "vab_pp")), as.numeric)
+    )
+}
+
 theme_eaae <- function() {
   theme_minimal(base_size = 11) +
     theme(
@@ -75,7 +83,13 @@ series_palette <- c(
   "Ganancia pp" = "#6A4C93",
   "Stock capital" = "#1B4E89",
   "Capital circulante adelantado" = "#2E7D32",
-  "Capital total adelantado" = "#B23A48"
+  "Capital total adelantado" = "#B23A48",
+  "Inversión / VAB manufacturero" = "#B23A48",
+  "Inversión constante" = "#1B4E89",
+  "VAB" = "#1B4E89",
+  "Masa salarial" = "#2E7D32",
+  "Ganancia" = "#6A4C93",
+  "Capital adelantado" = "#B23A48"
 )
 
 panel_xlsx_path <- latest_analysis_file("^[0-9]{8}_panel_eaae\\.xlsx$")
@@ -104,6 +118,12 @@ industrial_indice <- read_result_sheet(
   "resultados-industrial-ind-2005",
   "Industria"
 )
+industrial_constante <- read_result_sheet(
+  panel_xlsx_path,
+  "resultados-industrial-constante",
+  "Industria"
+)
+rama_c <- read_panel_sheet(panel_xlsx_path, "rama-C")
 
 corrientes <- bind_rows(total_corrientes, industrial_corrientes)
 indices_2005 <- bind_rows(total_indice, industrial_indice)
@@ -213,13 +233,13 @@ capital_componentes <- corrientes %>%
   select(
     anno,
     ambito_label,
-    stock_capital,
+    stock_capital_imputado,
     capital_circulante_adelantado,
     capital_total_adelantado
   ) %>%
   pivot_longer(
     cols = c(
-      stock_capital,
+      stock_capital_imputado,
       capital_circulante_adelantado,
       capital_total_adelantado
     ),
@@ -229,7 +249,7 @@ capital_componentes <- corrientes %>%
   mutate(
     serie = recode(
       serie,
-      stock_capital = "Stock capital",
+      stock_capital_imputado = "Stock capital",
       capital_circulante_adelantado = "Capital circulante adelantado",
       capital_total_adelantado = "Capital total adelantado"
     )
@@ -251,7 +271,7 @@ fig_05 <- ggplot(capital_componentes, aes(anno, valor, color = serie)) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Capital adelantado y componentes",
-    subtitle = "Niveles corrientes; las interrupciones reflejan años sin stock de capital",
+    subtitle = "Niveles corrientes; usa stock observado o imputado según disponibilidad",
     y = "Miles de millones de pesos corrientes",
     caption = "Fuente: elaboración propia con panel EAAE."
   ) +
@@ -273,13 +293,127 @@ fig_06 <- ggplot(participacion_industria, aes(anno, vab_pp_participacion_total))
   ) +
   theme_eaae()
 
+inversion_industrial <- rama_c %>%
+  select(anno, fbcf) %>%
+  left_join(
+    industrial_constante %>%
+      select(anno, gdp_price_index_base_2005, vab_pp),
+    by = "anno"
+  ) %>%
+  mutate(
+    inversion_constante = fbcf / gdp_price_index_base_2005,
+    inversion_vab = inversion_constante / vab_pp
+  )
+
+dual_axis_factor <- max(inversion_industrial$inversion_vab, na.rm = TRUE) /
+  max(inversion_industrial$inversion_constante, na.rm = TRUE)
+
+fig_07 <- ggplot(inversion_industrial, aes(anno)) +
+  geom_line(
+    aes(
+      y = inversion_vab,
+      color = "Inversión / VAB manufacturero"
+    ),
+    linewidth = 0.95,
+    na.rm = TRUE
+  ) +
+  geom_point(
+    aes(
+      y = inversion_vab,
+      color = "Inversión / VAB manufacturero"
+    ),
+    size = 1.7,
+    na.rm = TRUE
+  ) +
+  geom_line(
+    aes(
+      y = inversion_constante * dual_axis_factor,
+      color = "Inversión constante"
+    ),
+    linewidth = 0.95,
+    na.rm = TRUE
+  ) +
+  geom_point(
+    aes(
+      y = inversion_constante * dual_axis_factor,
+      color = "Inversión constante"
+    ),
+    size = 1.7,
+    na.rm = TRUE
+  ) +
+  scale_color_manual(values = series_palette) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    sec.axis = sec_axis(
+      ~ . / dual_axis_factor,
+      labels = label_number(
+        accuracy = 1,
+        scale = 1e-9,
+        big.mark = ".",
+        decimal.mark = ","
+      ),
+      name = "Inversión constante"
+    )
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  labs(
+    title = "Inversión manufacturera",
+    subtitle = "FBCF industrial en precios de 2005 (eje der., miles de millones) y como porcentaje del VAB manufacturero",
+    y = "Inversión / VAB manufacturero",
+    caption = "Fuente: elaboración propia con panel EAAE y deflactores Oyanthabal."
+  ) +
+  theme_eaae()
+
+indices_resultados <- indices_2005 %>%
+  select(
+    anno,
+    ambito_label,
+    vab_pp_ind_2005,
+    costo_laboral_ind_2005,
+    ganancia_pp_ind_2005,
+    capital_total_adelantado_ind_2005
+  ) %>%
+  pivot_longer(
+    cols = -c(anno, ambito_label),
+    names_to = "serie",
+    values_to = "valor"
+  ) %>%
+  mutate(
+    serie = recode(
+      serie,
+      vab_pp_ind_2005 = "VAB",
+      costo_laboral_ind_2005 = "Masa salarial",
+      ganancia_pp_ind_2005 = "Ganancia",
+      capital_total_adelantado_ind_2005 = "Capital adelantado"
+    )
+  ) %>%
+  filter(!is.na(valor))
+
+fig_08 <- ggplot(indices_resultados, aes(anno, valor, color = serie)) +
+  geom_hline(yintercept = 1, linewidth = 0.3, color = "grey70") +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 1.4) +
+  facet_wrap(~ ambito_label, ncol = 1) +
+  scale_color_manual(values = series_palette) +
+  scale_y_continuous(labels = label_number(accuracy = 0.1, decimal.mark = ",")) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  labs(
+    title = "Resultados en índices de volumen",
+    subtitle = "VAB, masa salarial, ganancia y capital adelantado; base 2005=1",
+    y = "Índice 2005=1",
+    caption = "Fuente: elaboración propia con panel EAAE y deflactores Oyanthabal."
+  ) +
+  theme_eaae()
+
 figures <- c(
   "01_tasa_ganancia_corrientes.png" = save_plot(fig_01, "01_tasa_ganancia_corrientes.png"),
   "02_ganancia_indice_2005.png" = save_plot(fig_02, "02_ganancia_indice_2005.png"),
   "03_descomposicion_vab_total_corrientes.png" = save_plot(fig_03, "03_descomposicion_vab_total_corrientes.png"),
   "04_descomposicion_vab_industria_corrientes.png" = save_plot(fig_04, "04_descomposicion_vab_industria_corrientes.png"),
   "05_capital_adelantado_corrientes.png" = save_plot(fig_05, "05_capital_adelantado_corrientes.png"),
-  "06_participacion_industria_vab_corrientes.png" = save_plot(fig_06, "06_participacion_industria_vab_corrientes.png")
+  "06_participacion_industria_vab_corrientes.png" = save_plot(fig_06, "06_participacion_industria_vab_corrientes.png"),
+  "07_inversion_manufacturera_constante.png" = save_plot(fig_07, "07_inversion_manufacturera_constante.png"),
+  "08_indices_resultados_total_industria.png" = save_plot(fig_08, "08_indices_resultados_total_industria.png", height = 7)
 )
 
 report_lines <- c(
@@ -293,14 +427,15 @@ report_lines <- c(
   "",
   "- Las tasas de ganancia, la descomposición del VAB, el capital adelantado y la participación industrial se muestran en valores corrientes para conservar la cobertura hasta 2024.",
   "- Las ganancias indexadas usan las hojas de resultados en precios constantes y se expresan con base 2005=1.",
+  "- La inversión manufacturera usa `fbcf` de la rama C y se deflacta con `gdp_price_index_base_2005`; la relación de inversión sobre VAB usa el VAB industrial constante.",
   "- Las series en precios constantes e índices dependen del `gdp_price_index_base_2005`, disponible hasta 2019; por eso esas figuras no fuerzan continuidad después de ese año.",
-  "- Las interrupciones en capital adelantado reflejan años sin `stock_capital` en el panel.",
+  "- El capital adelantado usa `stock_capital_imputado`, que replica `stock_capital` cuando existe e imputa faltantes definidos.",
   "",
   "## Figuras",
   "",
   "### 1. Tasa de ganancia",
   "",
-  "La tasa se calcula como ganancia sobre `stock_capital + capital_circulante_adelantado`. Se presentan las variantes a precios básicos y a precios productor.",
+  "La tasa se calcula como ganancia sobre `stock_capital_imputado + capital_circulante_adelantado`. Se presentan las variantes a precios básicos y a precios productor.",
   "",
   paste0("![Tasa de ganancia](", relative_fig("01_tasa_ganancia_corrientes.png"), ")"),
   "",
@@ -333,6 +468,18 @@ report_lines <- c(
   "Mide el peso de la industria manufacturera dentro del VAB total de la economía.",
   "",
   paste0("![Participación industrial](", relative_fig("06_participacion_industria_vab_corrientes.png"), ")"),
+  "",
+  "### 7. Inversión manufacturera",
+  "",
+  "Muestra la FBCF industrial en precios de 2005 en el eje derecho y la misma inversión como porcentaje del VAB manufacturero en el eje izquierdo.",
+  "",
+  paste0("![Inversión manufacturera](", relative_fig("07_inversion_manufacturera_constante.png"), ")"),
+  "",
+  "### 8. Resultados en índices",
+  "",
+  "Compara en dos paneles, economía total e industria, la evolución del VAB, la masa salarial, la ganancia y el capital adelantado en índices con base 2005=1.",
+  "",
+  paste0("![Resultados en índices](", relative_fig("08_indices_resultados_total_industria.png"), ")"),
   "",
   "## Reproducción",
   "",

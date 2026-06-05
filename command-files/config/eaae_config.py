@@ -65,6 +65,7 @@ PANEL_COLUMNS = [
     "consumo_capital_fijo",
     "impuestos_netos",
     "stock_capital",
+    "stock_capital_imputado",
     "capital_total_adelantado",
     "excedente_bruto",
     "part_salarial",
