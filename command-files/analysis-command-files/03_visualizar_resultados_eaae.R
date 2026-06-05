@@ -89,7 +89,9 @@ series_palette <- c(
   "VAB" = "#1B4E89",
   "Masa salarial" = "#2E7D32",
   "Ganancia" = "#6A4C93",
-  "Capital adelantado" = "#B23A48"
+  "Capital adelantado" = "#B23A48",
+  "Economía total" = "#1B4E89",
+  "Rama manufacturera" = "#B23A48"
 )
 
 panel_xlsx_path <- latest_analysis_file("^[0-9]{8}_panel_eaae\\.xlsx$")
@@ -430,6 +432,33 @@ fig_08 <- ggplot(indices_resultados, aes(anno, valor, color = serie)) +
   ) +
   theme_eaae()
 
+productividad_indice <- indices_2005 %>%
+  select(anno, ambito_label, productividad_trabajo_ind_2005) %>%
+  transmute(
+    anno,
+    ambito_label = recode(
+      ambito_label,
+      Industria = "Rama manufacturera"
+    ),
+    valor = productividad_trabajo_ind_2005
+  ) %>%
+  filter(!is.na(valor))
+
+fig_09 <- ggplot(productividad_indice, aes(anno, valor, color = ambito_label)) +
+  geom_hline(yintercept = 1, linewidth = 0.3, color = "grey70") +
+  geom_line(linewidth = 0.95) +
+  geom_point(size = 1.7) +
+  scale_color_manual(values = series_palette) +
+  scale_y_continuous(labels = label_number(accuracy = 0.1, decimal.mark = ",")) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  labs(
+    title = "Productividad del trabajo en índice",
+    subtitle = "VAB a precios constantes por puesto de trabajo; base 2005=1",
+    y = "Índice 2005=1",
+    caption = "Fuente: elaboración propia con panel EAAE y deflactores Oyanthabal."
+  ) +
+  theme_eaae()
+
 figures <- c(
   "01_representatividad_eaae_bcu_corrientes.png" = save_plot(fig_00, "01_representatividad_eaae_bcu_corrientes.png"),
   "01_tasa_ganancia_corrientes.png" = save_plot(fig_01, "01_tasa_ganancia_corrientes.png"),
@@ -439,7 +468,8 @@ figures <- c(
   "05_capital_adelantado_corrientes.png" = save_plot(fig_05, "05_capital_adelantado_corrientes.png"),
   "06_participacion_industria_vab_corrientes.png" = save_plot(fig_06, "06_participacion_industria_vab_corrientes.png"),
   "07_inversion_manufacturera_constante.png" = save_plot(fig_07, "07_inversion_manufacturera_constante.png"),
-  "08_indices_resultados_total_industria.png" = save_plot(fig_08, "08_indices_resultados_total_industria.png", height = 7)
+  "08_indices_resultados_total_industria.png" = save_plot(fig_08, "08_indices_resultados_total_industria.png", height = 7),
+  "09_productividad_trabajo_indice_2005.png" = save_plot(fig_09, "09_productividad_trabajo_indice_2005.png")
 )
 
 report_lines <- c(
@@ -513,6 +543,12 @@ report_lines <- c(
   "Compara en dos paneles, economía total e industria, la evolución del VAB, la masa salarial, la ganancia y el capital adelantado en índices con base 2005=1.",
   "",
   paste0("![Resultados en índices](", relative_fig("08_indices_resultados_total_industria.png"), ")"),
+  "",
+  "### 10. Productividad del trabajo en índice",
+  "",
+  "Compara la evolución de la productividad del trabajo, medida como VAB a precios constantes por puesto de trabajo, para economía total y rama manufacturera.",
+  "",
+  paste0("![Productividad del trabajo en índice](", relative_fig("09_productividad_trabajo_indice_2005.png"), ")"),
   "",
   "## Reproducción",
   "",

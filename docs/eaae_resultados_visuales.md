@@ -69,6 +69,12 @@ Compara en dos paneles, economía total e industria, la evolución del VAB, la m
 
 ![Resultados en índices](../output/figures/eaae/08_indices_resultados_total_industria.png)
 
+### 10. Productividad del trabajo en índice
+
+Compara la evolución de la productividad del trabajo, medida como VAB a precios constantes por puesto de trabajo, para economía total y rama manufacturera.
+
+![Productividad del trabajo en índice](../output/figures/eaae/09_productividad_trabajo_indice_2005.png)
+
 ## Reproducción
 
 Desde la raíz del repositorio:
