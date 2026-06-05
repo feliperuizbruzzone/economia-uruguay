@@ -440,7 +440,7 @@ build_metodologia_sheet <- function() {
     "diccionario_variables", "remuneraciones_vab", "validación", "check-calidad-*", "Peso de remuneraciones sobre VAB a precios productor.", "remuneraciones / vab_pp.",
     "diccionario_variables", "stock_vab", "validación", "check-calidad-*", "Relación entre stock de capital operativo y VAB a precios productor.", "stock_capital_imputado / vab_pp.",
     "diccionario_variables", "gdp_price_index_base_2005", "deflactor", "Hojas constantes", "Índice de precios implícito del PIB con base 2005.", "Oyanthabal; usado para variables monetarias no laborales.",
-    "diccionario_variables", "ipc_index_2005", "deflactor", "Hojas constantes", "Índice de precios al consumo con base 2005.", "Oyanthabal; usado para costo_laboral.",
+    "diccionario_variables", "ipc_index_2005", "deflactor", "Hojas constantes", "Índice de precios al consumo con base 2005.", "Oyanthabal; usado para costo_laboral. Si la planilla no lo trae explícito, se deriva desde ipc_index_1983_1989 normalizando 2005=1.",
     "diccionario_variables", "costo_laboral", "calculada_resultados", "Hojas resultados-*", "Costo laboral operativo usado en ganancias.", "Igual a remuneraciones; no se separan cargas patronales para evitar doble conteo.",
     "diccionario_variables", "ganancia_pb", "calculada_resultados", "Hojas resultados-*", "Ganancia calculada a precios básicos.", "vab_pb_estimado - consumo_capital_fijo - costo_laboral.",
     "diccionario_variables", "ganancia_pp", "calculada_resultados", "Hojas resultados-*", "Ganancia calculada a precios productor.", "vab_pp - consumo_capital_fijo - costo_laboral.",

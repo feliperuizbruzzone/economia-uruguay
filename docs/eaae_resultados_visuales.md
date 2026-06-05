@@ -10,7 +10,7 @@ Este informe resume visualmente los resultados propios calculados para la econom
 - Las tasas de ganancia, la descomposición del VAB y la participación industrial se muestran en valores corrientes para conservar la cobertura hasta 2024.
 - Las ganancias indexadas y el capital adelantado usan las hojas de resultados en precios constantes.
 - La inversión manufacturera usa `fbcf` de la rama C y se deflacta con `gdp_price_index_base_2005`; la relación de inversión sobre VAB usa el VAB industrial constante.
-- Las series en precios constantes e índices dependen del `gdp_price_index_base_2005`, disponible hasta 2019; por eso esas figuras no fuerzan continuidad después de ese año.
+- Las series en precios constantes e índices usan los deflactores Oyanthabal actualizados hasta 2024.
 - El capital adelantado usa `stock_capital_imputado`, que replica `stock_capital` cuando existe e imputa 2002 y 2011 con factores históricos de `stock_capital / consumo_capital_fijo`.
 
 ## Figuras

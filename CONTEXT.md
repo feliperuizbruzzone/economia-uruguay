@@ -130,11 +130,12 @@ Notas validadas:
 - Las hojas `resultados-total-constante` y `resultados-industrial-constante`
   replican esos cálculos en precios de 2005. `costo_laboral` se deflacta con
   `ipc_index_2005`. El resto de las variables monetarias se deflacta con
-  `gdp_price_index_base_2005`; `puestos_trabajo` se mantiene como cantidad. Como
-  la fuente Oyanthabal solo trae `gdp_price_index_base_2005` hasta 2019, las
-  variables reales que dependen de ese deflactor quedan como NA desde 2020 en
-  esas hojas. `productividad_trabajo` se calcula en las hojas constantes como
-  `vab_pp / puestos_trabajo`.
+  `gdp_price_index_base_2005`; `puestos_trabajo` se mantiene como cantidad. La
+  fuente Oyanthabal actualizada cubre `gdp_price_index_base_2005` e
+  `ipc_index_2005` hasta 2024; cuando el XLSX no trae `ipc_index_2005` como
+  columna explícita, el pipeline lo deriva desde `ipc_index_1983_1989`
+  normalizando 2005=1. `productividad_trabajo` se calcula en las hojas
+  constantes como `vab_pp / puestos_trabajo`.
 - Las hojas `resultados-total-var-pct` y `resultados-industrial-var-pct`
   expresan las columnas analíticas de los resultados constantes como variación
   porcentual interanual: `(x[t] / x[t-1] - 1) * 100`. Las hojas

@@ -40,7 +40,7 @@ def pdf_text(path: Path, first_page: int, last_page: int | None = None) -> str:
 def write_csv(path: Path, rows: list[dict[str, object]], columns: list[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=columns, extrasaction="ignore")
+        writer = csv.DictWriter(file, fieldnames=columns, extrasaction="ignore", lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -744,6 +744,25 @@ def parse_oyanthabal() -> None:
                     "valor": xlsx_number_value(values[index]),
                     "unidad": unit,
                     "fuente_original": source_row[index] if index < len(source_row) else "",
+                }
+            )
+    if not any(row["variable"] == "ipc_index_2005" for row in rows):
+        ipc_rows = [row for row in rows if row["variable"] == "ipc_index_1983_1989" and row["valor"] is not None]
+        base_value = next((row["valor"] for row in ipc_rows if row["anno"] == 2005), None)
+        if base_value is None or base_value == 0:
+            raise ValueError("No se puede derivar ipc_index_2005 desde IPC 1983-1989: falta el valor base 2005.")
+        for row in ipc_rows:
+            rows.append(
+                {
+                    "fuente": "oyanthabal",
+                    "archivo": path.name,
+                    "hoja": "IPI PBI e IPC",
+                    "anno": row["anno"],
+                    "variable": "ipc_index_2005",
+                    "variable_etiqueta": "IPC (base 2005=1, derivado)",
+                    "valor": row["valor"] / base_value,
+                    "unidad": "2005=1",
+                    "fuente_original": "Calculado desde IPC 1983-1989=100 con valor 2005=1.",
                 }
             )
     write_csv(
