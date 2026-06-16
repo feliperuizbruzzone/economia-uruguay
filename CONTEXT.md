@@ -258,6 +258,84 @@ Contenido de cada RAR: archivos .xls (Excel 97-2003, formato BIFF8)
 Destino local de descarga: data/input-data/eaae/
 ```
 
+### Fuente primaria adicional: Encuesta Industrial Anual 1989-1997
+
+**INCORPORADO — Junio 2026:** se descargó una serie histórica externa de la
+Encuesta Industrial Anual desde la página "Series Económicas" de la Unidad de
+Métodos y Acceso a Datos, Facultad de Ciencias Sociales, Udelar:
+
+```
+URL de referencia:
+https://cienciassociales.edu.uy/servicios/unidad-de-metodos-y-acceso-a-datos/series-economicas/
+
+Destino local de descarga:
+data/input-data/EIA 1989-1997/
+```
+
+Archivos originales preservados:
+
+| Año | Archivo local |
+|---|---|
+| 1989 | `Encuesta-industrial-anual-1989.xls` |
+| 1990 | `Encuesta-industrial-anual-1990.xls` |
+| 1991 | `Encuesta-industrial-anual-1991.xlsx` |
+| 1992 | `Encuesta-industrial-anual-1992.xls` |
+| 1993 | `Encuesta-industrial-anual-1993.xls` |
+| 1994 | `Encuesta-industrial-anual-1994.xls` |
+| 1995 | `Encuesta-industrial-anual-1995.xls` |
+| 1996 | `Encuesta-industrial-anual-1996.xls` |
+| 1997 | `Encuesta-industrial-anual-1997.xls` |
+
+**DECISION:** estos archivos quedan como fuente primaria histórica en
+`data/input-data/`. No se transforman ni se integran al panel EAAE 2001-2024 en
+esta etapa. Cualquier base tidy derivada de esta serie debe construirse en un
+script reproducible bajo `command-files/` y escribirse en `data/analysis-data/`.
+
+**PROCESAMIENTO — Junio 2026:** se creó
+`command-files/processing-command-files/09_process_eia_1989_1997.R` para
+extraer los cuadros reales 2, 5, 9, 16, 17 y 19 desde los encabezados de cada
+hoja. La extracción no usa el número de hoja porque en algunos libros, en
+particular 1997, el número de hoja y el número real de cuadro no coinciden.
+
+Artefactos derivados:
+
+| Archivo | Contenido |
+|---|---|
+| `data/analysis-data/eia_1989_1997_cuadros_tidy.csv` | Base larga auditada: año, archivo, hoja, cuadro, título, código CIIU Rev.2, variable original, variable canónica, unidad y valor estandarizado a pesos corrientes. |
+| `data/analysis-data/eia_1989_1997_panel.csv` | Panel ancho por `anno` × `codigo_rama_original`, con variables canónicas pensadas para dialogar con los cálculos EAAE. |
+| `data/analysis-data/eia_1989_1997_validaciones.csv` | Cobertura de cuadros, chequeos de duplicados conceptuales y validaciones contables. |
+
+Decisiones de procesamiento:
+
+- La fuente queda identificada como `ciiu_version = "Rev.2"` y
+  `seccion_homologada = "C"` porque toda la serie corresponde a industria
+  manufacturera. No se homologan subramas Rev.2 hacia Rev.3/Rev.4 en esta
+  etapa.
+- El panel conserva `codigo_rama_original`, `nivel_codigo` y
+  `nivel_agregacion` para permitir una homologación experta posterior.
+- Se guardan `valor_original`, `unidad_original`,
+  `multiplicador_pesos_corrientes` y `valor_pesos_corrientes`. Cuando el título
+  declara "miles", el multiplicador es 1000. Por consistencia intercuadro, se
+  interpretan también como miles de pesos corrientes los cuadros 5 de 1989 y
+  1990, y el cuadro 9 de 1990, aunque el encabezado no lo declare de manera
+  explícita.
+- En 1997 los contenidos por número real de cuadro cambian respecto a años
+  previos: el cuadro 9 corresponde a compras de materias primas por origen, el
+  cuadro 17 a formación bruta de capital fijo, y el cuadro 19 a variación de
+  existencias. Se respeta el número real solicitado, no una equivalencia
+  temática artificial.
+- Si una variable canónica aparece en más de un cuadro, la base larga preserva
+  ambas observaciones. El panel ancho elige una fuente preferente: para
+  `impuestos_netos`, el cuadro 2; para `iva_neto`, el cuadro 17; para `fbcf`,
+  el cuadro 19 salvo 1997, donde el cuadro 17 es la fuente solicitada
+  disponible.
+- Validación actual: se detectaron los 54 cuadros esperados (9 años × 6
+  cuadros). Las identidades `vbp_corriente = consumo_intermedio +
+  vab_corriente` y la descomposición del VAB pasan en el panel. Queda una alerta
+  menor documentada en `eia_1989_1997_validaciones.csv`: en 1990, código Rev.2
+  `38`, `impuestos_netos` difiere en 2.000 pesos corrientes entre cuadro 2 y
+  cuadro 16; el panel usa cuadro 2 para preservar la identidad contable.
+
 ### Cinco épocas estructurales
 
 La serie 2001–2024 no es homogénea. El pipeline aplica lógica condicional
@@ -1200,6 +1278,8 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Validación específica para manufactura C en 2006–2007: `consumo_capital_fijo/vab_pp` se compara contra la envolvente 2005/2008 para detectar desalineación de columnas C2 | ✓ |
 | Jun 2026 | Integración de `n_empresas` desde PDF de metodología/diseño muestral para años con desglose exacto verificable: 2001–2005, 2011 y 2020 | ✓ |
 | Jun 2026 | Creación del post-proceso R `02_add_calculos_propios_eaae.R` y agregado de hojas de resultados corrientes, constantes, variaciones porcentuales e índices 2005=1 al XLSX | ✓ |
+| Jun 2026 | Incorporación de fuente primaria externa `EIA 1989-1997` desde Series Económicas FCS/Udelar en `data/input-data/`, preservando archivos Excel originales | ✓ |
+| Jun 2026 | Procesamiento reproducible de EIA 1989–1997: extracción de cuadros reales 2, 5, 9, 16, 17 y 19; creación de base larga, panel ancho y validaciones en `data/analysis-data/` | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
