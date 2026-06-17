@@ -582,6 +582,276 @@ choose_panel_values <- function(tidy_data) {
     arrange(.data$anno, .data$codigo_rama_original)
 }
 
+validation_row <- function(
+    validacion,
+    estado,
+    anno = NA_integer_,
+    cuadro = NA_integer_,
+    codigo_rama_original = NA_character_,
+    variable_canonica = NA_character_,
+    detalle = NA_character_,
+    diferencia_abs = NA_real_,
+    diferencia_rel = NA_real_) {
+  tibble(
+    validacion = validacion,
+    estado = estado,
+    anno = anno,
+    cuadro = cuadro,
+    codigo_rama_original = as.character(codigo_rama_original),
+    variable_canonica = variable_canonica,
+    detalle = detalle,
+    diferencia_abs = diferencia_abs,
+    diferencia_rel = diferencia_rel
+  )
+}
+
+build_panel_quality_validations <- function(panel) {
+  expected_years <- 1989:1997
+
+  temporal_coverage <- tibble(anno = expected_years) %>%
+    mutate(
+      validacion = "cobertura_temporal_panel",
+      estado = if_else(.data$anno %in% panel$anno, "ok", "revisar"),
+      cuadro = NA_integer_,
+      codigo_rama_original = NA_character_,
+      variable_canonica = NA_character_,
+      detalle = if_else(
+        .data$estado == "ok",
+        "anio_presente",
+        "anio_faltante"
+      ),
+      diferencia_abs = NA_real_,
+      diferencia_rel = NA_real_
+    ) %>%
+    select(
+      validacion,
+      estado,
+      anno,
+      cuadro,
+      codigo_rama_original,
+      variable_canonica,
+      detalle,
+      diferencia_abs,
+      diferencia_rel
+    )
+
+  duplicated_keys <- panel %>%
+    count(.data$anno, .data$codigo_rama_original, name = "n") %>%
+    filter(.data$n > 1L)
+  unique_key <- if (nrow(duplicated_keys) == 0L) {
+    validation_row(
+      validacion = "clave_unica_panel",
+      estado = "ok",
+      detalle = "duplicados=0"
+    )
+  } else {
+    duplicated_keys %>%
+      transmute(
+        validacion = "clave_unica_panel",
+        estado = "revisar",
+        anno = .data$anno,
+        cuadro = NA_integer_,
+        codigo_rama_original = as.character(.data$codigo_rama_original),
+        variable_canonica = NA_character_,
+        detalle = paste0("duplicados=", .data$n),
+        diferencia_abs = as.numeric(.data$n - 1L),
+        diferencia_rel = NA_real_
+      )
+  }
+
+  branch_coverage <- panel %>%
+    group_by(.data$anno) %>%
+    summarise(
+      n_filas = n(),
+      n_industria_total = sum(.data$nivel_agregacion == "industria_total"),
+      .groups = "drop"
+    ) %>%
+    transmute(
+      validacion = "cobertura_ramas_panel",
+      estado = if_else(.data$n_filas > 0L & .data$n_industria_total == 1L, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = NA_integer_,
+      codigo_rama_original = NA_character_,
+      variable_canonica = NA_character_,
+      detalle = paste0("filas=", .data$n_filas, "; industria_total=", .data$n_industria_total),
+      diferencia_abs = as.numeric(.data$n_industria_total - 1L),
+      diferencia_rel = NA_real_
+    )
+
+  key_variables <- c("vbp_corriente", "vab_corriente", "remuneraciones")
+  non_null_key_vars <- panel %>%
+    select("anno", "codigo_rama_original", all_of(key_variables)) %>%
+    pivot_longer(
+      cols = all_of(key_variables),
+      names_to = "variable_canonica",
+      values_to = "valor"
+    ) %>%
+    group_by(.data$anno, .data$variable_canonica) %>%
+    summarise(
+      n_faltantes = sum(is.na(.data$valor)),
+      .groups = "drop"
+    ) %>%
+    transmute(
+      validacion = "variables_clave_no_nulas",
+      estado = if_else(.data$n_faltantes == 0L, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = NA_integer_,
+      codigo_rama_original = NA_character_,
+      variable_canonica = .data$variable_canonica,
+      detalle = paste0("faltantes=", .data$n_faltantes),
+      diferencia_abs = as.numeric(.data$n_faltantes),
+      diferencia_rel = NA_real_
+    )
+
+  vbp_ge_vab <- panel %>%
+    filter(!is.na(.data$vbp_corriente), !is.na(.data$vab_corriente)) %>%
+    transmute(
+      validacion = "vbp_mayor_igual_vab",
+      estado = if_else(.data$vbp_corriente >= .data$vab_corriente, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = 2L,
+      codigo_rama_original = as.character(.data$codigo_rama_original),
+      variable_canonica = NA_character_,
+      detalle = "vbp_corriente >= vab_corriente",
+      diferencia_abs = .data$vbp_corriente - .data$vab_corriente,
+      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$vbp_corriente), 1)
+    )
+
+  vab_ge_rem <- panel %>%
+    filter(!is.na(.data$vab_corriente), !is.na(.data$remuneraciones)) %>%
+    transmute(
+      validacion = "vab_mayor_igual_remuneraciones",
+      estado = if_else(.data$vab_corriente >= .data$remuneraciones, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = 2L,
+      codigo_rama_original = as.character(.data$codigo_rama_original),
+      variable_canonica = NA_character_,
+      detalle = "vab_corriente >= remuneraciones",
+      diferencia_abs = .data$vab_corriente - .data$remuneraciones,
+      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$vab_corriente), 1)
+    )
+
+  capital_consumption_non_negative <- panel %>%
+    filter(!is.na(.data$consumo_capital_fijo)) %>%
+    transmute(
+      validacion = "consumo_capital_fijo_no_negativo",
+      estado = if_else(.data$consumo_capital_fijo >= 0, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = 2L,
+      codigo_rama_original = as.character(.data$codigo_rama_original),
+      variable_canonica = "consumo_capital_fijo",
+      detalle = "consumo_capital_fijo >= 0",
+      diferencia_abs = .data$consumo_capital_fijo,
+      diferencia_rel = NA_real_
+    )
+
+  fbcf_non_negative <- panel %>%
+    filter(!is.na(.data$fbcf)) %>%
+    transmute(
+      validacion = "fbcf_no_negativa",
+      estado = if_else(.data$fbcf >= 0, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = NA_integer_,
+      codigo_rama_original = as.character(.data$codigo_rama_original),
+      variable_canonica = "fbcf",
+      detalle = "fbcf >= 0",
+      diferencia_abs = .data$fbcf,
+      diferencia_rel = NA_real_
+    )
+
+  fbkf_maq_le_fbcf <- panel %>%
+    filter(!is.na(.data$fbkf_maq_eq), !is.na(.data$fbcf), .data$fbcf >= 0) %>%
+    transmute(
+      validacion = "fbkf_maq_eq_menor_igual_fbcf",
+      estado = if_else(.data$fbkf_maq_eq <= .data$fbcf, "ok", "revisar"),
+      anno = .data$anno,
+      cuadro = NA_integer_,
+      codigo_rama_original = as.character(.data$codigo_rama_original),
+      variable_canonica = "fbkf_maq_eq",
+      detalle = "fbkf_maq_eq <= fbcf",
+      diferencia_abs = .data$fbcf - .data$fbkf_maq_eq,
+      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$fbcf), 1)
+    )
+
+  accounts_alignment <- panel %>%
+    filter(
+      !is.na(.data$consumo_capital_fijo),
+      !is.na(.data$impuestos_netos),
+      !is.na(.data$vab_corriente),
+      !is.na(.data$remuneraciones)
+    ) %>%
+    group_by(.data$anno) %>%
+    summarise(
+      n = n(),
+      consumo_igual_vab = sum(.data$consumo_capital_fijo == .data$vab_corriente),
+      impuestos_igual_vab = sum(.data$impuestos_netos == .data$vab_corriente),
+      consumo_igual_rem = sum(.data$consumo_capital_fijo == .data$remuneraciones),
+      mediana_consumo_vab = median(.data$consumo_capital_fijo / .data$vab_corriente, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    transmute(
+      validacion = "alineacion_columnas_cuentas",
+      estado = if_else(
+        .data$consumo_igual_vab == .data$n |
+          .data$impuestos_igual_vab == .data$n |
+          .data$consumo_igual_rem == .data$n |
+          .data$mediana_consumo_vab > 0.4,
+        "revisar",
+        "ok"
+      ),
+      anno = .data$anno,
+      cuadro = 2L,
+      codigo_rama_original = NA_character_,
+      variable_canonica = NA_character_,
+      detalle = paste0(
+        "n=", .data$n,
+        "; consumo_igual_vab=", .data$consumo_igual_vab,
+        "; impuestos_igual_vab=", .data$impuestos_igual_vab,
+        "; consumo_igual_rem=", .data$consumo_igual_rem,
+        "; mediana_consumo_vab=", round(.data$mediana_consumo_vab, 4)
+      ),
+      diferencia_abs = .data$mediana_consumo_vab,
+      diferencia_rel = NA_real_
+    )
+
+  total_vab_yoy <- panel %>%
+    filter(.data$nivel_agregacion == "industria_total") %>%
+    arrange(.data$anno) %>%
+    mutate(
+      vab_lag = lag(.data$vab_corriente),
+      variacion_abs = abs(.data$vab_corriente / .data$vab_lag - 1)
+    ) %>%
+    filter(!is.na(.data$vab_lag)) %>%
+    transmute(
+      validacion = "variacion_vab_total_mayor_50pct",
+      estado = if_else(.data$variacion_abs > 0.5, "revisar", "ok"),
+      anno = .data$anno,
+      cuadro = NA_integer_,
+      codigo_rama_original = as.character(.data$codigo_rama_original),
+      variable_canonica = "vab_corriente",
+      detalle = paste0("variacion_abs_pct=", round(.data$variacion_abs * 100, 2)),
+      diferencia_abs = .data$variacion_abs,
+      diferencia_rel = .data$variacion_abs
+    )
+
+  # DECISION: EIA 1989-1997 no incluye puestos de trabajo ni VAB a precios
+  # basicos en los cuadros objetivo procesados. Las validaciones equivalentes
+  # del panel EAAE se incorporan solo para variables efectivamente disponibles.
+  bind_rows(
+    temporal_coverage,
+    unique_key,
+    branch_coverage,
+    non_null_key_vars,
+    vbp_ge_vab,
+    vab_ge_rem,
+    capital_consumption_non_negative,
+    fbcf_non_negative,
+    fbkf_maq_le_fbcf,
+    accounts_alignment,
+    total_vab_yoy
+  )
+}
+
 build_validations <- function(tidy_data, panel, sheet_index) {
   coverage <- expand_grid(
     anno = sort(unique(sheet_index$anno)),
@@ -707,6 +977,7 @@ build_validations <- function(tidy_data, panel, sheet_index) {
     )
 
   bind_rows(coverage, duplicate_checks, identidad_vbp, identidad_vab) %>%
+    bind_rows(build_panel_quality_validations(panel)) %>%
     arrange(.data$validacion, .data$anno, .data$cuadro, .data$codigo_rama_original, .data$variable_canonica)
 }
 
