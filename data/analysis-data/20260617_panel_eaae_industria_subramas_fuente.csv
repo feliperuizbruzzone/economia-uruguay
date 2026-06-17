@@ -1,0 +1,1079 @@
+anno,seccion,seccion_fuente,ciiu_version,epoca,archivo_fuente,division_publicada,codigos_componentes,codigos_base_2dig,nivel_agregacion,usar_para_homologacion,descripcion_fuente,vbp_pp,vbp_pb,vab_pp,vab_pb,remuneraciones,puestos_trabajo
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,,,,seccion_total,no,Industrias Manufactureras.,86431142000.0,,30765240000.0,,11063329000.0,96958.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,15-16,15|16,15|16,grupo_codigos_publicado,si,"Elaboración De Productos Alimenticios, Bebidas Y Tabaco.",36886440000.0,,11830027000.0,,4509215000.0,41475.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,17-18-19,17|18|19,17|18|19,grupo_codigos_publicado,si,"Fabricación De Productos Textiles, Prendas De Vestir Y Teñido De Pieles. Curtiembres Y Talleres De Acabado, Fabricación De Productos Y Calzado De Cuero.",9732813000.0,,2687161000.0,,1332167000.0,15813.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,20,20,20,division_2_digitos,si,"Producción De Madera Y Productos De Madera, Caña, Mimbre, Corcho Y Otros Materiales Excepto Muebles.",738710000.0,,220869000.0,,127850000.0,2090.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,21-22,21|22,21|22,grupo_codigos_publicado,si,"Fabricación De Papel Y De Productos De Papel. Actividades De Encuadernación, Impresión, Edición Y Reproducción De Grabaciones.",5172759000.0,,2193158000.0,,1086568000.0,7860.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,23,23,23,division_2_digitos,si,Fabricación De Productos Diversos Derivados Del Petroleo Y Del Carbón.,13822409000.0,,6963494000.0,,260236000.0,956.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,24-25,24|25,24|25,grupo_codigos_publicado,si,"Fabricación De Sustancias Y De Productos Químicos, De Productos De Caucho Y Plástico.",9384685000.0,,3338759000.0,,1696349000.0,9542.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,26-27,26|27,26|27,grupo_codigos_publicado,si,Fabricación De Otros Productos Minerales No Metálicos. Industrias Metálicas Básicas.,2543878000.0,,963448000.0,,592571000.0,4463.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,28-29-30,28|29|30,28|29|30,grupo_codigos_publicado,si,"Fabricación De Productos Metálicos, Maquinarias Y Equipos. Construcción De Maquinaria Exceptuando La Maquinaria Eléctrica. Fabricación De Maquinaria De Oficina, Contabilidad E Informática.",2762516000.0,,959163000.0,,576392000.0,6302.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,31-32-33,31|32|33,31|32|33,grupo_codigos_publicado,si,"Fabricación De Maquinaria Y Aparatos Eléctricos N.C.P., De Equipos Y Aparatos De Radio, Televisión Y Comunicación, De Instrumentos Médicos, Ópticos Y De Precisión, Y De Relojes.",1717150000.0,,589176000.0,,348949000.0,3213.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,34-35,34|35,34|35,grupo_codigos_publicado,si,"Fabricación De Vehículos Automotores, Remolques Y Semirremolques, Y De Otros Tipos De Equipo De Transporte.",2591127000.0,,630961000.0,,305833000.0,2509.0
+2001,C,D,Rev.3,1,2 Digitos/EAE_cu1afe2_01.xls,36,36,36,division_2_digitos,si,Fabricación De Muebles; Industrias Manufactureras N.C.P.,1078655000.0,,389024000.0,,227199000.0,2735.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,,,,seccion_total,no,Industrias  Manufactureras.,104934883446.0,,39381506784.0,,9421078355.0,76575.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,15,15,15,division_2_digitos,si,Elaboración De Productos Alimenticios Y Bebidas.,43091162988.0,,12897844097.0,,3741294492.0,34170.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,151,151,15,grupo_3_digitos,no,"Producción, procesamiento y conservación de carnes, pescados, frutas, legumbres, hortalizas y aceites.",17882919160.0,,3574031982.0,,1247575299.0,13465.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1511,1511,15,clase_4_digitos,no,Matanza de ganado y aves. Preparación de carnes.,14996947895.0,,2658140683.0,,903874302.0,10218.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1512,1512,15,clase_4_digitos,no,Elaboración y conservación de pescado.,1782034563.0,,577902348.0,,232164034.0,2217.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1513,1513,15,clase_4_digitos,no,"Elaboración y conservación de frutas, legumbres y hortalizas.",644569848.0,,191954991.0,,78978148.0,808.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1514,1514,15,clase_4_digitos,no,Aceites y grasas vegetales y animales.,459366854.0,,146033960.0,,32558815.0,222.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,152,152,15,grupo_3_digitos,no,Elaboración de productos lácteos.,6670613978.0,,1978581891.0,,742970394.0,3987.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1520,1520,15,clase_4_digitos,no,Productos lácteos.,6670613978.0,,1978581891.0,,742970394.0,3987.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,153,153,15,grupo_3_digitos,no,"Elaboración de productos de molinería, almidones y productos derivados del almidón y de alimentos preparados para animales.",5521332456.0,,1592356857.0,,335307920.0,2381.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1531,1531,15,clase_4_digitos,no,Molinos harineros.,1853801131.0,,370018984.0,,109748628.0,743.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1533,1533,15,clase_4_digitos,no,Elaboración de alimentos preparados para animales.,401123505.0,,156399960.0,,39008022.0,411.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1534,1534,15,clase_4_digitos,no,Molinos arroceros.,3266407820.0,,1065937913.0,,186551270.0,1227.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,154,154,15,grupo_3_digitos,no,Elaboración de otros productos alimenticios.,8095986998.0,,3381894394.0,,942379659.0,11341.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1541,1541,15,clase_4_digitos,no,Elaboración de productos de panadería.,2203389471.0,,739256612.0,,505854733.0,7700.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1542,1542,15,clase_4_digitos,no,Elaboración de azúcar.,647344351.0,,228013902.0,,52883039.0,427.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1543,1543,15,clase_4_digitos,no,"Elaboración de cacao, chocolate y productos de chocolate, caramelos. Frutas y cáscaras abrillantadas.",59007644.0,,15647742.0,,12465245.0,191.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1544,1544,15,clase_4_digitos,no,Fideerías y fabricación de pastas.,436096114.0,,156858571.0,,91380032.0,1411.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1549,1549,15,clase_4_digitos,no,Elaboración de productos alimenticios n.c.p. Incluye molinos yerbateros,4750149418.0,,2242117567.0,,279796610.0,1612.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,155,155,15,grupo_3_digitos,no,Elaboración de bebidas.,4920310396.0,,2370978973.0,,473061220.0,2996.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1551,1551,15,clase_4_digitos,no,"Destilación, rectificación y mezcla de bebidas espirituosas. Alcohol etílico.",219142712.0,,134834282.0,,54500112.0,235.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1552,1552,15,clase_4_digitos,no,Elaboración de vinos.,615079437.0,,282263509.0,,49892939.0,928.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1553,1553,15,clase_4_digitos,no,Cervecerías y fabricación de maltas.,1937812076.0,,874429707.0,,187380264.0,745.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1554,1554,15,clase_4_digitos,no,Bebidas sin alcohol.,2148276171.0,,1079451475.0,,181287905.0,1088.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,16,16,16,division_2_digitos,si,Elaboración De Productos De Tabaco.,3355268807.0,,2177654666.0,,258028296.0,598.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,160,160,16,grupo_3_digitos,no,Industria del tabaco.,3355268807.0,,2177654666.0,,258028296.0,598.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1600,1600,16,clase_4_digitos,no,Industria del tabaco.,3355268807.0,,2177654666.0,,258028296.0,598.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,17,17,17,division_2_digitos,si,Fabricación De Productos Textiles.,6320882378.0,,1665124199.0,,545696992.0,5005.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,171,171,17,grupo_3_digitos,no,"Hilandería, tejeduría, acabado de productos textiles, lavaderos y fabricación de tops.",5713307541.0,,1413923529.0,,422082317.0,3160.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1711,1711,17,clase_4_digitos,no,Hilandería y tejeduría.,1416358958.0,,655246189.0,,261745104.0,2345.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1712,1712,17,clase_4_digitos,no,Acabado de productos textiles.,15611781.0,,7285280.0,,3463863.0,56.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1713,1713,17,clase_4_digitos,no,Lavadero y fabricación de tops.,4281336802.0,,751392060.0,,156873350.0,759.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,172,172,17,grupo_3_digitos,no,Fabricación de otros productos textiles con tejidos no producidos en la misma unidad.,215563144.0,,69826488.0,,35662104.0,429.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1720,1720,17,clase_4_digitos,no,Textiles excepto prendas de vestir.,215563144.0,,69826488.0,,35662104.0,429.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,173,173,17,grupo_3_digitos,no,"Fabricación de tejidos de punto como buzos, chalecos, camisetas,  medias y similares.",392011693.0,,181374182.0,,87952571.0,1416.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1730,1730,17,clase_4_digitos,no,Fabricación de tejidos de punto.,392011693.0,,181374182.0,,87952571.0,1416.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,18,18,18,division_2_digitos,si,Fabricación De Prendas De Vestir Y Teñido De Pieles.,1524778260.0,,564499894.0,,259727001.0,4032.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,181,181,18,grupo_3_digitos,no,"Fabricación de prendas de vestir, con materiales no fabricados en la misma unidad.",1524778260.0,,564499894.0,,259727001.0,4032.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1810,1810,18,clase_4_digitos,no,Fabricación de prendas de vestir.,1524778260.0,,564499894.0,,259727001.0,4032.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,19,19,19,division_2_digitos,si,Curtiembres Y Talleres De Acabado; Fabricación De Productos  De Cuero.,6936169502.0,,1654526383.0,,355168883.0,3207.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,191,191,19,grupo_3_digitos,no,Curtiembres y talleres de acabado; fabricación de artículos de cuero excepto prendas.,6846835343.0,,1621497313.0,,334758948.0,2730.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1911,1911,19,clase_4_digitos,no,Curtiembres y talleres de acabado.,6806437820.0,,1606777440.0,,325848236.0,2532.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1912,1912,19,clase_4_digitos,no,Artículos de cuero (marroquinerías).,40397523.0,,14719873.0,,8910712.0,198.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,192,192,19,grupo_3_digitos,no,Fabricación de calzado de cualquier material y para todo uso.,89334159.0,,33029070.0,,20409935.0,477.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,1920,1920,19,clase_4_digitos,no,Fabricación de calzado.,89334159.0,,33029070.0,,20409935.0,477.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,20,20,20,division_2_digitos,si,Producción De Madera Y Productos De Madera Excepto Muebles.,880283267.0,,398336839.0,,108061813.0,1502.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,201,201,20,grupo_3_digitos,no,"Aserraderos, acabado de madera, fabricación de parquet.",624777531.0,,290384276.0,,58321281.0,710.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2010,2010,20,clase_4_digitos,no,Aserraderos y fabricación de parquet.,624777531.0,,290384276.0,,58321281.0,710.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,202,202,20,grupo_3_digitos,no,"Fabricación de productos de madera, corcho, paja y materiales trenzables.",255505736.0,,107952563.0,,49740532.0,792.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2021,2021,20,clase_4_digitos,no,Fabricación de productos de madera (excepto muebles).,182934742.0,,73153223.0,,37763658.0,656.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2029,2029,20,clase_4_digitos,no,"Fabricación de productos de corcho, paja y materiales trenzables.",72570994.0,,34799340.0,,11976874.0,136.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,21,21,21,division_2_digitos,si,Fabricación De Papel Y De Productos De Papel.,2329969328.0,,748806935.0,,274210215.0,1284.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,210,210,21,grupo_3_digitos,no,Fabricación de papel y de productos de papel.,2329969328.0,,748806935.0,,274210215.0,1284.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2101,2101,21,clase_4_digitos,no,"Pulpa de madera, papel y cartón.",1249785528.0,,460310318.0,,116249256.0,462.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2102,2102,21,clase_4_digitos,no,Envases de papel y cartón.,572649716.0,,120357719.0,,83306726.0,538.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2109,2109,21,clase_4_digitos,no,Fabricación de artículos de papel y cartón n.c.p.,507534084.0,,168138898.0,,74654233.0,284.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,22,22,22,division_2_digitos,si,"Actividades De Encuadernación, Impresión, Edición Y Reproducción.",2987598885.0,,1457295129.0,,623243894.0,4182.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,221,221,22,grupo_3_digitos,no,"Actividades de encuadernación, impresión, edición, grabación y reproducción sobre papel.",2953172005.0,,1447746073.0,,620531668.0,4154.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2211,2211,22,clase_4_digitos,no,"Encuadernación, impresión, edición, grabación y reproducción sobre papel excepto diarios y revistas.",1714144972.0,,797179571.0,,303748319.0,2115.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2212,2212,22,clase_4_digitos,no,Impresión y edición de diarios y revistas.,1239027033.0,,650566502.0,,316783349.0,2039.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,223,223,22,grupo_3_digitos,no,Edición y reproducción de grabaciones en discos y cintas.,34426880.0,,9549056.0,,2712226.0,28.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2230,2230,22,clase_4_digitos,no,Edición y reproducción de grabaciones.,34426880.0,,9549056.0,,2712226.0,28.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,23,23,23,division_2_digitos,si,Fabricación De Productos Diversos Derivados Del Petróleo Y Del Carbón.,16661607730.0,,10240536350.0,,210195676.0,890.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,232,232,23,grupo_3_digitos,no,"Producción de combustibles, aceites grasas lubricantes, productos bituminosos y otros derivados del petróleo.",16661607730.0,,10240536350.0,,210195676.0,890.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2320,2320,23,clase_4_digitos,no,Combustibles y aceites grasas lubricantes productos bituminosos y otros productos derivados del petróleo.,16661607730.0,,10240536350.0,,210195676.0,890.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,24,24,24,division_2_digitos,si,Fabricación De Sustancias Y De Productos Químicos.,8796246822.0,,3315416427.0,,1240265142.0,5353.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,241,241,24,grupo_3_digitos,no,Fabricación de sustancias químicas básicas.,3193427435.0,,1047905183.0,,254167495.0,912.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2411,2411,24,clase_4_digitos,no,Sustancias químicas básicas.,1736289952.0,,520585552.0,,191379181.0,645.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2412,2412,24,clase_4_digitos,no,Abonos.,974468677.0,,381295598.0,,54707356.0,207.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2413,2413,24,clase_4_digitos,no,"Fabricación de plásticos en formas primarias, caucho sintético, resinas sintéticas y fibras artificiales.",482668806.0,,146024033.0,,8080958.0,60.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,242,242,24,grupo_3_digitos,no,Fabricación de otros productos químicos.,5602819387.0,,2267511244.0,,986097647.0,4441.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2421,2421,24,clase_4_digitos,no,Plaguicidas.,360407423.0,,171425906.0,,30359483.0,130.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2422,2422,24,clase_4_digitos,no,"Pinturas, barnices y lacas.",783984662.0,,314258416.0,,96925632.0,524.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2423,2423,24,clase_4_digitos,no,Fabricación de productos farmacéuticos y medicamentos.,3353865332.0,,1355676391.0,,634535170.0,2510.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2424,2424,24,clase_4_digitos,no,Artículos de  limpieza y de tocador.,823945467.0,,321004720.0,,179175699.0,1066.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2429,2429,24,clase_4_digitos,no,Productos químicos n.c.p.,280616503.0,,105145811.0,,45101663.0,211.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,25,25,25,division_2_digitos,si,Fabricación De Productos De Caucho Y Plástico.,2743715159.0,,955954601.0,,313977176.0,2969.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,251,251,25,grupo_3_digitos,no,Fabricación de productos de caucho.,190290677.0,,61631749.0,,27961225.0,281.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2511,2511,25,clase_4_digitos,no,Fabricación de cámaras y neumáticos. Recauchutaje.,48143790.0,,25922682.0,,11000182.0,108.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2519,2519,25,clase_4_digitos,no,Fabricación de productos de caucho natural o sintético en formas básicas .,142146887.0,,35709067.0,,16961043.0,173.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,252,252,25,grupo_3_digitos,no,Fabricación de productos de plástico.,2553424482.0,,894322852.0,,286015951.0,2688.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2520,2520,25,clase_4_digitos,no,Productos de plástico.,2553424482.0,,894322852.0,,286015951.0,2688.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,26,26,26,division_2_digitos,si,Fabricación De Otros Productos Minerales No Metálicos.,1562941194.0,,504740102.0,,315165172.0,2482.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,261,261,26,grupo_3_digitos,no,Fabricación de vidrio y productos de vidrio.,184814321.0,,48200280.0,,27109511.0,387.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2610,2610,26,clase_4_digitos,no,Vidrio y productos de vidrio.,184814321.0,,48200280.0,,27109511.0,387.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,269,269,26,grupo_3_digitos,no,Fabricación de productos minerales no metálicos n.c.p.,1378126873.0,,456539822.0,,288055661.0,2095.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2691,2691,26,clase_4_digitos,no,"Objetos de barro, loza y cerámica.",278631579.0,,113969797.0,,72071183.0,744.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2692,2692,26,clase_4_digitos,no,Fabricación de productos de arcilla y cerámica refractaria o no refractaria.,15744254.0,,7462841.0,,5873561.0,90.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2694,2694,26,clase_4_digitos,no,"Fabricación de cemento, cal y yeso.",800737328.0,,257708984.0,,169723334.0,856.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2695,2695,26,clase_4_digitos,no,"Fabricación de artículos de cemento, hormigón y yeso.",239963012.0,,65134876.0,,34919563.0,353.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2699,2699,26,clase_4_digitos,no,Productos minerales no metálicos n.c.p.,43050700.0,,12263324.0,,5468020.0,52.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,27,27,27,division_2_digitos,si,Industrias Metálicas Básicas.,834254641.0,,357052004.0,,97806743.0,516.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,270,270,27,grupo_3_digitos,no,"Industrias básicas de hierro, acero y metales no ferrosos.",834254641.0,,357052004.0,,97806743.0,516.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2700,2700,27,clase_4_digitos,no,"Industria básica de hierro, acero y metales no ferrosos.",834254641.0,,357052004.0,,97806743.0,516.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,28,28,28,division_2_digitos,si,"Fabricación De Productos Metálicos, Maquinarias Y Equipos.",1564856491.0,,559054376.0,,247580003.0,3072.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,281,281,28,grupo_3_digitos,no,"Fabricación de productos metálicos, excepto maquinarias y equipo.",898976960.0,,281551270.0,,134313330.0,1518.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2811,2811,28,clase_4_digitos,no,Fabricación de productos metálicos estructurales (herrería de obra).,788291075.0,,247239270.0,,124189230.0,1287.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2812,2812,28,clase_4_digitos,no,Fabricación de recipientes de metal.,110685885.0,,34312000.0,,10124100.0,231.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,289,289,28,grupo_3_digitos,no,Fabricación de otros productos de metal.,665879531.0,,277503106.0,,113266673.0,1554.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2890,2890,28,clase_4_digitos,no,Otros productos de metal.,665879531.0,,277503106.0,,113266673.0,1554.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,29,29,29,division_2_digitos,si,Construcción De Maquinaria Exceptuando La Maquinaria Eléctrica.,818949466.0,,375804908.0,,180156013.0,1579.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,291,291,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso general: motores, turbinas.",352320922.0,,172542662.0,,82195113.0,544.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2910,2910,29,clase_4_digitos,no,Maquinaria de uso general.,352320922.0,,172542662.0,,82195113.0,544.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,292,292,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso especial (para el agro, la minería y la construcción).",270965517.0,,123923490.0,,35277635.0,514.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2920,2920,29,clase_4_digitos,no,Maquinaria de uso especial.,270965517.0,,123923490.0,,35277635.0,514.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,293,293,29,grupo_3_digitos,no,Fabricación de electrodomésticos.,195663027.0,,79338756.0,,62683265.0,521.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,2930,2930,29,clase_4_digitos,no,Electrodomésticos.,195663027.0,,79338756.0,,62683265.0,521.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,30,30,30,division_2_digitos,si,"Fabricación De Maquinaria De Oficina, Contabilidad E Informática.",0.0,,0.0,,0.0,0.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,300,300,30,grupo_3_digitos,no,"Fabricación de maquinaria de oficina, contabilidad e informática.",0.0,,0.0,,0.0,0.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3000,3000,30,clase_4_digitos,no,"Maquinaria de oficina, contabilidad e informática.",0.0,,0.0,,0.0,0.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,31,31,31,division_2_digitos,si,Fabricación De Maquinaria Y Aparatos Eléctricos N.C.P.,544230109.0,,237995053.0,,119348152.0,898.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,310,310,31,grupo_3_digitos,no,"Fabricación de motores, generadores, transformadores eléctricos, cargadores de baterías, etc.",544230109.0,,237995053.0,,119348152.0,898.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3100,3100,31,clase_4_digitos,no,Maquinaria y aparatos eléctricos n.c.p.,544230109.0,,237995053.0,,119348152.0,898.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,32,32,32,division_2_digitos,si,"Fabricación De Equipos Y Aparatos De Radio, Televisión Y Comunicación.",10090694.0,,2715347.0,,4764068.0,72.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,320,320,32,grupo_3_digitos,no,"Fabricación de equipos y aparatos de radio, televisión y comunicación y sus componentes electrónicos.",10090694.0,,2715347.0,,4764068.0,72.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3200,3200,32,clase_4_digitos,no,"Equipos y aparatos de radio, televisión y comunicación.",10090694.0,,2715347.0,,4764068.0,72.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,33,33,33,division_2_digitos,si,"Fabricación De Instrumentos Médicos, Ópticos Y De Precisión.",573474364.0,,282772902.0,,110823263.0,1085.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,330,330,33,grupo_3_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",573474364.0,,282772902.0,,110823263.0,1085.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3300,3300,33,clase_4_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",573474364.0,,282772902.0,,110823263.0,1085.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,34,34,34,division_2_digitos,si,"Fabricación De Vehículos Automotores, Remolques Y Semirremolques.",1906696629.0,,506469626.0,,148396020.0,959.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,340,340,34,grupo_3_digitos,no,"Fabricación de vehículos automotores, carrocerías, cúpulas, repuestos y sus motores.",1906696629.0,,506469626.0,,148396020.0,959.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3400,3400,34,clase_4_digitos,no,Automotores y repuestos.,1906696629.0,,506469626.0,,148396020.0,959.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,35,35,35,division_2_digitos,si,Fabricación De Otros Tipos De Equipo De Transporte.,562361566.0,,200793631.0,,123956489.0,908.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,351,351,35,grupo_3_digitos,no,Construcción y reparación de buques y otras embarcaciones.,214653758.0,,82883220.0,,53158858.0,412.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3510,3510,35,clase_4_digitos,no,Construcción y reparación de buques.,214653758.0,,82883220.0,,53158858.0,412.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,353,353,35,grupo_3_digitos,no,Fabricación de aeronaves y naves espaciales,3200882.0,,658964.0,,271916.0,4.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3530,3530,35,clase_4_digitos,no,Fabricación de aeronaves y naves espaciales.,3200882.0,,658964.0,,271916.0,4.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,359,359,35,grupo_3_digitos,no,"Fabricación de motocicletas, bicicletas, sillones de ruedas y otro tipo de transporte n.c.p.",344506926.0,,117251447.0,,70525715.0,492.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3590,3590,35,clase_4_digitos,no,Otro equipo de transporte n.c.p.,344506926.0,,117251447.0,,70525715.0,492.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,36,36,36,division_2_digitos,si,Fabricación De Muebles; Industrias Manufactureras N.C.P.,924595825.0,,276514662.0,,142651665.0,1783.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,361,361,36,grupo_3_digitos,no,Fabricación de muebles de todo tipo y de colchones de cualquier  material.,777834143.0,,212077761.0,,93592241.0,1172.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3610,3610,36,clase_4_digitos,no,Muebles y colchones.,777834143.0,,212077761.0,,93592241.0,1172.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,369,369,36,grupo_3_digitos,no,Industrias manufactureras n.c.p.,146761682.0,,64436901.0,,49059424.0,611.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3691,3691,36,clase_4_digitos,no,Joyas y artículos conexos.,17142443.0,,8520999.0,,6901878.0,56.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3699,3699,36,clase_4_digitos,no,Otras industrias manufactureras n.c.p.,129619239.0,,55915902.0,,42157546.0,555.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,37,37,37,division_2_digitos,si,Reciclaje,4749341.0,,1598653.0,,561187.0,29.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,370,370,37,grupo_3_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,4749341.0,,1598653.0,,561187.0,29.0
+2002,C,D,Rev.3,2,EAE_C1_2002.xls,3700,3700,37,clase_4_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,4749341.0,,1598653.0,,561187.0,29.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,,,,seccion_total,no,Industrias  Manufactureras.,139349946300.0,,41497361974.0,,10878789626.0,83356.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,15,15,15,division_2_digitos,si,Elaboración De Productos Alimenticios Y Bebidas.,59675645654.0,,13994519988.0,,4346858783.0,36818.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,151,151,15,grupo_3_digitos,no,"Producción, procesamiento y conservación de carnes, pescados, frutas, legumbres, hortalizas y aceites.",26151049677.0,,3425840989.0,,1518369714.0,14684.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1511,1511,15,clase_4_digitos,no,Matanza de ganado y aves. Preparación de carnes.,22355496883.0,,2280575484.0,,1108366751.0,11105.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1512,1512,15,clase_4_digitos,no,Elaboración y conservación de pescado.,2484557849.0,,765496309.0,,284716629.0,2337.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1513,1513,15,clase_4_digitos,no,"Elaboración y conservación de frutas, legumbres y hortalizas.",671222511.0,,262275388.0,,84478031.0,967.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1514,1514,15,clase_4_digitos,no,Aceites y grasas vegetales y animales.,639772434.0,,117493808.0,,40808303.0,275.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,152,152,15,grupo_3_digitos,no,Elaboración de productos lácteos.,8546898798.0,,1889414695.0,,798764090.0,4030.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1520,1520,15,clase_4_digitos,no,Productos lácteos.,8546898798.0,,1889414695.0,,798764090.0,4030.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,153,153,15,grupo_3_digitos,no,"Elaboración de productos de molinería, almidones y productos derivados del almidón y de alimentos preparados para animales.",8467938286.0,,1549364071.0,,405863501.0,2989.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1531,1531,15,clase_4_digitos,no,Molinos harineros.,2661543465.0,,456097182.0,,126762730.0,964.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1533,1533,15,clase_4_digitos,no,Elaboración de alimentos preparados para animales.,639413006.0,,227921892.0,,52196879.0,488.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1534,1534,15,clase_4_digitos,no,Molinos arroceros.,5166981815.0,,865344997.0,,226903892.0,1537.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,154,154,15,grupo_3_digitos,no,Elaboración de otros productos alimenticios.,10161927591.0,,4505222361.0,,1022787054.0,12207.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1541,1541,15,clase_4_digitos,no,Elaboración de productos de panadería.,2369968180.0,,739310381.0,,522989999.0,8019.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1542,1542,15,clase_4_digitos,no,Elaboración de azúcar.,831473465.0,,259378857.0,,66509324.0,521.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1543,1543,15,clase_4_digitos,no,"Elaboración de cacao, chocolate y productos de chocolate, caramelos. Frutas y cáscaras abrillantadas.",112645166.0,,27881521.0,,14054303.0,202.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1544,1544,15,clase_4_digitos,no,Fideerías y fabricación de pastas.,525468049.0,,179264336.0,,100977003.0,1590.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1549,1549,15,clase_4_digitos,no,Elaboración de productos alimenticios n.c.p. Incluye molinos yerbateros,6322372731.0,,3299387266.0,,318256425.0,1875.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,155,155,15,grupo_3_digitos,no,Elaboración de bebidas.,6347831302.0,,2624677872.0,,601074424.0,2908.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1551,1551,15,clase_4_digitos,no,"Destilación, rectificación y mezcla de bebidas espirituosas. Alcohol etílico.",310988995.0,,185295965.0,,41465558.0,148.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1552,1552,15,clase_4_digitos,no,Elaboración de vinos.,682313362.0,,302988592.0,,56441277.0,858.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1553,1553,15,clase_4_digitos,no,Cervecerías y fabricación de maltas.,2916099627.0,,1140454231.0,,266309254.0,707.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1554,1554,15,clase_4_digitos,no,Bebidas sin alcohol.,2438429318.0,,995939084.0,,236858335.0,1195.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,16,16,16,division_2_digitos,si,Elaboración De Productos De Tabaco.,3482799193.0,,2194087786.0,,275365707.0,567.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,160,160,16,grupo_3_digitos,no,Industria del tabaco.,3482799193.0,,2194087786.0,,275365707.0,567.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1600,1600,16,clase_4_digitos,no,Industria del tabaco.,3482799193.0,,2194087786.0,,275365707.0,567.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,17,17,17,division_2_digitos,si,Fabricación De Productos Textiles.,8106334549.0,,2361913533.0,,658259278.0,5977.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,171,171,17,grupo_3_digitos,no,"Hilandería, tejeduría, acabado de productos textiles, lavaderos y fabricación de tops.",7225121428.0,,1993469897.0,,499970984.0,3814.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1711,1711,17,clase_4_digitos,no,Hilandería y tejeduría.,2224353327.0,,820049627.0,,301505965.0,2909.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1712,1712,17,clase_4_digitos,no,Acabado de productos textiles.,36059619.0,,14425151.0,,6208281.0,107.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1713,1713,17,clase_4_digitos,no,Lavadero y fabricación de tops.,4964708482.0,,1158995119.0,,192256738.0,798.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,172,172,17,grupo_3_digitos,no,Fabricación de otros productos textiles con tejidos no producidos en la misma unidad.,279411005.0,,104355923.0,,42757482.0,476.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1720,1720,17,clase_4_digitos,no,Textiles excepto prendas de vestir.,279411005.0,,104355923.0,,42757482.0,476.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,173,173,17,grupo_3_digitos,no,"Fabricación de tejidos de punto como buzos, chalecos, camisetas,  medias y similares.",601802116.0,,264087713.0,,115530812.0,1687.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1730,1730,17,clase_4_digitos,no,Fabricación de tejidos de punto.,601802116.0,,264087713.0,,115530812.0,1687.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,18,18,18,division_2_digitos,si,Fabricación De Prendas De Vestir Y Teñido De Pieles.,2086754868.0,,769778364.0,,346122385.0,4705.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,181,181,18,grupo_3_digitos,no,"Fabricación de prendas de vestir, con materiales no fabricados en la misma unidad.",2086754868.0,,769778364.0,,346122385.0,4705.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1810,1810,18,clase_4_digitos,no,Fabricación de prendas de vestir.,2086754868.0,,769778364.0,,346122385.0,4705.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,19,19,19,division_2_digitos,si,Curtiembres Y Talleres De Acabado; Fabricación De Productos  De Cuero.,9192075394.0,,1791329701.0,,471719056.0,3846.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,191,191,19,grupo_3_digitos,no,Curtiembres y talleres de acabado; fabricación de artículos de cuero excepto prendas.,9015658786.0,,1736769623.0,,445163180.0,3299.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1911,1911,19,clase_4_digitos,no,Curtiembres y talleres de acabado.,8952578506.0,,1709462423.0,,430663249.0,3023.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1912,1912,19,clase_4_digitos,no,Artículos de cuero (marroquinerías).,63080280.0,,27307200.0,,14499931.0,276.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,192,192,19,grupo_3_digitos,no,Fabricación de calzado de cualquier material y para todo uso.,176416608.0,,54560078.0,,26555876.0,547.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,1920,1920,19,clase_4_digitos,no,Fabricación de calzado.,176416608.0,,54560078.0,,26555876.0,547.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,20,20,20,division_2_digitos,si,Producción De Madera Y Productos De Madera Excepto Muebles.,2619292753.0,,949273708.0,,145081236.0,1810.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,201,201,20,grupo_3_digitos,no,"Aserraderos, acabado de madera, fabricación de parquet.",2322187260.0,,842708589.0,,88100821.0,926.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2010,2010,20,clase_4_digitos,no,Aserraderos y fabricación de parquet.,2322187260.0,,842708589.0,,88100821.0,926.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,202,202,20,grupo_3_digitos,no,"Fabricación de productos de madera, corcho, paja y materiales trenzables.",297105493.0,,106565119.0,,56980415.0,884.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2021,2021,20,clase_4_digitos,no,Fabricación de productos de madera (excepto muebles).,245672435.0,,83676608.0,,45294122.0,748.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2029,2029,20,clase_4_digitos,no,"Fabricación de productos de corcho, paja y materiales trenzables.",51433058.0,,22888511.0,,11686293.0,136.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,21,21,21,division_2_digitos,si,Fabricación De Papel Y De Productos De Papel.,2964490367.0,,1046813238.0,,313802940.0,1723.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,210,210,21,grupo_3_digitos,no,Fabricación de papel y de productos de papel.,2964490367.0,,1046813238.0,,313802940.0,1723.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2101,2101,21,clase_4_digitos,no,"Pulpa de madera, papel y cartón.",1586430789.0,,691644778.0,,145934782.0,738.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2102,2102,21,clase_4_digitos,no,Envases de papel y cartón.,680683089.0,,160013296.0,,90022213.0,629.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2109,2109,21,clase_4_digitos,no,Fabricación de artículos de papel y cartón n.c.p.,697376489.0,,195155164.0,,77845945.0,356.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,22,22,22,division_2_digitos,si,"Actividades De Encuadernación, Impresión, Edición Y Reproducción.",3405581957.0,,1445245754.0,,610622027.0,4324.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,221,221,22,grupo_3_digitos,no,"Actividades de encuadernación, impresión, edición, grabación y reproducción sobre papel.",3392762590.0,,1442159397.0,,609224586.0,4315.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2211,2211,22,clase_4_digitos,no,"Encuadernación, impresión, edición, grabación y reproducción sobre papel excepto diarios y revistas.",2103523403.0,,878172933.0,,294466986.0,2246.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2212,2212,22,clase_4_digitos,no,Impresión y edición de diarios y revistas.,1289239187.0,,563986464.0,,314757600.0,2069.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,223,223,22,grupo_3_digitos,no,Edición y reproducción de grabaciones en discos y cintas.,12819367.0,,3086357.0,,1397441.0,9.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2230,2230,22,clase_4_digitos,no,Edición y reproducción de grabaciones.,12819367.0,,3086357.0,,1397441.0,9.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,23,23,23,division_2_digitos,si,Fabricación De Productos Diversos Derivados Del Petróleo Y Del Carbón.,20621189349.0,,7353007136.0,,275503878.0,840.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,232,232,23,grupo_3_digitos,no,"Producción de combustibles, aceites grasas lubricantes, productos bituminosos y otros derivados del petróleo.",20621189349.0,,7353007136.0,,275503878.0,840.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2320,2320,23,clase_4_digitos,no,Combustibles y aceites grasas lubricantes productos bituminosos y otros productos derivados del petróleo.,20621189349.0,,7353007136.0,,275503878.0,840.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,24,24,24,division_2_digitos,si,Fabricación De Sustancias Y De Productos Químicos.,11862202266.0,,4204717438.0,,1405201562.0,5792.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,241,241,24,grupo_3_digitos,no,Fabricación de sustancias químicas básicas.,4418535944.0,,1272130707.0,,309273298.0,996.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2411,2411,24,clase_4_digitos,no,Sustancias químicas básicas.,2278144243.0,,631398495.0,,233777041.0,711.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2412,2412,24,clase_4_digitos,no,Abonos.,1424934963.0,,484495701.0,,64394339.0,217.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2413,2413,24,clase_4_digitos,no,"Fabricación de plásticos en formas primarias, caucho sintético, resinas sintéticas y fibras artificiales.",715456738.0,,156236511.0,,11101918.0,68.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,242,242,24,grupo_3_digitos,no,Fabricación de otros productos químicos.,7443666322.0,,2932586731.0,,1095928264.0,4796.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2421,2421,24,clase_4_digitos,no,Plaguicidas.,626212272.0,,246273215.0,,40792199.0,144.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2422,2422,24,clase_4_digitos,no,"Pinturas, barnices y lacas.",1134424976.0,,410751005.0,,109411328.0,537.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2423,2423,24,clase_4_digitos,no,Fabricación de productos farmacéuticos y medicamentos.,4213523155.0,,1752508812.0,,699038957.0,2564.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2424,2424,24,clase_4_digitos,no,Artículos de  limpieza y de tocador.,1083491103.0,,397418467.0,,192671911.0,1335.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2429,2429,24,clase_4_digitos,no,Productos químicos n.c.p.,386014816.0,,125635232.0,,54013869.0,216.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,25,25,25,division_2_digitos,si,Fabricación De Productos De Caucho Y Plástico.,3539566739.0,,1133671874.0,,357105900.0,2945.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,251,251,25,grupo_3_digitos,no,Fabricación de productos de caucho.,145517957.0,,44033143.0,,27386491.0,258.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2511,2511,25,clase_4_digitos,no,Fabricación de cámaras y neumáticos. Recauchutaje.,36292284.0,,16363636.0,,8232439.0,82.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2519,2519,25,clase_4_digitos,no,Fabricación de productos de caucho natural o sintético en formas básicas .,109225673.0,,27669507.0,,19154052.0,176.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,252,252,25,grupo_3_digitos,no,Fabricación de productos de plástico.,3394048782.0,,1089638731.0,,329719409.0,2687.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2520,2520,25,clase_4_digitos,no,Productos de plástico.,3394048782.0,,1089638731.0,,329719409.0,2687.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,26,26,26,division_2_digitos,si,Fabricación De Otros Productos Minerales No Metálicos.,2249648517.0,,832416366.0,,411571757.0,2500.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,261,261,26,grupo_3_digitos,no,Fabricación de vidrio y productos de vidrio.,226320485.0,,65148867.0,,31590706.0,418.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2610,2610,26,clase_4_digitos,no,Vidrio y productos de vidrio.,226320485.0,,65148867.0,,31590706.0,418.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,269,269,26,grupo_3_digitos,no,Fabricación de productos minerales no metálicos n.c.p.,2023328032.0,,767267499.0,,379981051.0,2082.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2691,2691,26,clase_4_digitos,no,"Objetos de barro, loza y cerámica.",362197376.0,,176286664.0,,109307505.0,784.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2692,2692,26,clase_4_digitos,no,Fabricación de productos de arcilla y cerámica refractaria o no refractaria.,19894492.0,,9294473.0,,6937042.0,92.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2694,2694,26,clase_4_digitos,no,"Fabricación de cemento, cal y yeso.",1130496627.0,,427841975.0,,212370660.0,847.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2695,2695,26,clase_4_digitos,no,"Fabricación de artículos de cemento, hormigón y yeso.",461527239.0,,137775939.0,,45530109.0,311.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2699,2699,26,clase_4_digitos,no,Productos minerales no metálicos n.c.p.,49212298.0,,16068448.0,,5835735.0,48.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,27,27,27,division_2_digitos,si,Industrias Metálicas Básicas.,1387636653.0,,470064416.0,,127425676.0,846.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,270,270,27,grupo_3_digitos,no,"Industrias básicas de hierro, acero y metales no ferrosos.",1387636653.0,,470064416.0,,127425676.0,846.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2700,2700,27,clase_4_digitos,no,"Industria básica de hierro, acero y metales no ferrosos.",1387636653.0,,470064416.0,,127425676.0,846.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,28,28,28,division_2_digitos,si,"Fabricación De Productos Metálicos, Maquinarias Y Equipos.",2299410039.0,,794298236.0,,276102098.0,3223.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,281,281,28,grupo_3_digitos,no,"Fabricación de productos metálicos, excepto maquinarias y equipo.",1334763433.0,,451475673.0,,152087677.0,1813.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2811,2811,28,clase_4_digitos,no,Fabricación de productos metálicos estructurales (herrería de obra).,1235856856.0,,419851771.0,,139173347.0,1588.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2812,2812,28,clase_4_digitos,no,Fabricación de recipientes de metal.,98906577.0,,31623902.0,,12914330.0,225.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,289,289,28,grupo_3_digitos,no,Fabricación de otros productos de metal.,964646606.0,,342822563.0,,124014421.0,1410.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2890,2890,28,clase_4_digitos,no,Otros productos de metal.,964646606.0,,342822563.0,,124014421.0,1410.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,29,29,29,division_2_digitos,si,Construcción De Maquinaria Exceptuando La Maquinaria Eléctrica.,1056450778.0,,416520782.0,,204279206.0,1606.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,291,291,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso general: motores, turbinas.",375185136.0,,193162983.0,,96157096.0,585.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2910,2910,29,clase_4_digitos,no,Maquinaria de uso general.,375185136.0,,193162983.0,,96157096.0,585.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,292,292,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso especial (para el agro, la minería y la construcción).",412946600.0,,124380490.0,,50043082.0,596.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2920,2920,29,clase_4_digitos,no,Maquinaria de uso especial.,412946600.0,,124380490.0,,50043082.0,596.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,293,293,29,grupo_3_digitos,no,Fabricación de electrodomésticos.,268319042.0,,98977309.0,,58079028.0,425.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,2930,2930,29,clase_4_digitos,no,Electrodomésticos.,268319042.0,,98977309.0,,58079028.0,425.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,30,30,30,division_2_digitos,si,"Fabricación De Maquinaria De Oficina, Contabilidad E Informática.",0.0,,0.0,,0.0,0.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,300,300,30,grupo_3_digitos,no,"Fabricación de maquinaria de oficina, contabilidad e informática.",0.0,,0.0,,0.0,0.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3000,3000,30,clase_4_digitos,no,"Maquinaria de oficina, contabilidad e informática.",0.0,,0.0,,0.0,0.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,31,31,31,division_2_digitos,si,Fabricación De Maquinaria Y Aparatos Eléctricos N.C.P.,690973368.0,,314943211.0,,122892413.0,931.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,310,310,31,grupo_3_digitos,no,"Fabricación de motores, generadores, transformadores eléctricos, cargadores de baterías, etc.",690973368.0,,314943211.0,,122892413.0,931.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3100,3100,31,clase_4_digitos,no,Maquinaria y aparatos eléctricos n.c.p.,690973368.0,,314943211.0,,122892413.0,931.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,32,32,32,division_2_digitos,si,"Fabricación De Equipos Y Aparatos De Radio, Televisión Y Comunicación.",13215441.0,,3941866.0,,4660169.0,79.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,320,320,32,grupo_3_digitos,no,"Fabricación de equipos y aparatos de radio, televisión y comunicación y sus componentes electrónicos.",13215441.0,,3941866.0,,4660169.0,79.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3200,3200,32,clase_4_digitos,no,"Equipos y aparatos de radio, televisión y comunicación.",13215441.0,,3941866.0,,4660169.0,79.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,33,33,33,division_2_digitos,si,"Fabricación De Instrumentos Médicos, Ópticos Y De Precisión.",698987091.0,,319790836.0,,122444137.0,1262.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,330,330,33,grupo_3_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",698987091.0,,319790836.0,,122444137.0,1262.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3300,3300,33,clase_4_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",698987091.0,,319790836.0,,122444137.0,1262.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,34,34,34,division_2_digitos,si,"Fabricación De Vehículos Automotores, Remolques Y Semirremolques.",1400225699.0,,444932139.0,,134608747.0,919.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,340,340,34,grupo_3_digitos,no,"Fabricación de vehículos automotores, carrocerías, cúpulas, repuestos y sus motores.",1400225699.0,,444932139.0,,134608747.0,919.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3400,3400,34,clase_4_digitos,no,Automotores y repuestos.,1400225699.0,,444932139.0,,134608747.0,919.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,35,35,35,division_2_digitos,si,Fabricación De Otros Tipos De Equipo De Transporte.,779138726.0,,249729931.0,,121156687.0,868.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,351,351,35,grupo_3_digitos,no,Construcción y reparación de buques y otras embarcaciones.,295820857.0,,122738728.0,,67758900.0,445.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3510,3510,35,clase_4_digitos,no,Construcción y reparación de buques.,295820857.0,,122738728.0,,67758900.0,445.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,353,353,35,grupo_3_digitos,no,Fabricación de aeronaves y naves espaciales,2351202.0,,1241841.0,,356087.0,5.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3530,3530,35,clase_4_digitos,no,Fabricación de aeronaves y naves espaciales.,2351202.0,,1241841.0,,356087.0,5.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,359,359,35,grupo_3_digitos,no,"Fabricación de motocicletas, bicicletas, sillones de ruedas y otro tipo de transporte n.c.p.",480966667.0,,125749362.0,,53041700.0,418.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3590,3590,35,clase_4_digitos,no,Otro equipo de transporte n.c.p.,480966667.0,,125749362.0,,53041700.0,418.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,36,36,36,division_2_digitos,si,Fabricación De Muebles; Industrias Manufactureras N.C.P.,1213990202.0,,404919962.0,,147404525.0,1746.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,361,361,36,grupo_3_digitos,no,Fabricación de muebles de todo tipo y de colchones de cualquier  material.,1017754878.0,,323454233.0,,96924617.0,1137.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3610,3610,36,clase_4_digitos,no,Muebles y colchones.,1017754878.0,,323454233.0,,96924617.0,1137.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,369,369,36,grupo_3_digitos,no,Industrias manufactureras n.c.p.,196235324.0,,81465729.0,,50479908.0,609.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3691,3691,36,clase_4_digitos,no,Joyas y artículos conexos.,27302648.0,,13207407.0,,7776036.0,62.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3699,3699,36,clase_4_digitos,no,Otras industrias manufactureras n.c.p.,168932676.0,,68258322.0,,42703872.0,547.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,37,37,37,division_2_digitos,si,Reciclaje,4336697.0,,1445709.0,,601459.0,29.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,370,370,37,grupo_3_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,4336697.0,,1445709.0,,601459.0,29.0
+2003,C,D,Rev.3,2,EAE_C1_2003.xls,3700,3700,37,clase_4_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,4336697.0,,1445709.0,,601459.0,29.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,,,,seccion_total,no,Industrias  Manufactureras.,179010449525.0,,52621053735.0,,12139435357.0,88653.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,15,15,15,division_2_digitos,si,Elaboración De Productos Alimenticios Y Bebidas.,75394724483.0,,17482101849.0,,4692559855.0,38102.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,151,151,15,grupo_3_digitos,no,"Producción, procesamiento y conservación de carnes, pescados, frutas, legumbres, hortalizas y aceites.",35121467096.0,,4597593732.0,,1761265540.0,15072.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1511,1511,15,clase_4_digitos,no,Matanza de ganado y aves. Preparación de carnes.,30974254803.0,,3489579584.0,,1289187046.0,11094.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1512,1512,15,clase_4_digitos,no,Elaboración y conservación de pescado.,2690930525.0,,789880134.0,,332787310.0,2715.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1513,1513,15,clase_4_digitos,no,"Elaboración y conservación de frutas, legumbres y hortalizas.",592113814.0,,202769938.0,,88899356.0,966.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1514,1514,15,clase_4_digitos,no,Aceites y grasas vegetales y animales.,864167954.0,,115364076.0,,50391828.0,297.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,152,152,15,grupo_3_digitos,no,Elaboración de productos lácteos.,10492458279.0,,2063001364.0,,880524496.0,4303.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1520,1520,15,clase_4_digitos,no,Productos lácteos.,10492458279.0,,2063001364.0,,880524496.0,4303.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,153,153,15,grupo_3_digitos,no,"Elaboración de productos de molinería, almidones y productos derivados del almidón y de alimentos preparados para animales.",10387911648.0,,1715129047.0,,485156402.0,3549.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1531,1531,15,clase_4_digitos,no,Molinos harineros.,2739681161.0,,437413659.0,,148388697.0,1189.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1533,1533,15,clase_4_digitos,no,Elaboración de alimentos preparados para animales.,926178774.0,,317461448.0,,55722537.0,558.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1534,1534,15,clase_4_digitos,no,Molinos arroceros.,6722051713.0,,960253940.0,,281045168.0,1802.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,154,154,15,grupo_3_digitos,no,Elaboración de otros productos alimenticios.,11232109090.0,,5108672603.0,,1010214612.0,12357.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1541,1541,15,clase_4_digitos,no,Elaboración de productos de panadería.,2610627776.0,,859473085.0,,513597328.0,8517.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1542-1543,1542|1543,15,grupo_codigos_publicado,no,"Elaboración de azúcar, cacao, chocolate y productos de chocolate, caramelos. Frutas y cáscaras abrillantadas.",930163874.0,,215582176.0,,95878401.0,721.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1544,1544,15,clase_4_digitos,no,Fideerías y fabricación de pastas.,550399871.0,,192523402.0,,102091848.0,1399.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1549,1549,15,clase_4_digitos,no,Elaboración de productos alimenticios n.c.p. Incluye molinos yerbateros,7140917569.0,,3841093940.0,,298647035.0,1720.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,155,155,15,grupo_3_digitos,no,Elaboración de bebidas.,8160778370.0,,3997705103.0,,555398805.0,2821.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1551,1551,15,clase_4_digitos,no,"Destilación, rectificación y mezcla de bebidas espirituosas. Alcohol etílico.",369147081.0,,237662135.0,,51001932.0,169.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1552,1552,15,clase_4_digitos,no,Elaboración de vinos.,1145745308.0,,476865901.0,,70454442.0,934.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1553,1553,15,clase_4_digitos,no,Cervecerías y fabricación de maltas.,4179979434.0,,2222899266.0,,245057835.0,600.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1554,1554,15,clase_4_digitos,no,Bebidas sin alcohol.,2465906547.0,,1060277801.0,,188884596.0,1118.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,16,16,16,division_2_digitos,si,Elaboración De Productos De Tabaco.,4140867966.0,,2820517420.0,,284166292.0,467.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,160,160,16,grupo_3_digitos,no,Industria del tabaco.,4140867966.0,,2820517420.0,,284166292.0,467.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1600,1600,16,clase_4_digitos,no,Industria del tabaco.,4140867966.0,,2820517420.0,,284166292.0,467.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,17,17,17,division_2_digitos,si,Fabricación De Productos Textiles.,7945565915.0,,1905250682.0,,737567057.0,6320.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,171,171,17,grupo_3_digitos,no,"Hilandería, tejeduría, acabado de productos textiles, lavaderos y fabricación de tops.",6803130183.0,,1435453565.0,,547561783.0,3790.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1711,1711,17,clase_4_digitos,no,Hilandería y tejeduría.,2432660319.0,,847440115.0,,340617221.0,2974.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1712,1712,17,clase_4_digitos,no,Acabado de productos textiles.,39726096.0,,13118687.0,,6370472.0,94.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1713,1713,17,clase_4_digitos,no,Lavadero y fabricación de tops.,4330743768.0,,574894763.0,,200574090.0,722.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,172,172,17,grupo_3_digitos,no,Fabricación de otros productos textiles con tejidos no producidos en la misma unidad.,400499248.0,,143042263.0,,50903742.0,617.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1720,1720,17,clase_4_digitos,no,Textiles excepto prendas de vestir.,400499248.0,,143042263.0,,50903742.0,617.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,173,173,17,grupo_3_digitos,no,"Fabricación de tejidos de punto como buzos, chalecos, camisetas,  medias y similares.",741936484.0,,326754854.0,,139101532.0,1913.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1730,1730,17,clase_4_digitos,no,Fabricación de tejidos de punto.,741936484.0,,326754854.0,,139101532.0,1913.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,18,18,18,division_2_digitos,si,Fabricación De Prendas De Vestir Y Teñido De Pieles.,2721015411.0,,1122654967.0,,412268457.0,5331.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,181,181,18,grupo_3_digitos,no,"Fabricación de prendas de vestir, con materiales no fabricados en la misma unidad.",2721015411.0,,1122654967.0,,412268457.0,5331.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1810,1810,18,clase_4_digitos,no,Fabricación de prendas de vestir.,2721015411.0,,1122654967.0,,412268457.0,5331.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,19,19,19,division_2_digitos,si,Curtiembres Y Talleres De Acabado; Fabricación De Productos  De Cuero.,9339263871.0,,2212436946.0,,486904119.0,4004.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,191,191,19,grupo_3_digitos,no,Curtiembres y talleres de acabado; fabricación de artículos de cuero excepto prendas.,9045626188.0,,2101926734.0,,452782461.0,3433.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1911,1911,19,clase_4_digitos,no,Curtiembres y talleres de acabado.,8953725447.0,,2057829434.0,,431290804.0,3138.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1912,1912,19,clase_4_digitos,no,Artículos de cuero (marroquinerías).,91900741.0,,44097300.0,,21491657.0,295.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,192,192,19,grupo_3_digitos,no,Fabricación de calzado de cualquier material y para todo uso.,293637683.0,,110510212.0,,34121658.0,571.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,1920,1920,19,clase_4_digitos,no,Fabricación de calzado.,293637683.0,,110510212.0,,34121658.0,571.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,20,20,20,division_2_digitos,si,Producción De Madera Y Productos De Madera Excepto Muebles.,3421375010.0,,834966476.0,,180506962.0,2151.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,201,201,20,grupo_3_digitos,no,"Aserraderos, acabado de madera, fabricación de parquet.",3022597755.0,,708879229.0,,107625819.0,1012.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2010,2010,20,clase_4_digitos,no,Aserraderos y fabricación de parquet.,3022597755.0,,708879229.0,,107625819.0,1012.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,202,202,20,grupo_3_digitos,no,"Fabricación de productos de madera, corcho, paja y materiales trenzables.",398777255.0,,126087247.0,,72881143.0,1139.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2021,2021,20,clase_4_digitos,no,Fabricación de productos de madera (excepto muebles).,313951327.0,,103823087.0,,55705079.0,867.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2029,2029,20,clase_4_digitos,no,"Fabricación de productos de corcho, paja y materiales trenzables.",84825928.0,,22264160.0,,17176064.0,272.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,21,21,21,division_2_digitos,si,Fabricación De Papel Y De Productos De Papel.,3215836986.0,,891307314.0,,299635042.0,1709.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,210,210,21,grupo_3_digitos,no,Fabricación de papel y de productos de papel.,3215836986.0,,891307314.0,,299635042.0,1709.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2101,2101,21,clase_4_digitos,no,"Pulpa de madera, papel y cartón.",1431857763.0,,464118395.0,,123497405.0,740.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2102,2102,21,clase_4_digitos,no,Envases de papel y cartón.,829507024.0,,185661200.0,,87789035.0,594.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2109,2109,21,clase_4_digitos,no,Fabricación de artículos de papel y cartón n.c.p.,954472199.0,,241527719.0,,88348602.0,375.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,22,22,22,division_2_digitos,si,"Actividades De Encuadernación, Impresión, Edición Y Reproducción.",4158066890.0,,1671070867.0,,690331267.0,4838.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,221,221,22,grupo_3_digitos,no,"Actividades de encuadernación, impresión, edición, grabación y reproducción sobre papel.",4149939604.0,,1669052904.0,,689490913.0,4832.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2211,2211,22,clase_4_digitos,no,"Encuadernación, impresión, edición, grabación y reproducción sobre papel excepto diarios y revistas.",2657832881.0,,1026331008.0,,375488503.0,2922.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2212,2212,22,clase_4_digitos,no,Impresión y edición de diarios y revistas.,1492106723.0,,642721896.0,,314002410.0,1910.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,223,223,22,grupo_3_digitos,no,Edición y reproducción de grabaciones en discos y cintas.,8127286.0,,2017963.0,,840354.0,6.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2230,2230,22,clase_4_digitos,no,Edición y reproducción de grabaciones.,8127286.0,,2017963.0,,840354.0,6.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,23,23,23,division_2_digitos,si,Fabricación De Productos Diversos Derivados Del Petróleo Y Del Carbón.,33235018744.0,,11804301261.0,,361068168.0,940.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,232,232,23,grupo_3_digitos,no,"Producción de combustibles, aceites grasas lubricantes, productos bituminosos y otros derivados del petróleo.",33235018744.0,,11804301261.0,,361068168.0,940.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2320,2320,23,clase_4_digitos,no,Combustibles y aceites grasas lubricantes productos bituminosos y otros productos derivados del petróleo.,33235018744.0,,11804301261.0,,361068168.0,940.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,24,24,24,division_2_digitos,si,Fabricación De Sustancias Y De Productos Químicos.,14249934784.0,,4412502419.0,,1626148482.0,6396.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,241,241,24,grupo_3_digitos,no,Fabricación de sustancias químicas básicas.,5661746614.0,,1344132140.0,,383601888.0,1070.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2411,2411,24,clase_4_digitos,no,Sustancias químicas básicas.,2785935222.0,,761807525.0,,288669111.0,781.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2412,2412,24,clase_4_digitos,no,Abonos.,1947722077.0,,520541471.0,,80700191.0,224.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2413,2413,24,clase_4_digitos,no,"Fabricación de plásticos en formas primarias, caucho sintético, resinas sintéticas y fibras artificiales.",928089315.0,,61783144.0,,14232586.0,65.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,242,242,24,grupo_3_digitos,no,Fabricación de otros productos químicos.,8588188170.0,,3068370279.0,,1242546594.0,5326.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2421,2421,24,clase_4_digitos,no,Plaguicidas.,726828011.0,,277036547.0,,41558442.0,140.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2422,2422,24,clase_4_digitos,no,"Pinturas, barnices y lacas.",1496328585.0,,534302963.0,,152028063.0,595.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2423,2423,24,clase_4_digitos,no,Fabricación de productos farmacéuticos y medicamentos.,4544282101.0,,1723678891.0,,761198959.0,2867.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2424,2424,24,clase_4_digitos,no,Artículos de  limpieza y de tocador.,1347128565.0,,389223912.0,,231511302.0,1513.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2429,2429,24,clase_4_digitos,no,Productos químicos n.c.p.,473620908.0,,144127966.0,,56249828.0,211.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,25,25,25,division_2_digitos,si,Fabricación De Productos De Caucho Y Plástico.,4808145697.0,,1549311375.0,,400270625.0,3324.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,251,251,25,grupo_3_digitos,no,Fabricación de productos de caucho.,140518012.0,,66668864.0,,36396238.0,350.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2511,2511,25,clase_4_digitos,no,Fabricación de cámaras y neumáticos. Recauchutaje.,52375390.0,,27521151.0,,11416944.0,120.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2519,2519,25,clase_4_digitos,no,Fabricación de productos de caucho natural o sintético en formas básicas .,88142622.0,,39147713.0,,24979294.0,230.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,252,252,25,grupo_3_digitos,no,Fabricación de productos de plástico.,4667627685.0,,1482642511.0,,363874387.0,2974.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2520,2520,25,clase_4_digitos,no,Productos de plástico.,4667627685.0,,1482642511.0,,363874387.0,2974.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,26,26,26,division_2_digitos,si,Fabricación De Otros Productos Minerales No Metálicos.,2722420605.0,,1064899610.0,,435804715.0,2669.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,261,261,26,grupo_3_digitos,no,Fabricación de vidrio y productos de vidrio.,243557276.0,,74425191.0,,34994989.0,444.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2610,2610,26,clase_4_digitos,no,Vidrio y productos de vidrio.,243557276.0,,74425191.0,,34994989.0,444.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,269,269,26,grupo_3_digitos,no,Fabricación de productos minerales no metálicos n.c.p.,2478863329.0,,990474419.0,,400809726.0,2225.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2691,2691,26,clase_4_digitos,no,"Objetos de barro, loza y cerámica.",460663787.0,,215395796.0,,127580836.0,856.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2692,2692,26,clase_4_digitos,no,Fabricación de productos de arcilla y cerámica refractaria o no refractaria.,20768760.0,,9786782.0,,5005044.0,75.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2694,2694,26,clase_4_digitos,no,"Fabricación de cemento, cal y yeso.",1350293686.0,,552577959.0,,193929083.0,795.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2695,2695,26,clase_4_digitos,no,"Fabricación de artículos de cemento, hormigón y yeso.",442095556.0,,149012186.0,,50559544.0,312.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2699,2699,26,clase_4_digitos,no,Productos minerales no metálicos n.c.p.,205041540.0,,63701696.0,,23735219.0,187.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,27,27,27,division_2_digitos,si,Industrias Metálicas Básicas.,2386073020.0,,1113754702.0,,180480301.0,1020.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,270,270,27,grupo_3_digitos,no,"Industrias básicas de hierro, acero y metales no ferrosos.",2386073020.0,,1113754702.0,,180480301.0,1020.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2700,2700,27,clase_4_digitos,no,"Industria básica de hierro, acero y metales no ferrosos.",2386073020.0,,1113754702.0,,180480301.0,1020.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,28,28,28,division_2_digitos,si,"Fabricación De Productos Metálicos, Maquinarias Y Equipos.",3216592517.0,,980386272.0,,314892627.0,2826.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,281,281,28,grupo_3_digitos,no,"Fabricación de productos metálicos, excepto maquinarias y equipo.",1917318382.0,,545418577.0,,167247123.0,1441.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2811,2811,28,clase_4_digitos,no,Fabricación de productos metálicos estructurales (herrería de obra).,1784601686.0,,493000015.0,,153212443.0,1200.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2812,2812,28,clase_4_digitos,no,Fabricación de recipientes de metal.,132716696.0,,52418562.0,,14034680.0,241.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,289,289,28,grupo_3_digitos,no,Fabricación de otros productos de metal.,1299274135.0,,434967695.0,,147645504.0,1385.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2890,2890,28,clase_4_digitos,no,Otros productos de metal.,1299274135.0,,434967695.0,,147645504.0,1385.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,29,29,29,division_2_digitos,si,Construcción De Maquinaria Exceptuando La Maquinaria Eléctrica.,1252572240.0,,499989419.0,,207259466.0,1478.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,291,291,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso general: motores, turbinas.",427324986.0,,192987645.0,,112262549.0,694.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2910,2910,29,clase_4_digitos,no,Maquinaria de uso general.,427324986.0,,192987645.0,,112262549.0,694.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,292,292,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso especial (para el agro, la minería y la construcción).",545373661.0,,198693638.0,,55975776.0,477.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2920,2920,29,clase_4_digitos,no,Maquinaria de uso especial.,545373661.0,,198693638.0,,55975776.0,477.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,293,293,29,grupo_3_digitos,no,Fabricación de electrodomésticos.,279873593.0,,108308136.0,,39021141.0,307.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,2930,2930,29,clase_4_digitos,no,Electrodomésticos.,279873593.0,,108308136.0,,39021141.0,307.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,31,31,31,division_2_digitos,si,Fabricación De Maquinaria Y Aparatos Eléctricos N.C.P.,1016854406.0,,449456035.0,,159209836.0,1048.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,310,310,31,grupo_3_digitos,no,"Fabricación de motores, generadores, transformadores eléctricos, cargadores de baterías, etc.",1016854406.0,,449456035.0,,159209836.0,1048.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3100,3100,31,clase_4_digitos,no,Maquinaria y aparatos eléctricos n.c.p.,1016854406.0,,449456035.0,,159209836.0,1048.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,32,32,32,division_2_digitos,si,"Fabricación De Equipos Y Aparatos De Radio, Televisión Y Comunicación.",13167402.0,,4107873.0,,4198503.0,70.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,320,320,32,grupo_3_digitos,no,"Fabricación de equipos y aparatos de radio, televisión y comunicación y sus componentes electrónicos.",13167402.0,,4107873.0,,4198503.0,70.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3200,3200,32,clase_4_digitos,no,"Equipos y aparatos de radio, televisión y comunicación.",13167402.0,,4107873.0,,4198503.0,70.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,33,33,33,division_2_digitos,si,"Fabricación De Instrumentos Médicos, Ópticos Y De Precisión.",846541374.0,,366633989.0,,148731916.0,1378.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,330,330,33,grupo_3_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",846541374.0,,366633989.0,,148731916.0,1378.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3300,3300,33,clase_4_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",846541374.0,,366633989.0,,148731916.0,1378.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,34,34,34,division_2_digitos,si,"Fabricación De Vehículos Automotores, Remolques Y Semirremolques.",2115287389.0,,507043993.0,,159373207.0,1175.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,340,340,34,grupo_3_digitos,no,"Fabricación de vehículos automotores, carrocerías, cúpulas, repuestos y sus motores.",2115287389.0,,507043993.0,,159373207.0,1175.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3400,3400,34,clase_4_digitos,no,Automotores y repuestos.,2115287389.0,,507043993.0,,159373207.0,1175.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,35,35,35,division_2_digitos,si,Fabricación De Otros Tipos De Equipo De Transporte.,1021393195.0,,333153999.0,,161093807.0,1045.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,351,351,35,grupo_3_digitos,no,Construcción y reparación de buques y otras embarcaciones.,423276813.0,,182954109.0,,96671421.0,526.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3510,3510,35,clase_4_digitos,no,Construcción y reparación de buques.,423276813.0,,182954109.0,,96671421.0,526.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,353-359,353|359,35,grupo_codigos_publicado,no,"Fabricación aeronaves,  naves espaciales, motocicletas, bicicletas, sillones de ruedas y otro tipo de transporte n.c.p.",598116382.0,,150199890.0,,64422386.0,519.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3530-3590,3530|3590,35,grupo_codigos_publicado,no,"Fabricación de aeronaves, naves espaciales y otro equipo de transporte n.c.p.",598116382.0,,150199890.0,,64422386.0,519.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,36,36,36,division_2_digitos,si,Fabricación De Muebles; Industrias Manufactureras N.C.P.,1785363327.0,,593976836.0,,196519307.0,2344.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,361,361,36,grupo_3_digitos,no,Fabricación de muebles de todo tipo y de colchones de cualquier  material.,1496868598.0,,471963309.0,,132813060.0,1601.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3610,3610,36,clase_4_digitos,no,Muebles y colchones.,1496868598.0,,471963309.0,,132813060.0,1601.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,369,369,36,grupo_3_digitos,no,Industrias manufactureras n.c.p.,288494729.0,,122013527.0,,63706247.0,743.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3691,3691,36,clase_4_digitos,no,Joyas y artículos conexos.,37301861.0,,18619924.0,,9297805.0,67.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3699,3699,36,clase_4_digitos,no,Otras industrias manufactureras n.c.p.,251192868.0,,103393603.0,,54408442.0,676.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,37,37,37,division_2_digitos,si,Reciclaje,4368293.0,,1229431.0,,445346.0,18.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,370,370,37,grupo_3_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,4368293.0,,1229431.0,,445346.0,18.0
+2004,C,D,Rev.3,2,EAE_C1_2004.xls,3700,3700,37,clase_4_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,4368293.0,,1229431.0,,445346.0,18.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,,,,seccion_total,no,Industrias  Manufactureras.,184862461743.0,,53991760706.0,,14615233399.0,102414.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,15,15,15,division_2_digitos,si,Elaboración De Productos Alimenticios Y Bebidas.,76948303543.0,,18336129474.0,,5646698506.0,43468.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,151,151,15,grupo_3_digitos,no,"Producción, procesamiento y conservación de carnes, pescados, frutas, legumbres, hortalizas y aceites.",35987195917.0,,4708751686.0,,2219764743.0,17637.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1511,1511,15,clase_4_digitos,no,Matanza de ganado y aves. Preparación de carnes.,31637626807.0,,3566126750.0,,1691464197.0,13107.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1512,1512,15,clase_4_digitos,no,Elaboración y conservación de pescado.,2973421218.0,,818337637.0,,380118456.0,3257.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1513,1513,15,clase_4_digitos,no,"Elaboración y conservación de frutas, legumbres y hortalizas.",693938498.0,,206161679.0,,92075195.0,960.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1514,1514,15,clase_4_digitos,no,Aceites y grasas vegetales y animales.,682209394.0,,118125620.0,,56106895.0,313.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,152,152,15,grupo_3_digitos,no,Elaboración de productos lácteos.,11421946830.0,,2125692229.0,,1016035160.0,5089.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1520,1520,15,clase_4_digitos,no,Productos lácteos.,11421946830.0,,2125692229.0,,1016035160.0,5089.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,153,153,15,grupo_3_digitos,no,"Elaboración de productos de molinería, almidones y productos derivados del almidón y de alimentos preparados para animales.",8597883993.0,,1375653283.0,,525873234.0,3979.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1531,1531,15,clase_4_digitos,no,Molinos harineros.,2338541260.0,,308739931.0,,178732294.0,1346.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1533,1533,15,clase_4_digitos,no,Elaboración de alimentos preparados para animales.,795788014.0,,249186464.0,,69209859.0,533.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1534,1534,15,clase_4_digitos,no,Molinos arroceros.,5463554719.0,,817726888.0,,277931081.0,2100.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,154,154,15,grupo_3_digitos,no,Elaboración de otros productos alimenticios.,12397476360.0,,6191411878.0,,1146998990.0,13813.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1541,1541,15,clase_4_digitos,no,Elaboración de productos de panadería.,3024219628.0,,1046982942.0,,621403855.0,9710.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1542,1542,15,clase_4_digitos,no,Elaboración de azúcar.,749891455.0,,187193342.0,,76321294.0,493.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1543,1543,15,clase_4_digitos,no,"Elaboración de cacao, chocolate y productos de chocolate, caramelos. Frutas y cáscaras abrillantadas.",195603186.0,,58513927.0,,35065580.0,323.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1544,1544,15,clase_4_digitos,no,Fideerías y fabricación de pastas.,617650927.0,,225160644.0,,124574137.0,1644.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1549,1549,15,clase_4_digitos,no,Elaboración de productos alimenticios n.c.p. Incluye molinos yerbateros,7810111164.0,,4673561023.0,,289634124.0,1643.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,155,155,15,grupo_3_digitos,no,Elaboración de bebidas.,8543800443.0,,3934620398.0,,738026379.0,2950.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1551,1551,15,clase_4_digitos,no,"Destilación, rectificación y mezcla de bebidas espirituosas. Alcohol etílico.",370781310.0,,224781508.0,,54784154.0,163.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1552,1552,15,clase_4_digitos,no,Elaboración de vinos.,1120589854.0,,500822214.0,,94932691.0,942.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1553,1553,15,clase_4_digitos,no,Cervecerías y fabricación de maltas.,4089061808.0,,1899828424.0,,289429657.0,657.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1554,1554,15,clase_4_digitos,no,Bebidas sin alcohol.,2963367471.0,,1309188252.0,,298879877.0,1188.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,16,16,16,division_2_digitos,si,Elaboración De Productos De Tabaco.,4075544503.0,,3002146384.0,,292241732.0,456.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,160,160,16,grupo_3_digitos,no,Industria del tabaco.,4075544503.0,,3002146384.0,,292241732.0,456.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1600,1600,16,clase_4_digitos,no,Industria del tabaco.,4075544503.0,,3002146384.0,,292241732.0,456.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,17,17,17,division_2_digitos,si,Fabricación De Productos Textiles.,6883764691.0,,1749224034.0,,853562096.0,7749.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,171,171,17,grupo_3_digitos,no,"Hilandería, tejeduría, acabado de productos textiles, lavaderos y fabricación de tops.",5525638508.0,,1212932347.0,,613906347.0,4272.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1711,1711,17,clase_4_digitos,no,Hilandería y tejeduría.,1972898454.0,,698485382.0,,392990202.0,3449.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1712,1712,17,clase_4_digitos,no,Acabado de productos textiles.,36573969.0,,12538009.0,,7452305.0,96.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1713,1713,17,clase_4_digitos,no,Lavadero y fabricación de tops.,3516166085.0,,501908956.0,,213463840.0,727.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,172,172,17,grupo_3_digitos,no,Fabricación de otros productos textiles con tejidos no producidos en la misma unidad.,624722592.0,,200743210.0,,86049002.0,1119.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1720,1720,17,clase_4_digitos,no,Textiles excepto prendas de vestir.,624722592.0,,200743210.0,,86049002.0,1119.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,173,173,17,grupo_3_digitos,no,"Fabricación de tejidos de punto como buzos, chalecos, camisetas,  medias y similares.",733403591.0,,335548477.0,,153606747.0,2358.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1730,1730,17,clase_4_digitos,no,Fabricación de tejidos de punto.,733403591.0,,335548477.0,,153606747.0,2358.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,18,18,18,division_2_digitos,si,Fabricación De Prendas De Vestir Y Teñido De Pieles.,2633078612.0,,1079007940.0,,485437410.0,6747.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,181,181,18,grupo_3_digitos,no,"Fabricación de prendas de vestir, con materiales no fabricados en la misma unidad.",2633078612.0,,1079007940.0,,485437410.0,6747.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1810,1810,18,clase_4_digitos,no,Fabricación de prendas de vestir.,2633078612.0,,1079007940.0,,485437410.0,6747.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,19,19,19,division_2_digitos,si,Curtiembres Y Talleres De Acabado; Fabricación De Productos  De Cuero.,8531871855.0,,1805476053.0,,629222272.0,4843.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,191,191,19,grupo_3_digitos,no,Curtiembres y talleres de acabado; fabricación de artículos de cuero excepto prendas.,8204656117.0,,1693581853.0,,575340707.0,4087.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1911,1911,19,clase_4_digitos,no,Curtiembres y talleres de acabado.,8071362935.0,,1628918746.0,,541710304.0,3608.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1912,1912,19,clase_4_digitos,no,Artículos de cuero (marroquinerías).,133293182.0,,64663107.0,,33630403.0,479.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,192,192,19,grupo_3_digitos,no,Fabricación de calzado de cualquier material y para todo uso.,327215738.0,,111894200.0,,53881565.0,756.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,1920,1920,19,clase_4_digitos,no,Fabricación de calzado.,327215738.0,,111894200.0,,53881565.0,756.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,20,20,20,division_2_digitos,si,Producción De Madera Y Productos De Madera Excepto Muebles.,3477371580.0,,788719262.0,,254903103.0,2637.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,201,201,20,grupo_3_digitos,no,"Aserraderos, acabado de madera, fabricación de parquet.",3008148734.0,,628705734.0,,162518204.0,1311.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2010,2010,20,clase_4_digitos,no,Aserraderos y fabricación de parquet.,3008148734.0,,628705734.0,,162518204.0,1311.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,202,202,20,grupo_3_digitos,no,"Fabricación de productos de madera, corcho, paja y materiales trenzables.",469222846.0,,160013528.0,,92384899.0,1326.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2021,2021,20,clase_4_digitos,no,Fabricación de productos de madera (excepto muebles).,469222846.0,,160013528.0,,92384899.0,1326.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,21,21,21,division_2_digitos,si,Fabricación De Papel Y De Productos De Papel.,3211991568.0,,903687032.0,,340617235.0,1797.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,210,210,21,grupo_3_digitos,no,Fabricación de papel y de productos de papel.,3211991568.0,,903687032.0,,340617235.0,1797.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2101,2101,21,clase_4_digitos,no,"Pulpa de madera, papel y cartón.",1404828997.0,,433009980.0,,139440627.0,784.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2102,2102,21,clase_4_digitos,no,Envases de papel y cartón.,828255977.0,,194265139.0,,100265943.0,629.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2109,2109,21,clase_4_digitos,no,Fabricación de artículos de papel y cartón n.c.p.,978906594.0,,276411913.0,,100910665.0,384.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,22,22,22,division_2_digitos,si,"Actividades De Encuadernación, Impresión, Edición Y Reproducción.",4443902166.0,,1917961947.0,,848553593.0,5351.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,221,221,22,grupo_3_digitos,no,"Actividades de encuadernación, impresión, edición, grabación y reproducción sobre papel.",4434112634.0,,1915224668.0,,847367268.0,5345.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2211,2211,22,clase_4_digitos,no,"Encuadernación, impresión, edición, grabación y reproducción sobre papel excepto diarios y revistas.",2843424335.0,,1156942826.0,,505667458.0,3389.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2212,2212,22,clase_4_digitos,no,Impresión y edición de diarios y revistas.,1590688299.0,,758281842.0,,341699810.0,1956.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,223,223,22,grupo_3_digitos,no,Edición y reproducción de grabaciones en discos y cintas.,9789532.0,,2737279.0,,1186325.0,6.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2230,2230,22,clase_4_digitos,no,Edición y reproducción de grabaciones.,9789532.0,,2737279.0,,1186325.0,6.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,23,23,23,division_2_digitos,si,Fabricación De Productos Diversos Derivados Del Petróleo Y Del Carbón.,35220904774.0,,11095635900.0,,447888275.0,865.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,232,232,23,grupo_3_digitos,no,"Producción de combustibles, aceites grasas lubricantes, productos bituminosos y otros derivados del petróleo.",35220904774.0,,11095635900.0,,447888275.0,865.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2320,2320,23,clase_4_digitos,no,Combustibles y aceites grasas lubricantes productos bituminosos y otros productos derivados del petróleo.,35220904774.0,,11095635900.0,,447888275.0,865.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,24,24,24,division_2_digitos,si,Fabricación De Sustancias Y De Productos Químicos.,14607046294.0,,4468451689.0,,1829909948.0,6979.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,241,241,24,grupo_3_digitos,no,Fabricación de sustancias químicas básicas.,5739146697.0,,1248266675.0,,421999261.0,1151.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2411,2411,24,clase_4_digitos,no,Sustancias químicas básicas.,3145810630.0,,749878334.0,,315943209.0,828.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2412,2412,24,clase_4_digitos,no,Abonos.,1681063702.0,,436553234.0,,80006170.0,224.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2413,2413,24,clase_4_digitos,no,"Fabricación de plásticos en formas primarias, caucho sintético, resinas sintéticas y fibras artificiales.",912272365.0,,61835107.0,,26049882.0,99.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,242,242,24,grupo_3_digitos,no,Fabricación de otros productos químicos.,8867899597.0,,3220185014.0,,1407910687.0,5828.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2421,2421,24,clase_4_digitos,no,Plaguicidas.,639014602.0,,232863590.0,,42882878.0,149.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2422,2422,24,clase_4_digitos,no,"Pinturas, barnices y lacas.",1614247075.0,,559621762.0,,175311595.0,605.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2423,2423,24,clase_4_digitos,no,Fabricación de productos farmacéuticos y medicamentos.,4608298914.0,,1797217292.0,,851980531.0,3165.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2424,2424,24,clase_4_digitos,no,Artículos de  limpieza y de tocador.,1468044353.0,,452070088.0,,266381091.0,1676.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2429,2429,24,clase_4_digitos,no,Productos químicos n.c.p.,538294653.0,,178412282.0,,71354592.0,233.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,25,25,25,division_2_digitos,si,Fabricación De Productos De Caucho Y Plástico.,5422982003.0,,1644605608.0,,480914240.0,3765.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,251,251,25,grupo_3_digitos,no,Fabricación de productos de caucho.,143385536.0,,57601438.0,,33521331.0,414.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2511,2511,25,clase_4_digitos,no,Fabricación de cámaras y neumáticos. Recauchutaje.,66312040.0,,17866131.0,,9365269.0,135.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2519,2519,25,clase_4_digitos,no,Fabricación de productos de caucho natural o sintético en formas básicas .,77073496.0,,39735307.0,,24156062.0,279.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,252,252,25,grupo_3_digitos,no,Fabricación de productos de plástico.,5279596467.0,,1587004170.0,,447392909.0,3351.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2520,2520,25,clase_4_digitos,no,Productos de plástico.,5279596467.0,,1587004170.0,,447392909.0,3351.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,26,26,26,division_2_digitos,si,Fabricación De Otros Productos Minerales No Metálicos.,3010353737.0,,1112956924.0,,501399479.0,3017.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,261,261,26,grupo_3_digitos,no,Fabricación de vidrio y productos de vidrio.,313911180.0,,99939277.0,,59126264.0,519.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2610,2610,26,clase_4_digitos,no,Vidrio y productos de vidrio.,313911180.0,,99939277.0,,59126264.0,519.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,269,269,26,grupo_3_digitos,no,Fabricación de productos minerales no metálicos n.c.p.,2696442557.0,,1013017647.0,,442273215.0,2498.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2691,2691,26,clase_4_digitos,no,"Objetos de barro, loza y cerámica.",504472779.0,,230861758.0,,142110500.0,924.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2692,2692,26,clase_4_digitos,no,Fabricación de productos de arcilla y cerámica refractaria o no refractaria.,42362623.0,,20445799.0,,10176535.0,142.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2694,2694,26,clase_4_digitos,no,"Fabricación de cemento, cal y yeso.",1619993688.0,,626257688.0,,232485170.0,818.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2695,2695,26,clase_4_digitos,no,"Fabricación de artículos de cemento, hormigón y yeso.",365222901.0,,83602408.0,,34335960.0,318.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2699,2699,26,clase_4_digitos,no,Productos minerales no metálicos n.c.p.,164390566.0,,51849994.0,,23165050.0,296.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,27,27,27,division_2_digitos,si,Industrias Metálicas Básicas.,3209748046.0,,1628884629.0,,232208257.0,1162.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,270,270,27,grupo_3_digitos,no,"Industrias básicas de hierro, acero y metales no ferrosos.",3209748046.0,,1628884629.0,,232208257.0,1162.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2700,2700,27,clase_4_digitos,no,"Industria básica de hierro, acero y metales no ferrosos.",3209748046.0,,1628884629.0,,232208257.0,1162.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,28,28,28,division_2_digitos,si,"Fabricación De Productos Metálicos, Maquinarias Y Equipos.",3733528160.0,,1293571221.0,,457647319.0,4085.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,281,281,28,grupo_3_digitos,no,"Fabricación de productos metálicos, excepto maquinarias y equipo.",2212034253.0,,697804066.0,,264048736.0,2273.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2811,2811,28,clase_4_digitos,no,Fabricación de productos metálicos estructurales (herrería de obra).,2039178922.0,,637793556.0,,227144692.0,2016.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2812,2812,28,clase_4_digitos,no,Fabricación de recipientes de metal.,172855331.0,,60010510.0,,36904044.0,257.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,289,289,28,grupo_3_digitos,no,Fabricación de otros productos de metal.,1521493907.0,,595767155.0,,193598583.0,1812.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2890,2890,28,clase_4_digitos,no,Otros productos de metal.,1521493907.0,,595767155.0,,193598583.0,1812.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,29,29,29,division_2_digitos,si,Construcción De Maquinaria Exceptuando La Maquinaria Eléctrica.,1251105860.0,,568426723.0,,242357599.0,1628.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,291,291,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso general: motores, turbinas.",455401654.0,,227271731.0,,135917996.0,712.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2910,2910,29,clase_4_digitos,no,Maquinaria de uso general.,455401654.0,,227271731.0,,135917996.0,712.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,292,292,29,grupo_3_digitos,no,"Fabricación de maquinaria de uso especial (para el agro, la minería y la construcción).",506261768.0,,198682323.0,,57247752.0,549.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2920,2920,29,clase_4_digitos,no,Maquinaria de uso especial.,506261768.0,,198682323.0,,57247752.0,549.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,293,293,29,grupo_3_digitos,no,Fabricación de electrodomésticos.,289442438.0,,142472669.0,,49191851.0,367.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,2930,2930,29,clase_4_digitos,no,Electrodomésticos.,289442438.0,,142472669.0,,49191851.0,367.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,30,30,30,division_2_digitos,si,"Fabricación De Maquinaria De Oficina, Contabilidad E Informática.",514830269.0,,89441413.0,,63580345.0,161.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,300,300,30,grupo_3_digitos,no,"Fabricación de maquinaria de oficina, contabilidad e informática.",514830269.0,,89441413.0,,63580345.0,161.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3000,3000,30,clase_4_digitos,no,"Maquinaria de oficina, contabilidad e informática.",514830269.0,,89441413.0,,63580345.0,161.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,31,31,31,division_2_digitos,si,Fabricación De Maquinaria Y Aparatos Eléctricos N.C.P.,1169195473.0,,454325157.0,,196909298.0,1171.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,310,310,31,grupo_3_digitos,no,"Fabricación de motores, generadores, transformadores eléctricos, cargadores de baterías, etc.",1169195473.0,,454325157.0,,196909298.0,1171.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3100,3100,31,clase_4_digitos,no,Maquinaria y aparatos eléctricos n.c.p.,1169195473.0,,454325157.0,,196909298.0,1171.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,32,32,32,division_2_digitos,si,"Fabricación De Equipos Y Aparatos De Radio, Televisión Y Comunicación.",15797191.0,,6578276.0,,4277879.0,71.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,320,320,32,grupo_3_digitos,no,"Fabricación de equipos y aparatos de radio, televisión y comunicación y sus componentes electrónicos.",15797191.0,,6578276.0,,4277879.0,71.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3200,3200,32,clase_4_digitos,no,"Equipos y aparatos de radio, televisión y comunicación.",15797191.0,,6578276.0,,4277879.0,71.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,33,33,33,division_2_digitos,si,"Fabricación De Instrumentos Médicos, Ópticos Y De Precisión.",973207853.0,,434742142.0,,191024057.0,1487.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,330,330,33,grupo_3_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",973207853.0,,434742142.0,,191024057.0,1487.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3300,3300,33,clase_4_digitos,no,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",973207853.0,,434742142.0,,191024057.0,1487.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,34,34,34,division_2_digitos,si,"Fabricación De Vehículos Automotores, Remolques Y Semirremolques.",2343301035.0,,629559618.0,,185103775.0,1256.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,340,340,34,grupo_3_digitos,no,"Fabricación de vehículos automotores, carrocerías, cúpulas, repuestos y sus motores.",2343301035.0,,629559618.0,,185103775.0,1256.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3400,3400,34,clase_4_digitos,no,Automotores y repuestos.,2343301035.0,,629559618.0,,185103775.0,1256.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,35,35,35,division_2_digitos,si,Fabricación De Otros Tipos De Equipo De Transporte.,1345664294.0,,473543637.0,,177041039.0,1088.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,351,351,35,grupo_3_digitos,no,Construcción y reparación de buques y otras embarcaciones.,381663996.0,,176269084.0,,85060883.0,490.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3510,3510,35,clase_4_digitos,no,Construcción y reparación de buques.,381663996.0,,176269084.0,,85060883.0,490.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,353,353,35,grupo_3_digitos,no,Fabricación de aeronaves y naves espaciales,3712389.0,,1399577.0,,368897.0,5.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3530,3530,35,clase_4_digitos,no,Fabricación de aeronaves y naves espaciales.,3712389.0,,1399577.0,,368897.0,5.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,359,359,35,grupo_3_digitos,no,"Fabricación de motocicletas, bicicletas, sillones de ruedas y otro tipo de transporte n.c.p.",960287909.0,,295874976.0,,91611259.0,593.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3590,3590,35,clase_4_digitos,no,Otro equipo de transporte n.c.p.,960287909.0,,295874976.0,,91611259.0,593.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,36,36,36,division_2_digitos,si,Fabricación De Muebles; Industrias Manufactureras N.C.P.,1781756856.0,,494188627.0,,244067303.0,2508.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,361,361,36,grupo_3_digitos,no,Fabricación de muebles de todo tipo y de colchones de cualquier  material.,1487592162.0,,363513552.0,,179368770.0,1721.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3610,3610,36,clase_4_digitos,no,Muebles y colchones.,1487592162.0,,363513552.0,,179368770.0,1721.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,369,369,36,grupo_3_digitos,no,Industrias manufactureras n.c.p.,294164694.0,,130675075.0,,64698533.0,787.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3691,3691,36,clase_4_digitos,no,Joyas y artículos conexos.,47559577.0,,20376051.0,,13443946.0,80.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3699,3699,36,clase_4_digitos,no,Otras industrias manufactureras n.c.p.,246605117.0,,110299024.0,,51254587.0,707.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,37,37,37,division_2_digitos,si,Reciclaje,57211380.0,,14497016.0,,9668639.0,123.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,370,370,37,grupo_3_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,57211380.0,,14497016.0,,9668639.0,123.0
+2005,C,D,Rev.3,2,EAE_C1_2005.xls,3700,3700,37,clase_4_digitos,no,Reciclaje de desperdicios y desechos metálicos y no metálicos.,57211380.0,,14497016.0,,9668639.0,123.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1511,1511,15,clase_4_digitos,si,Matanza de ganado y aves. Preparación de carnes.,36453987270.0,,5202865379.0,,2096545903.9999998,11974.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1512,1512,15,clase_4_digitos,si,Elaboración y conservación de pescado.,3478177173.81818,,1141983951.2727268,,408325745.45454514,3571.636363636362
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1513,1513,15,clase_4_digitos,si,"Elaboración y conservación de frutas, legumbres y hortalizas.",913124242.0000001,,278547782.0,,124002919.99999997,1073.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1514,1514,15,clase_4_digitos,si,Elaboración de aceites y grasas vegetales y animales.,1006078916.0,,185678767.0,,76579474.0,291.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1520,1520,15,clase_4_digitos,si,Elaboración de productos lácteos.,12018793737.999998,,2177780856.0,,1090602109.0,4064.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1531,1531,15,clase_4_digitos,si,Molinos harineros.,2278262115.9999995,,328742963.0,,178317550.0,914.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1533,1533,15,clase_4_digitos,si,Elaboración de alimentos preparados para animales.,236581973.0,,76724945.0,,28797673.0,186.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1534,1534,15,clase_4_digitos,si,Molinos arroceros.,6702791193.000001,,1431090419.0,,452824524.0,2171.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1541,1541,15,clase_4_digitos,si,Elaboración de productos de panadería.,1613915919.0,,625065210.0,,284067442.00000006,2614.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1542,1542,15,clase_4_digitos,si,Elaboración de azúcar.,1087736144.0,,274318511.0,,140939427.0,717.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1543,1543,15,clase_4_digitos,si,"Elaboración de cacao, chocolate y productos de chocolate, caramelos. Frutas y cáscaras abrillantadas.",260800485.0,,78303503.0,,34587733.0,293.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1544,1544,15,clase_4_digitos,si,Fideerías y fabricación de pastas.,458198136.99999994,,175197002.0,,94885553.99999999,621.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1549,1549,15,clase_4_digitos,si,Elaboración de otros productos alimenticios n.c.p. También incluye molinos yerbateros.,6521937046.0,,4597701806.000001,,158508763.0,604.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1551,1551,15,clase_4_digitos,si,"Destilación, rectificación y mezcla de bebidas espirituosas. Producción de alcohol etílico.",239036148.5774648,,139436306.78873238,,48764648.774647884,92.53521126760563
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1552,1552,15,clase_4_digitos,si,Elaboración de vinos.,367940918.0,,108731420.0,,27025287.0,211.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1553,1553,15,clase_4_digitos,si,Cervecerías y fabricación de maltas.,4355015450.0,,2132869691.0,,321080022.0,672.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1554,1554,15,clase_4_digitos,si,Elaboración de bebidas sin alcohol.,2925412549.0,,1237087033.0,,372402845.0,885.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1600,1600,16,clase_4_digitos,si,Industria del tabaco.,4679496395.0,,3477593189.0,,375616811.0,609.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1711,1711,17,clase_4_digitos,si,Hilandería y tejeduría.,1332842442.75,,377766157.5,,273390742.125,1891.125
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1712,1712,17,clase_4_digitos,si,Acabado de productos textiles.,30135458.0,,6372817.0,,4581339.0,33.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1713,1713,17,clase_4_digitos,si,Lavadero y fabricación de tops.,3852108135.0000005,,486084862.0,,203914780.0,676.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1720,1720,17,clase_4_digitos,si,"Elaboración de productos textiles, excepto prendas de vestir.",236443606.0,,74241975.0,,25131109.0,294.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1730,1730,17,clase_4_digitos,si,Fabricación de tejidos de punto.,507137964.0,,185006066.00000003,,106767897.0,980.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1810,1810,18,clase_4_digitos,si,Fabricación de prendas de vestir.,2281557457.4799986,,621174232.2399995,,383342862.9599998,3276.28
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1911,1911,19,clase_4_digitos,si,Curtiembres y talleres de acabado.,7742162534.000001,,1425355599.0,,500951953.0,2441.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1912,1912,19,clase_4_digitos,si,Elaboración de artículos de cuero (marroquinerías).,319349547.0,,72119735.0,,39367140.0,283.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,1920,1920,19,clase_4_digitos,si,Fabricación de calzado.,190902302.0,,61471455.0,,32050086.0,280.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2010,2010,20,clase_4_digitos,si,Aserraderos y fabricación de parquet.,3687936562.0,,1221512249.0000002,,155283852.0,842.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2021,2021,20,clase_4_digitos,si,Fabricación de productos de madera (excepto muebles).,713772409.0,,228038775.0,,140108262.0,710.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2029,2029,20,clase_4_digitos,no,"Fabricación de artículos de corcho, paja y materiales trenzables.",,,,,,
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2101,2101,21,clase_4_digitos,si,"Fabricación de pulpa de madera, papel y cartón.",1517882650.0,,1030525324.0,,132151845.0,417.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2102,2102,21,clase_4_digitos,si,Fabricación de envases de papel y cartón.,1019911424.0,,211516482.0,,109571078.0,556.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2109,2109,21,clase_4_digitos,si,Fabricación de artículos de papel y cartón n.c.p.,1058368895.0,,267611831.0,,105734538.0,283.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2211,2211,22,clase_4_digitos,si,"Encuadernación, impresión, edición, grabación y reproducción sobre papel, excepto diarios y revistas.",1508360538.0,,468182990.99999994,,268827014.00000006,1064.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2212,2212,22,clase_4_digitos,si,Impresión y edición de diarios y revistas.,1450647018.9999998,,724142436.0,,337238012.00000006,1426.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2320,2320,23,clase_4_digitos,si,"Producción de combustibles y aceites grasas lubricantes, productos bituminosos y otros productos derivados del petróleo.",33627383326.0,,10965325129.0,,490441095.0,882.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2411,2411,24,clase_4_digitos,si,Producción de sustancias químicas básicas.,2539497935.0,,671041540.0,,247454854.99999997,475.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2412,2412,24,clase_4_digitos,si,Fabricación de abonos.,1745576323.0,,504781136.0,,94831740.0,239.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2413,2413,24,clase_4_digitos,si,"Fabricación de plásticos en formas primarias, caucho sintético, resinas sintéticas y fibras artificiales.",1352855193.6666665,,72082586.33333334,,28890779.166666664,119.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2421,2421,24,clase_4_digitos,si,Producción de plaguicidas.,882684848.0,,137418375.0,,49063453.0,148.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2422,2422,24,clase_4_digitos,si,"Fabricación de pinturas, barnices y lacas.",1358175556.0,,382315575.0,,147272305.0,378.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2423,2423,24,clase_4_digitos,si,Fabricación de productos farmacéuticos y medicamentos.,4148844687.0,,1683180087.0,,913311224.9999998,2417.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2424,2424,24,clase_4_digitos,si,Fabricación de artículos de  limpieza y de tocador.,1049522535.15,,400979098.89,,220010330.76,613.05
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2429,2429,24,clase_4_digitos,si,Fabricación productos químicos n.c.p.,492588408.0,,148396377.0,,64444640.0,185.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2511,2511,25,clase_4_digitos,si,Fabricación de cámaras y neumáticos. Recauchutaje.,127374537.0,,18276711.0,,11920285.0,164.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2519,2519,25,clase_4_digitos,si,Fabricación de productos de caucho natural o sintético en formas básicas.,41156674.5,,14372542.5,,9527412.0,184.5
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2520,2520,25,clase_4_digitos,si,Fabricación de productos de plástico.,5120787075.000001,,1105332424.0,,422771987.99999994,1821.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2610,2610,26,clase_4_digitos,si,Fabricación de vidrio y productos de vidrio.,196632771.0,,58696952.0,,34557841.0,272.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2691,2691,26,clase_4_digitos,si,"Fabricación de objetos de barro, loza y cerámica.",534671683.0,,218868341.0,,134611704.0,789.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2692,2692,26,clase_4_digitos,no,Fabricación de productos de arcilla y cerámica refractaria o no refractaria.,,,,,,
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2694,2694,26,clase_4_digitos,si,"Fabricación de cemento, cal y yeso.",2501035972.5,,921795782.5,,325711549.0,721.5
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2695,2695,26,clase_4_digitos,si,"Fabricación de artículos de cemento, hormigón y yeso.",128636514.0,,25138705.0,,18599105.0,65.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2699,2699,26,clase_4_digitos,si,Fabricación de productos minerales no metálicos n.c.p.,67803043.0,,23933492.0,,4606115.0,24.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2700,2700,27,clase_4_digitos,si,"Industria básica de hierro, acero y metales no ferrosos.",4692790131.11111,,2182840503.3333335,,410089994.4444444,1283.3333333333335
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2811,2811,28,clase_4_digitos,si,Fabricación de productos metálicos estructurales (herrería de obra).,1921864357.0,,432809730.0,,162616573.0,794.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2812,2812,28,clase_4_digitos,si,Fabricación de recipientes de metal.,171170317.0,,72915347.0,,33499885.0,245.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2890,2890,28,clase_4_digitos,si,Fabricación de otros productos de metal.,1038534507.0,,341172259.0,,114543993.0,558.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2910,2910,29,clase_4_digitos,si,Fabricación de maquinaria de uso general.,95355736.0,,40173019.0,,29638093.0,178.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2920,2920,29,clase_4_digitos,si,Fabricación de maquinaria de uso especial.,87400000.0,,27418608.0,,22007310.0,145.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,2930,2930,29,clase_4_digitos,si,Fabricación de electrodomésticos.,295977011.0,,149048916.0,,47212867.0,222.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3000,3000,30,clase_4_digitos,si,"Fabricación de maquinaria de oficina, contabilidad e informática.",55491793.0,,20832536.0,,20010297.0,42.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3100,3100,31,clase_4_digitos,si,Fabricación de maquinaria y aparatos eléctricos n.c.p.,1022798150.1964283,,351082434.9642857,,153761211.10714284,734.8928571428569
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3200,3200,32,clase_4_digitos,si,"Fabricación de equipos y aparatos de radio, televisión y comunicación.",37648560.0,,12979328.0,,3451530.0,32.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3300,3300,33,clase_4_digitos,si,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",462523542.0,,199999173.0,,120963998.00000001,575.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3400,3400,34,clase_4_digitos,si,Fabricación de automotores y repuestos.,3413456400.3749995,,760291008.7499999,,155007801.0,630.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3510,3510,35,clase_4_digitos,si,Construcción y reparación de buques.,237115088.0,,122568892.0,,72193706.0,276.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3530,3530,35,clase_4_digitos,no,Fabricación de aeronaves y naves espaciales.,,,,,,
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3590,3590,35,clase_4_digitos,si,Fabricación de otro equipo de transporte n.c.p.,1327571777.0,,594968359.0,,151308796.0,743.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3610,3610,36,clase_4_digitos,si,Fabricación de muebles y colchones.,1131538212.0,,195422159.0,,117214021.0,794.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3691,3691,36,clase_4_digitos,no,Elaboración de joyas y artículos conexos.,,,,,,
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3699,3699,36,clase_4_digitos,si,Otras industrias manufactureras n.c.p.,36415795.0,,14406831.0,,7977488.0,68.0
+2006,C,D,Rev.3,3,EAE_C1-F_2006.xls,3700,3700,37,clase_4_digitos,si,Reciclaje de desperdicios y desechos metálicos y no metálicos.,49914530.0,,15822020.0,,10500091.0,96.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1511,1511,15,clase_4_digitos,si,Matanza de ganado y aves. Preparación de carnes.,37959999144.0,,5881708930.0,,2185442103.75,14208.25
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1512,1512,15,clase_4_digitos,si,Elaboración y conservación de pescado.,4336340199.545453,,1274291938.9090905,,538419899.9090908,3504.7272727272716
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1513,1513,15,clase_4_digitos,si,"Elaboración y conservación de frutas, legumbres y hortalizas.",1419461152.5,,495394691.0,,184772655.5,1304.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1514,1514,15,clase_4_digitos,si,Elaboración de aceites y grasas vegetales y animales.,1900723372.5,,362707229.5,,89391411.5,429.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1520,1520,15,clase_4_digitos,si,Elaboración de productos lácteos.,13879203333.5,,2728512027.5,,1210443856.0,4662.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1531,1531,15,clase_4_digitos,si,Molinos harineros.,3576170651.0,,602964841.0,,262866733.0,1238.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1533,1533,15,clase_4_digitos,si,Elaboración de alimentos preparados para animales.,1685150553.3125,,362311951.0625,,144778893.25,1145.6875
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1534,1534,15,clase_4_digitos,si,Molinos arroceros.,7846702383.0,,1724822651.0,,347827672.0,2036.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1541,1541,15,clase_4_digitos,si,Elaboración de productos de panadería.,3120300708.2,,1182837878.8000002,,640650837.4,6486.4
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1542,1542,15,clase_4_digitos,si,Elaboración de azúcar.,1004469280.0,,236676769.0,,159740053.0,833.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1543,1543,15,clase_4_digitos,si,"Elaboración de cacao, chocolate y productos de chocolate, caramelos. Frutas y cáscaras abrillantadas.",375766254.0,,101054425.0,,62171864.0,463.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1544,1544,15,clase_4_digitos,si,Fideerías y fabricación de pastas.,887473912.0,,322506983.0,,126231183.0,1216.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1549,1549,15,clase_4_digitos,si,Elaboración de otros productos alimenticios n.c.p. También incluye molinos yerbateros.,9662849263.666668,,6153727431.0,,293976914.3333334,1244.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1551,1551,15,clase_4_digitos,si,"Destilación, rectificación y mezcla de bebidas espirituosas. Producción de alcohol etílico.",374693541.30985916,,215758036.15492958,,60755905.02816901,147.59154929577466
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1552,1552,15,clase_4_digitos,si,Elaboración de vinos.,830752145.0,,237720704.0,,84632255.0,705.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1553,1553,15,clase_4_digitos,si,Cervecerías y fabricación de maltas.,5242853939.0,,2739687186.0,,329821575.0,737.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1554,1554,15,clase_4_digitos,si,Elaboración de bebidas sin alcohol.,3956575106.0,,1627096080.0,,489909224.0,1384.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1600,1600,16,clase_4_digitos,si,Industria del tabaco.,4647183290.0,,3518465693.0,,296853949.0,589.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1711,1711,17,clase_4_digitos,si,Hilandería y tejeduría.,1532160775.125,,478440075.0,,368651725.875,2381.625
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1712,1712,17,clase_4_digitos,si,Acabado de productos textiles.,98597574.0,,24432520.0,,16424112.0,157.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1713,1713,17,clase_4_digitos,si,Lavadero y fabricación de tops.,4538531332.0,,819658231.0,,239906667.0,757.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1720,1720,17,clase_4_digitos,si,"Elaboración de productos textiles, excepto prendas de vestir.",942066286.3333333,,364368978.6666666,,118451260.66666666,977.3333333333333
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1730,1730,17,clase_4_digitos,si,Fabricación de tejidos de punto.,593086409.0,,261878591.5,,154914918.5,1440.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1810,1810,18,clase_4_digitos,si,Fabricación de prendas de vestir.,3340137376.5199995,,927944772.0399997,,585869255.4399998,5045.693333333332
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1911,1911,19,clase_4_digitos,si,Curtiembres y talleres de acabado.,8736612574.0,,1693080289.0,,810587969.0,3814.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1912,1912,19,clase_4_digitos,si,Elaboración de artículos de cuero (marroquinerías).,1267223933.25,,248275929.625,,99157597.75,803.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,1920,1920,19,clase_4_digitos,si,Fabricación de calzado.,591491282.0,,220048599.5,,90191997.5,1022.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2010,2010,20,clase_4_digitos,si,Aserraderos y fabricación de parquet.,3157571223.333333,,864968628.9999999,,238952495.0,1650.3333333333333
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2021,2021,20,clase_4_digitos,si,Fabricación de productos de madera (excepto muebles).,1379155615.0,,494600922.5,,208075148.5,1547.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2029,2029,20,clase_4_digitos,si,"Fabricación de artículos de corcho, paja y materiales trenzables.",26407707.0,,10034190.0,,3348423.0,60.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2101,2101,21,clase_4_digitos,si,"Fabricación de pulpa de madera, papel y cartón.",2627841394.0,,1470123707.0,,327833954.0,725.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2102,2102,21,clase_4_digitos,si,Fabricación de envases de papel y cartón.,1460943153.5,,370645309.0,,144001327.0,807.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2109,2109,21,clase_4_digitos,si,Fabricación de artículos de papel y cartón n.c.p.,1451652672.5,,452753799.5,,171155637.5,492.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2211,2211,22,clase_4_digitos,si,"Encuadernación, impresión, edición, grabación y reproducción sobre papel, excepto diarios y revistas.",2854592136.166666,,1015271957.1666665,,579921454.6249999,2892.375
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2212,2212,22,clase_4_digitos,si,Impresión y edición de diarios y revistas.,1631019703.0,,838281489.0,,482838695.0,1933.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2320,2320,23,clase_4_digitos,si,"Producción de combustibles y aceites grasas lubricantes, productos bituminosos y otros productos derivados del petróleo.",36265009558.0,,12148763185.0,,581189657.0,939.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2411,2411,24,clase_4_digitos,si,Producción de sustancias químicas básicas.,3262471170.0,,918801150.5,,337743774.5,667.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2412,2412,24,clase_4_digitos,si,Fabricación de abonos.,2603561809.0,,659913514.0,,103044039.0,295.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2413,2413,24,clase_4_digitos,si,"Fabricación de plásticos en formas primarias, caucho sintético, resinas sintéticas y fibras artificiales.",1653243854.6666667,,159865348.83333334,,47716066.666666664,187.66666666666669
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2421,2421,24,clase_4_digitos,si,Producción de plaguicidas.,1128399725.0,,236784424.0,,61328946.0,175.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2422,2422,24,clase_4_digitos,si,"Fabricación de pinturas, barnices y lacas.",1866942079.8333333,,488254974.0,,236873693.1666667,670.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2423,2423,24,clase_4_digitos,si,Fabricación de productos farmacéuticos y medicamentos.,5773155477.0,,2291410284.5,,1256806750.0,3102.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2424,2424,24,clase_4_digitos,si,Fabricación de artículos de  limpieza y de tocador.,1708936883.0016665,,593335632.0500001,,258094202.79999995,1208.8516666666667
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2429,2429,24,clase_4_digitos,si,Fabricación productos químicos n.c.p.,894363136.0,,277014708.0,,116168871.0,342.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2511,2511,25,clase_4_digitos,si,Fabricación de cámaras y neumáticos. Recauchutaje.,692976915.75,,116383726.75,,75008745.75,538.25
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2519,2519,25,clase_4_digitos,si,Fabricación de productos de caucho natural o sintético en formas básicas .,197685166.5,,80482649.5,,65227734.5,691.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2520,2520,25,clase_4_digitos,si,Fabricación de productos de plástico.,7719777475.5,,1575632409.6666667,,691809492.1666666,3390.833333333333
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2610,2610,26,clase_4_digitos,si,Fabricación de vidrio y productos de vidrio.,517803669.4242424,,188615096.63636363,,101859764.24242423,685.7272727272727
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2691,2691,26,clase_4_digitos,si,"Fabricación de objetos de barro, loza y cerámica.",581083774.0,,235913321.0,,152004787.0,787.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2692,2692,26,clase_4_digitos,si,Fabricación de productos de arcilla y cerámica refractaria o no refractaria.,97871539.5,,29800400.25,,24668660.999999996,215.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2694,2694,26,clase_4_digitos,si,"Fabricación de cemento, cal y yeso.",2686184775.5,,1043079278.0,,323030782.5,693.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2695,2695,26,clase_4_digitos,si,"Fabricación de artículos de cemento, hormigón y yeso.",705377323.0,,171698270.0,,69802128.5,432.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2699,2699,26,clase_4_digitos,si,Fabricación de productos minerales no metálicos n.c.p.,292949929.0,,95175277.5,,30730520.0,213.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2700,2700,27,clase_4_digitos,si,"Industria básica de hierro, acero y metales no ferrosos.",6010057668.948717,,2457021073.5512815,,556205027.4786325,1800.0128205128206
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2811,2811,28,clase_4_digitos,si,Fabricación de productos metálicos estructurales (herrería de obra).,4017598330.25,,875420305.875,,351840476.0,1915.75
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2812,2812,28,clase_4_digitos,si,Fabricación de recipientes de metal.,133677827.0,,64123284.0,,40152321.0,265.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2890,2890,28,clase_4_digitos,si,Fabricación de otros productos de metal.,2204113103.0,,720399803.0,,308332803.8125,1594.125
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2910,2910,29,clase_4_digitos,si,Fabricación de maquinaria de uso general.,502267033.5,,262700597.0,,158337679.0,660.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2920,2920,29,clase_4_digitos,si,Fabricación de maquinaria de uso especial.,835115874.4000001,,314276917.4,,176068354.0,987.8
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,2930,2930,29,clase_4_digitos,si,Fabricación de electrodomésticos.,531612430.0,,266804401.0,,66404606.0,316.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3000,3000,30,clase_4_digitos,si,"Fabricación de maquinaria de oficina, contabilidad e informática.",129032070.0,,59323832.0,,34519343.0,141.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3100,3100,31,clase_4_digitos,si,Fabricación de maquinaria y aparatos eléctricos n.c.p.,2580080504.7499995,,832015972.4017856,,316179912.93749994,1828.6875
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3200,3200,32,clase_4_digitos,si,"Fabricación de equipos y aparatos de radio, televisión y comunicación.",33669000.0,,15418080.0,,4447440.0,35.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3300,3300,33,clase_4_digitos,si,"Fabricación de aparatos e instrumentos médicos, aparatos para medir, verificar, ensayar, navegar y otros fines.",960650145.0416666,,481811959.75,,265769542.625,1160.625
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3400,3400,34,clase_4_digitos,si,Fabricación de automotores y repuestos.,4228443686.75,,1017893630.5,,323943338.75,1593.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3510,3510,35,clase_4_digitos,si,Construcción y reparación de buques.,356385762.0,,201090001.5,,154228704.0,559.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3530,3530,35,clase_4_digitos,si,Fabricación de aeronaves y naves espaciales.,7689369.0,,3541161.0,,2571731.0,21.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3590,3590,35,clase_4_digitos,si,Fabricación de otro equipo de transporte n.c.p.,3177606713.0,,823382498.0,,192460029.5,1096.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3610,3610,36,clase_4_digitos,si,Fabricación de muebles y colchones.,1518869206.0,,409239501.0,,238012834.0,1752.0
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3691,3691,36,clase_4_digitos,si,Elaboración de joyas y artículos conexos.,52769444.66666667,,26608008.666666668,,18591030.0,151.66666666666669
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3699,3699,36,clase_4_digitos,si,Otras industrias manufactureras n.c.p.,337249210.5,,136553988.0,,67993377.0,412.5
+2007,C,D,Rev.3,3,Forzosas y aleatorias/EAE_C1_2007.xls,3700,3700,37,clase_4_digitos,si,Reciclaje de desperdicios y desechos metálicos y no metálicos.,193560058.5,,60045901.0,,17695428.5,211.0
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,112667684769.29803,,28780301494.880676,,9263288589.567032,45205.838233849194
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,11,11,11,division_2_digitos,si,Elaboración de bebidas.,15114611332.033894,,5808849038.31325,,1219842044.607757,3436.0062389007217
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,12,12,12,division_2_digitos,si,Elaboración de productos de tabaco.,4678389894.0,,3620869848.0,,463411187.0,609.0
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,7399862699.135186,,1595198533.1947024,,858604559.5127511,4335.688712414346
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3198551033.358702,,1205811505.8530428,,744504040.2917635,6820.564426336869
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,7466303529.75223,,1963221054.5262334,,1028265350.085589,4708.955445153794
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",9721312152.176365,,1226715543.282945,,666260021.4963124,3336.819352294534
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,18995436439.846092,,9548862673.632406,,798999491.1049529,2310.1026205321964
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,3138859139.6519628,,1247728054.4440753,,675159606.964852,2978.1066942909993
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,41700433194.0,,5053278165.0,,625390785.0,1014.0
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,16131157103.434166,,4863046611.025143,,1362958480.7926474,3467.5272735392264
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",6756721122.455124,,3030835147.9570866,,1478767411.9071171,3283.417618981305
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,8627282041.204708,,2116049535.789649,,977132297.6841114,4526.3200000601355
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,5167333436.177588,,1769089400.9895854,,726631704.7509845,2770.088259627212
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,6213479499.478698,,1969358078.7781627,,548041038.1465917,1766.465954336153
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",5143324829.64377,,1776330919.7760649,,780458888.4933134,3702.885694629105
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",363649865.6886391,,190622155.38582876,,114714318.51428182,360.791773243269
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,2857160737.90101,,1018921112.7666031,,434462629.74035794,1790.5542501592693
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,632724679.3913822,,249826804.38259423,,157104644.7353051,839.971506769134
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,29,29,29,division_2_digitos,si,"Fabricación de vehículos automotores, remolques y semirremolques.",4113523658.748799,,984600419.8556305,,301792025.46549726,1210.8997405607065
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,30,30,30,division_2_digitos,si,Fabricación de otros tipos de equipo de transporte.,1534839947.0,,852434532.0,,201357086.0,773.0
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1418680486.4670935,,479443274.2722374,,290086552.2582954,1899.2303750422961
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1140110609.8747032,,517195518.29710513,,284831203.8295257,1535.5776502549695
+2008,C,C,Rev.4,4,EAE_C1_2008.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,814261119.1660789,,423621920.8326154,,289092315.92514277,1220.8739860646936
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,105932508750.34076,,25116933287.865967,,10957734975.171478,45966.34175922803
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,11,11,11,division_2_digitos,si,Elaboración de bebidas.,16635599452.082792,,6821496943.8033905,,1594054124.3071012,3178.582505851844
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,12,12,12,division_2_digitos,si,Elaboración de productos de tabaco.,5520222984.0,,4095509517.0,,493771858.0,591.0
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,5466330041.748407,,969178765.8088044,,770747773.7111486,3650.4990770822806
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3381505038.2933903,,1148754072.7522354,,731673624.8702352,5937.400927423662
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,7388494793.888194,,1963895095.38089,,1329933739.1149879,4883.1957452579645
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",4533805114.459713,,1048301696.5365922,,621743926.0351394,3163.26145373745
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,16662273597.97383,,4611753579.976502,,976549245.6614876,2279.8768994748157
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,3205333963.3870378,,1413844927.4818304,,765614554.7289366,2700.020101147829
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,37059614882.0,,12175111279.0,,1505218063.0,1683.0
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,13901793495.850307,,4122524995.142816,,1708656861.8260539,3938.585990612341
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",7251946194.951316,,3246857371.638579,,1747691402.563617,3468.097214225454
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,9321148800.165012,,2345083374.3595486,,1280680398.8424459,4802.447070841161
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,5103111157.433458,,1612282153.956868,,1185068982.9111109,3555.1313735586423
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,4280585167.618893,,1223653870.283217,,515412952.3380857,1368.0940194543464
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",6068843891.04635,,2239091141.535811,,1279154385.8447657,4332.93424999243
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",390779528.45862687,,200452420.24074087,,128321768.60102352,313.61669409459273
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,1967215434.560709,,744353810.8512049,,428966150.5620695,1566.6445317902187
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,766158811.7712588,,271870165.1825177,,145081616.96024308,498.88368197816925
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,29,29,29,division_2_digitos,si,"Fabricación de vehículos automotores, remolques y semiremolques.",2592186699.6175036,,658845773.0094827,,348333810.59768116,1344.6908281254618
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,30,30,30,division_2_digitos,si,Fabricación de otros tipos de equipo de transporte.,645076230.6725041,,167536396.70545793,,87806831.41582973,179.94833939828115
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1464279865.5615418,,638986165.5813931,,309470222.70433295,1797.1157216858157
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,999306025.2360293,,468720156.6625993,,278174497.0349087,1303.5825188185142
+2009,C,C,Rev.4,4,EAE_C1_2009.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,1809040005.658787,,929846917.063959,,553508846.1898,1533.6970870561545
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,120552010818.75528,,28998304068.85489,,12893820402.102415,49452.59367958053
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,11,11,11,division_2_digitos,si,Elaboración de bebidas.,14646942367.015223,,7027874910.062559,,1809118152.6507416,3461.4931476639904
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,12,12,12,division_2_digitos,si,Elaboración de productos de tabaco.,6590915280.0,,4979613097.0,,569843921.0,574.0
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,6163987281.006548,,1111010426.8200002,,798119369.4616808,3360.915121091793
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3040853533.879329,,1247893093.8086123,,840955414.8124318,5739.4262299518905
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,7577320543.50558,,1951092645.60603,,1343278600.4323287,4778.933320585866
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",5984902131.970272,,1190311497.3256166,,688643677.9062018,3447.6270990632916
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,22995048096.85769,,9619425244.635174,,1042666733.3788725,2446.1886708624315
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4113883834.7083006,,1833059631.7744763,,1013249744.4162731,3188.9787586715315
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,41162283178.0,,15180150227.0,,1712127200.0,2513.0
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,16467791959.32168,,4709498504.761377,,1986540113.0916102,4469.639084565013
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",6921647320.9871645,,3227765672.4842024,,1864932607.9695277,3557.5509017820978
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,9024309425.893496,,2414019372.486005,,1334569172.346716,5018.184229965269
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,4275834204.741434,,1517823594.1744685,,757748506.2638655,2449.982165906236
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,4814397910.843076,,1753092235.7746994,,736034494.8484063,1749.1348072915118
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",6145468772.7583475,,2235142195.975047,,1291071666.2774231,4878.646792116997
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",438072041.4990985,,225674927.2257563,,138467932.8075164,405.49624822997936
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,2403693133.2939906,,931180428.6025729,,489623482.16511923,1578.6043148043432
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2357067532.664128,,1041084190.4731928,,500104195.7081933,1498.7547404910101
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,29,29,29,division_2_digitos,si,"Fabricación de vehículos automotores, remolques y semiremolques.",6562975139.133861,,1762865784.0356894,,747750964.6406099,2399.413915931654
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,30,30,30,division_2_digitos,si,Fabricación de otros tipos de equipo de transporte.,1147095966.6981099,,294860550.3840355,,110122070.9116406,212.01601923583857
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1841587484.5793447,,744922395.9238878,,444543517.6435163,2013.5689374799836
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1255645424.1990879,,575001609.7090727,,361060016.581869,1274.962854287919
+2010,C,C,Rev.4,4,EAE_C1_2010.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,2130951732.4335911,,992424626.3549608,,657458325.9326761,1805.0828903075076
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,129575488824.49507,,29448773505.30103,,14135982371.22777,48039.78609317817
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas. Elaboración de productos de tabaco,24575938475.218292,,13445030081.110367,,2665715646.84237,4266.854635051921
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,6565870499.79133,,1424766388.4727576,,827319806.2754966,3128.2003872105256
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3527506406.6045794,,1322718581.082402,,859771988.2481514,4867.010798160643
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,8738758703.917183,,1733556499.7684252,,1557719287.478566,4566.356379018574
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",5783368187.765341,,1179676403.2105424,,857335197.0402097,3392.8341442196906
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,22864428105.03895,,8434423519.733018,,1314854583.989643,2705.0610488400935
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4118467024.95966,,1614592856.1606827,,992018670.7634974,3257.67032848236
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,38558923767.0,,14722545501.0,,2164648016.0,2579.0
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,22445576067.340427,,5425031097.704775,,2658777892.4713025,5250.4477151833735
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",7954802695.155384,,3393533750.657438,,2018900043.6331813,3520.3228703280674
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,11885603620.056267,,2844388101.6808057,,1547492238.852206,4401.466857715488
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,5510229189.999794,,1998487727.364972,,1026090736.1734132,2802.2024178666666
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,5621654842.560872,,2302590183.568427,,833911791.6236074,1620.5396087237536
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",6244324514.895796,,2507959018.2739377,,1343992881.4320924,4339.60735160169
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",376728435.7968283,,205305399.56412098,,155102761.60569113,368.57918393894687
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,2094675285.0282822,,704343204.4900575,,400845764.72279197,1132.821742864516
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,761200260.9451193,,265190806.8146182,,143326987.30880225,430.9548961591307
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,29,29,29,division_2_digitos,si,"Fabricación de vehículos automotores, remolques y semirremolques.",8884236802.239346,,2002841004.0884235,,940975780.7217479,3565.302609708631
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,30,30,30,division_2_digitos,si,Fabricación de otros tipos de equipo de transporte.,1106192689.905466,,312248234.1676029,,128960691.04215191,235.5656381118822
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1835252685.155252,,654167738.3905673,,450200687.1980449,1810.1000710783226
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1011298182.9987987,,488604623.033417,,304328529.4551577,1131.764080847195
+2011,C,C,Rev.4,4,EAE_C1_2011.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,2679585492.0931497,,1275815994.5962727,,912484438.4799659,1987.1742067458374
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,145483271526.4019,,30031398767.218098,,16161681331.674133,49316.010583432784
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,27119858368.51754,,15076672021.114616,,3010315081.385353,4152.658134917958
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,6938357335.706049,,1367301746.5944352,,913883399.5435964,2997.2207186288124
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3445378870.8105574,,1305598530.1215603,,966890622.8131913,4914.609415706386
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,10030515534.684944,,1634248218.420124,,1682529853.186504,4212.773007373261
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",6810299216.151784,,1453374912.6159267,,1067464448.5067487,3249.4434675308435
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,21365231769.83171,,6385875485.777925,,1361378949.5100772,2415.307024325694
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4178375777.1014566,,1708401378.0009992,,1070545477.535478,3152.1479279085092
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,56447655661.14728,,12777646882.599997,,2103700744.0,2659.0
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,26463355273.414234,,6288327632.406254,,3110219672.1069894,5274.152504635069
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",9362424143.97823,,4277573777.5831094,,2536998936.674405,3777.6310731001054
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,12535810057.170216,,3282915178.0739183,,1854539944.0545309,4549.477132984947
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,6611528890.930356,,2594506826.4790225,,1219971098.81475,2955.4286052201483
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,6812434781.177604,,2539101790.5991697,,1111185649.8254397,1673.7468156896198
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",7302686966.659804,,2710043023.620559,,1503413721.3712523,4087.9068529770525
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",544868270.0515087,,308039665.97917765,,164533336.90718085,302.0426681213668
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,2415250966.719032,,697908155.12154,,502152288.83044076,1124.5845433042261
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1067941356.147697,,453237513.7639113,,285289427.77864337,620.3338017931635
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,29,29,29,division_2_digitos,si,"Fabricación de vehículos automotores, remolques y semirremolques.",4178873059.461021,,1439330489.7630348,,1096305641.7028027,3710.5116440571796
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,30,30,30,division_2_digitos,si,Fabricación de otros tipos de equipo de transporte.,1263440446.3977048,,281098553.7679775,,184954901.20900726,333.0307679058955
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1909703082.5937777,,756534143.7032914,,507648718.8896671,1746.2217957667929
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,951472824.7257699,,468620521.1105898,,341814488.8604409,1105.6305272490474
+2012,C,C,Rev.4,4,EAE_C1.1_2012.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,3256743070.5074005,,1454419319.1385765,,1030456954.2445027,1808.8805209463485
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,152278803125.63538,,31188682164.630814,,18566189992.350697,50241.60324141475
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,28485774899.24864,,15322855443.96674,,3474868613.0870647,4251.1212923628555
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,6806866599.398909,,1524713894.7113676,,1103513927.9413812,2921.933521274452
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3172207749.310826,,1235889194.844636,,940253647.5183442,3976.6159270666767
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,11419559467.724455,,2333931955.7969823,,1951125084.2900665,4498.166749965959
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",6856221589.089392,,1662835847.1899254,,875841965.3804842,3153.5616490813622
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,24004462768.81305,,8050645224.811605,,1507783529.0849729,2382.2485266618314
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4313988218.520979,,1760968554.52765,,1121539746.0432367,3106.0680369892175
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,61964526747.9111,,17179605967.000004,,2540634589.0,2721.0
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,29226283316.09654,,6970909232.359356,,3835194039.87057,5515.964135109189
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",10752700129.740738,,4991136837.067961,,2906106616.171611,3980.8520391501074
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,13171110191.760647,,3594538097.4171834,,2011361208.527413,4338.2847893001845
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,7553438568.056537,,3220906823.408431,,1494762007.1268725,2956.3981234778735
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,6607452814.77369,,2914739146.1612782,,1338818468.8857064,1769.4050211421518
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",7553216930.409698,,2607996803.551716,,1843320126.0017545,3945.674086734228
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",610699249.9939809,,338172417.40973294,,197175844.68607208,363.87600199328733
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,2670107428.923215,,908546630.6543449,,574822228.7481557,1151.6144989794134
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1215369129.1344132,,439112929.46943647,,220136736.9670055,558.7499066012697
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",8453289545.322666,,2478848417.5589356,,1491785646.0896685,3361.299565338606
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1913747865.9496233,,764357752.7618246,,512516998.25577253,1494.539924433157
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1108139860.2527845,,563634810.7245139,,395942015.53404963,1147.6193693895618
+2013,C,C,Rev.4,4,EAE_C1.1_2013.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,3357614004.2254753,,1843007127.7098622,,1282986190.947935,1961.1534081919588
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,182113412948.35043,,43530064612.21012,,21531923762.970207,49359.467422315516
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,31673087306.835682,,17116468636.765669,,3830408006.5114717,4217.203416827177
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,7596268020.986909,,1611525362.3522325,,1051173342.0396342,2715.381630246016
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2800331175.753847,,1145021467.8546417,,835716428.8736198,3332.9088540937105
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,13790561174.508556,,3246593369.5107336,,2054864578.5564904,4157.09303737514
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",8104718202.808858,,2212200077.0978274,,1001172364.0940027,3010.781250725383
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,31186793195.626804,,7292263153.907782,,1880937745.015981,2407.4011831231123
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4655421292.6512575,,2021815988.3290536,,1266644540.3530815,3002.700477207326
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,66100845981.12972,,17502769443.999996,,2915327525.0,2974.0
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,32070493776.502026,,8794897114.269125,,4167512449.8689218,5451.676111232399
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",11959401997.267876,,5402027785.432425,,3299514919.7862053,4071.609085091463
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,13750567588.204493,,4052351990.260026,,2107183003.7477577,4238.37712347421
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,8462249436.935795,,3255102189.933247,,1764383046.7032363,3004.98907530724
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,6700314845.655092,,2542059735.6741667,,1369825221.5246587,1529.0705168963332
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",9405656274.977777,,3426888475.394382,,2233576017.6569304,4275.243807339018
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",672833182.1479686,,363318556.35876846,,227129278.48387757,363.07963776871946
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,3136918713.434241,,968973246.2930397,,648279444.7362896,1132.594726395568
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1284125453.900354,,360911463.6041044,,219702169.89511907,482.20652115499223
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",9539118129.22328,,2231907933.675058,,1741363280.75982,3399.358819011897
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,2144873587.7318966,,859491669.7330343,,589657642.7175255,1492.212350680944
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1138354638.686972,,584604764.6376019,,414699118.0627455,974.0918955607614
+2014,C,C,Rev.4,4,EAE_C1.1_2014.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,5354572300.095984,,2258874909.865785,,1686652478.3347871,2108.9800081272147
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,190366131060.51013,,48696319643.65017,,23196618623.593502,47983.979384153856
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,34407737024.23547,,18928161322.193794,,4323631288.446047,4262.121749284281
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,8279563473.28787,,1749113808.7504838,,1090889534.518284,2485.825327627963
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2578337475.1341996,,1105994828.1171637,,816894579.2562183,2951.08877878068
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,12436708688.611519,,2791932370.1225133,,1943007419.0300293,3868.369983232417
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",8386120425.283268,,2462342827.828924,,1370881283.554804,3215.057126942977
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,49475082276.745514,,15582237237.891016,,2386913323.315795,2756.6519242280847
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4571018154.900649,,2047114866.2921581,,1324814168.802185,2812.0198961305005
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,60469475405.778336,,20836859862.0,,3501281484.0,2782.0
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,34372987386.56862,,9598567023.643368,,4158005144.7261634,4942.117078190103
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",12203541523.607859,,5941254280.120352,,3618681445.3496294,3909.8264919993235
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,15349403345.454926,,4692970447.190698,,2537768322.5769424,4147.163206921391
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,8346093528.752636,,3311253847.352656,,2018495231.9374156,2928.0869166518223
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,5675927211.778057,,2210475260.2694283,,1158577858.8067539,1423.3090157192123
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",8992050856.97231,,3291559302.0017576,,2156141633.207194,3635.8493780022854
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",1291968258.3812647,,804541476.1411068,,358405487.7785684,492.7109926839824
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,3396518879.7792196,,1120677547.3637078,,654172302.4589969,1140.7610330701525
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1271555286.124175,,498599647.9369231,,284779673.87312824,571.7199242355351
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",7279016390.215912,,2314673538.8624597,,1523812600.1413536,3083.3054923127243
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,2282173987.3770046,,905194942.3574193,,659081077.3771873,1477.3967341033565
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1686703842.5795927,,804621378.8354795,,509962079.5481202,1139.7015228706346
+2015,C,C,Rev.4,4,EAE_C1.1_2015.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,4976851741.158725,,2245208443.6704707,,1511058070.670797,1782.1469438151432
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,198659047192.97568,,43725118423.68592,,25635200043.485916,47326.05049777277
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,37896763147.62513,,20661743260.03753,,4787871829.805355,4050.497354971104
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,8442665519.98748,,1967601549.4918716,,1113220899.6937072,2313.957484880149
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2529226561.819784,,1082841222.3948674,,738524127.1063322,2483.4597202467075
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,11534401746.100426,,2246820576.6974134,,2158509519.2583604,3495.2595220581607
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",8521775507.898925,,1879071604.2414541,,1453103453.17397,3098.2817036331717
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,45203778311.005745,,12451255083.198092,,1887029481.438944,2071.4155254313328
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4653589804.605571,,2090008856.3477767,,1444749602.3514159,2851.1338918136357
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,65096338926.02118,,31194121278.02118,,3697579880.0,2665.0
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,33213784081.992146,,8370545758.51835,,4902322485.0486965,5116.480890271721
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",17066468555.043943,,8426464071.981755,,4382113811.975178,4187.782264004207
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,13984860475.311975,,4422256027.058859,,2552461553.237829,3918.2545347117607
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,7441011604.933254,,3102178949.6208687,,2024029122.830339,2776.786123395666
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,5726721697.894914,,2238196172.7215624,,1323447470.4406087,1473.862803521052
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",8527478027.008408,,3148464651.0187306,,2204029312.710685,3487.685971611435
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",1833831233.6819932,,933320965.6834408,,399897140.8765276,495.02523874326556
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,3691374470.906591,,1066440380.9792031,,761532262.2366402,1130.9093320902707
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1536426576.9102309,,663909288.4559282,,343648172.72162634,617.3878095778867
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",4245691843.7219734,,1727838921.8295712,,1450476423.6514523,2541.0165488865496
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,2386261592.736007,,914531259.1396784,,664268983.5226207,1449.5551061272038
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1747078146.9355738,,793150931.5912138,,516418868.9410589,1048.0852999224333
+2016,C,C,Rev.4,4,Encuesta de Actividad Económica 2016/EAE_C1.1_2016.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,4344281930.011523,,2276959919.933696,,1413607420.2328691,1642.5590930950236
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,203258306933.5058,202753024535.90112,49829975978.82706,49324693581.22243,28587455468.33009,46682.02814778392
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,40766941978.81383,30881737435.90529,20792980226.766357,10907775683.857824,4833330004.689924,3953.263206035489
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,7509008972.498995,7506942968.154184,1450301234.2121363,1448235229.867325,1182454920.3729966,2173.016107156334
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2216188282.733896,2216188282.733896,870996325.502493,870996325.502493,652098665.0969982,1987.278063239888
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,9736850449.517189,9713683918.66706,2174088235.9632144,2150921705.1130853,2078533481.152377,3661.461896751253
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",13237156062.068743,13232227539.068743,2977785910.355379,2972857387.355379,1862999116.4594648,3185.539071374807
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,48846197664.10901,48843227185.58666,17430461211.050632,17427490732.528286,2107438348.7925444,1958.650237736584
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4386985979.286081,4386985978.112828,2186189837.4308386,2186189836.257585,1418171966.6308656,2583.534990389042
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,50095981482.13297,32371358228.132973,28824235329.0,11099612075.0,3750496015.0,2532.0
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,31586881976.078766,31570808832.98418,8799645861.015709,8783572717.92112,5149065258.856725,4823.113870450998
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",17332569250.755886,17305461280.58198,8290499907.350059,8263391937.176154,4803666415.047479,4116.097034408129
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,14023229639.42936,13937394089.417768,4325263941.665927,4239428391.654337,2604687679.8647532,3763.97852254055
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,7166134589.5938225,7166134589.5938225,2803215280.085573,2803215280.085573,1883858115.4464521,2541.152040323282
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,4696850183.539216,4696850183.539216,1448507630.305428,1448507630.305428,1411918168.1451514,1386.6657744916204
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",7908340249.209436,7908340249.209436,3062367061.871786,3062367061.871786,2202365154.5896683,3505.931970322548
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",1777240350.1399279,1777240350.1399279,1097237708.2004259,1097237708.2004259,399063992.7019899,431.6307903812603
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,2299854964.7299976,2299854964.7299976,638373224.6121327,638373224.6121327,532305280.70995677,790.7696768568708
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1144935095.6586564,1144935095.6586564,363313148.8507948,363313148.8507948,252484147.29811648,459.93698607378207
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",6678590524.684361,6596414038.552584,2349675043.861801,2267498557.7300234,1812359207.0740135,2905.579317125304
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,2299997729.33896,2299997729.33896,1035598580.3942652,1035598580.3942652,653495158.2880173,1200.7006361187396
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1677276816.752309,1677276816.752309,773319972.2161514,773319972.2161514,538512429.3621863,954.5726385083525
+2017,C,C,Rev.4,5,Encuesta de Actividad Económica 2017/EAE_C1.1_ 2017.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,5496006241.858468,5496006241.858468,2900540224.323251,2900540224.323251,1868218315.8619938,1870.0962480395326
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,222991881726.39975,222562372380.25507,56529502541.71273,56099993195.56809,31295877442.95495,45921.540655099416
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,41989626990.06716,31392816181.01127,23336970338.62459,12740159529.56871,5521516353.416256,4456.2939445584325
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,8042178696.766404,8041767486.557271,1090614704.4041252,1090203494.194992,932766951.7350379,1574.141861697525
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2293855468.409412,2293855468.409412,907272765.4009975,907272765.4009975,612322514.6332301,1662.8916521462038
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,10005181370.771458,10005181370.771458,2730194455.231787,2730194455.231787,2174852728.1975737,3246.4529943687526
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",17016949938.241556,17006902737.187416,3998569104.318474,3988521903.264334,1873509369.6742942,3045.183339333446
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,61814324715.76555,61811415297.76555,28501363230.81322,28498453812.81322,2170205884.650309,2062.2038547216853
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4363987531.593918,4363987531.593918,2155658184.718885,2155658184.718885,1469672638.915914,2289.6208392522813
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,84849636320.10085,65868579893.10086,36297376831.0,17316320404.0,4051463576.0,2425.0
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,31472285613.730125,31455591182.803787,9074345799.29836,9057651368.372025,5291159154.846892,4468.819625645604
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",20110277966.28632,20089006381.221935,9867481027.157917,9846209442.093533,5793632583.971967,4498.61741687455
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,15869185224.27979,15771894137.828854,5021157279.35595,4923866192.905012,2861368889.5159054,3577.2188052306587
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,9726168867.65401,9715335449.25106,3854955405.3305435,3844121986.9275947,2213718442.197573,2243.3906731197276
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,4132161164.0237627,4132161164.0237627,1138334312.9394941,1138334312.9394941,823501802.4883317,896.7929841607481
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",9303763348.65439,9303763348.65439,3225010935.8016877,3225010935.8016877,2622243942.691798,3651.031395794411
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",2298241400.249213,2298241400.249213,1085725896.515427,1085725896.515427,479810903.0514819,481.3766009439944
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,3149335232.802079,3149335232.802079,1200744363.0885322,1200744363.0885322,638947448.2360996,888.1615974138687
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,1678175227.7147934,1678175227.7147934,495440655.27933764,495440655.27933764,301706715.7495707,420.0876402674352
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",9800301473.882969,9572750790.034958,3032037966.257584,2804487282.409574,1925655934.0158367,2944.7307254653665
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1998936864.9152641,1998936864.9152641,757624754.6012818,757624754.6012818,562331737.6212687,997.4827409908258
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1717791802.3788674,1717571870.6553502,763145432.1928833,762925500.4693661,521443140.58138365,866.0107502258967
+2018,C,C,Rev.4,5,Encuesta de Actividad Económica 2018/EAE_C1.1_2018.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,5412602590.675617,5412602590.675617,2821803987.6324964,2821803987.6324964,1982976467.1651266,1949.0355597651228
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,239910551686.0,239362529576.0,51730782782.0,51182760671.0,33527404362.0,44190.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,44783557654.0,33921584158.0,24537508032.0,13675534536.0,5865670295.0,4381.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,8267413567.0,8267257057.0,1537875945.0,1537719435.0,987599697.0,1396.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,1995810084.0,1995810084.0,847955772.0,847955772.0,549775562.0,1354.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,9409299951.0,9409299951.0,2223797944.0,2223797944.0,2272810057.0,3151.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",18987484066.0,18972508951.0,2973365581.0,2958390466.0,1879921914.0,2655.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,59955064898.0,59951228360.0,23092271454.0,23088434916.0,2476626251.0,1954.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,5019439392.0,5019439392.0,2373977132.0,2373977132.0,1613492750.0,2266.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,84149539467.0,63337295331.0,33700848052.0,12888603916.0,4258145620.0,2481.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,32024760252.0,32002802943.0,8660297774.0,8638340465.0,5185673219.0,4068.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",22769119546.0,22746663457.0,11792550010.0,11770093921.0,6347219732.0,4498.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,17414283424.0,17414283424.0,5270008924.0,5270008924.0,3049951542.0,3582.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,12426253701.0,12394020652.0,5128369588.0,5096136540.0,2708326212.0,2439.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,5395949450.0,5395791980.0,2300331094.0,2300173623.0,1002034156.0,939.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",9522741767.0,9522741767.0,2944200405.0,2944200405.0,2417306731.0,3300.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,26,26,26,division_2_digitos,si,"Fabricación de los productos informáticos, electrónicos y ópticos.",2704540584.0,2704540584.0,1360393644.0,1360393644.0,545041505.0,481.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,27,27,27,division_2_digitos,si,Fabricación de equipo eléctrico.,3228487595.0,3228487595.0,1096434629.0,1096434629.0,584108134.0,732.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2060943095.0,2060943095.0,693698680.0,693698680.0,417319851.0,444.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",12034576239.0,11916894591.0,3838685512.0,3721003864.0,2052990030.0,2713.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1887336996.0,1887336996.0,635637342.0,635637342.0,507207939.0,833.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1738004606.0,1737488284.0,774152999.0,773636678.0,583065184.0,849.0
+2019,C,C,Rev.4,5,Encuesta de Actividad Económica 2019/EAE_C1.1_2019.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,5966266477.0,5961014341.0,3259382743.0,3254130607.0,2167780485.0,1775.0
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,257738232057.6992,257174579127.1699,56135616310.26708,55571963379.73776,32231384111.80433,42109.49980235967
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,44920640398.54382,34815448183.43947,23382370559.15849,13277178344.05414,5834304658.373174,4433.649574571817
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,5818829866.823628,5818428525.184568,1416505803.291977,1416104461.652918,760869903.133427,1183.513207501275
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,1819467174.589784,1819467174.589784,761661272.1778709,761661272.1778709,514199146.237599,1267.272590688494
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,6284503587.26736,6284503587.26736,1813470605.997208,1813470605.997208,1720629364.128293,2033.594472359848
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",17243224466.22324,17231672356.99236,2433075565.429705,2421523456.198825,2044875708.310049,2684.744727295632
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,57919112320.16016,57912122312.90569,15805563648.02108,15798573640.76661,3140865623.19964,2172.665230502183
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,3917137533.873962,3917137533.873962,1806631757.528098,1806631757.528098,1176321269.031114,1539.194322282843
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,73684514601.90465,52881797194.90465,27744229423.0,6941512016.000003,4350597147.0,2261.0
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,33376010137.70742,33365464278.23857,10047072395.94411,10036526536.47526,4756282235.114037,3818.845525641215
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",28613877637.5555,28587008102.40426,15920244771.63856,15893375236.48733,6710263635.535246,4499.046583854292
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,15403034391.89084,15403034391.89084,5299177311.439482,5299177311.439482,2634464556.844869,2917.178695179263
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,10804940525.3599,10804940525.3599,3986454503.088563,3986454503.088563,2448888035.221269,2032.909829104333
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,5497759493.129078,5497230103.129078,2405796022.735058,2405266632.735058,833441105.5147004,804.5995118130885
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",11961583429.59849,11961583429.59849,3458169347.604169,3458169347.604169,2374760281.9435,3282.8202547345
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,26 y 27,26|27,26|27,grupo_codigos_publicado,si,"Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico.",5577708002.869707,5577708002.869707,2101687173.117251,2101687173.117251,1290407095.8225,1282.864459072422
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2198769366.113843,2198769366.113843,651386861.7616694,651386861.7616694,394164681.8539262,534.5154320033506
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",5154011683.787188,5129210894.688267,2223889253.327985,2199088464.229063,1659822874.028333,2395.05916582663
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1840136044.380808,1840136044.380808,602435762.8547786,602435762.8547786,450249851.6846084,806.4352983336792
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,2183504109.144735,2180631567.637889,1015256944.282069,1012384402.775224,614713272.1347783,825.9260201599227
+2020,C,C,Rev.4,5,EAE_C1.1_2020.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,8860531562.87426,8854235796.391117,3952415438.343398,3946119671.860256,2336711932.388013,1879.130037436385
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,324232206525.4955,323652639981.9126,79424235765.85344,78844669222.2705,36166001934.32668,42311.87783847786
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,48892315781.32029,38712290377.39629,24940798087.37644,14760772683.45244,6217083849.671828,4185.148852493432
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,6921100715.783568,6921100715.783568,901538503.9505701,901538503.9505703,743445663.9804472,1048.175956436991
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2302075079.937226,2302075079.937226,847094829.8973813,847094829.8973813,626914615.6144569,1390.274276379093
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,8915574168.642122,8915574168.642122,2176555542.14904,2176555542.14904,1582383898.830383,2336.728297528075
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",21245464652.99275,21236456149.21341,7098850279.489043,7089841775.709705,2260305402.067818,2855.063959231356
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,79111944407.60582,79111944407.60582,36733935844.72956,36733935844.72956,2749364655.080758,2117.714289295968
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4222471650.233808,4222471650.233808,1884664415.212437,1884664415.212437,1220473397.500737,1664.687355026594
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,79625367670.0841,79625367670.0841,12946806512.99997,12946806512.99997,4248587898.000005,2168.0
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,41390491658.1012,41376429332.22394,11627746036.2963,11613683710.41903,5195325857.703145,3677.102999195907
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",27793584073.31902,27747467543.90776,14052743848.42207,14006627319.01081,6207772257.321005,4263.901482074112
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,21690986875.39184,21628467147.93161,6320777277.770867,6258257550.310634,2559213566.807242,2750.058407503746
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,13843326957.87291,13843326957.87291,4726384644.272879,4726384644.27288,2319297089.515893,2184.647280264646
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,7266659086.19554,7266659086.19554,2683662101.250691,2683662101.250691,990866466.0309191,924.5443138624411
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",13486133853.71968,13486133853.71968,3863555672.308109,3863555672.308109,2910677806.616926,3471.246062069572
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,26 y 27,26|27,26|27,grupo_codigos_publicado,si,"Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico.",7652399677.085512,7652399677.085512,3042225447.363878,3042225447.363878,1283209890.071996,1311.34830852996
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2156410305.360523,2156410305.360523,596841730.9862562,596841730.9862562,362625638.9817981,415.9193131689546
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",15236563095.15121,15205381177.71375,4340950622.342182,4309768704.904727,2472559902.408706,2826.642865739796
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1798872823.611397,1798872823.611397,589589457.9192019,589589457.9192019,354532548.498262,789.3678868424649
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1772220828.909888,1770404435.432277,817553068.8125883,815736675.3349773,673160767.4212674,906.4579202828749
+2021,C,C,Rev.4,5,EAE_C1.1_2021.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,10895230596.70705,10887157601.26447,5358170432.070161,5350097436.627588,2978295771.415342,2734.186713861432
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,376688396350.0463,376654116324.5691,73270148395.12938,73235868369.65219,40433847106.22008,43945.2060309411
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,58669944457.18642,46129089794.46853,29631248611.47251,17090393948.75462,7379518177.467481,4024.907864536388
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,7645409612.004601,7644525212.045514,1209727569.717809,1208843169.758726,840627753.028832,1090.156790747355
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3126077281.183296,3126077281.183296,1098980800.731437,1098980800.731437,754845914.8568667,1494.832594208248
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,8241881272.041178,8241881272.041178,1632607722.065196,1632607722.065196,1794175659.987751,1987.443902784996
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",23530913352.16131,23530913352.16131,7402246193.976149,7402246193.976152,2698574356.632305,3141.257004429009
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,88049000111.05687,88049000111.05687,42116458773.99867,42116458773.99868,2934689404.121096,2041.624345925109
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4868771091.41445,4868771091.41445,2045993752.34867,2045993752.34867,1324689122.68738,1603.802230180594
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,99572040783.70886,72094147032.70886,43268284843.70885,15790391092.70885,4169469751.000002,2117.0
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,59909673058.67326,59894282798.80472,14130349259.71725,14114958999.8487,6279586080.48115,3955.836264605779
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",26158720847.26478,26121409454.30262,12894389809.77965,12857078416.81749,6390688182.106395,3975.961093529978
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,28863574520.26596,28863574520.26596,6024151080.506478,6024151080.506478,2889679139.792662,2861.884325869166
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,14809955443.83561,14809955443.83561,5218406445.777292,5218406445.777292,2842098626.369673,2358.006669671411
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,7690184315.124573,7690184315.124573,2908151951.003375,2908151951.003375,1121274156.313678,1015.645501310453
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",14769498032.02308,14769498032.02308,4639885335.059939,4639885335.059939,3201558833.267054,3731.338390772939
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,26 y 27,26|27,26|27,grupo_codigos_publicado,si,"Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico.",7047066860.802288,7047066860.802288,2310027905.839918,2310027905.839918,1222648885.194015,1147.072932457754
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2829770459.180393,2829770459.180393,838023342.503488,838023342.503488,501299718.696247,486.3665139783201
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",37667329006.09567,37554241983.9949,6226610030.633986,6113523008.533214,3132124207.528254,3134.480051609712
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,1756308906.145628,1756308906.145628,833859162.5256424,833859162.525643,440489788.0198842,917.1251631267694
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1893856993.758176,1893313769.902455,1020064936.968816,1019521713.113096,631070806.5919968,801.4124423651252
+2022,C,C,Rev.4,5,EAE_C1.1_2022.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,13659736707.14664,13653169258.48403,6816434284.300598,6809866835.637984,4626958363.51502,3636.145975735433
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,340739251192.5903,340692548898.9279,74001594789.69716,73954892496.03473,45302504927.96487,45262.04584626238
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,60661395696.93281,47831334625.52515,31474252286.90485,18644191215.4972,8279158451.006319,4096.6944749583
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,5985082231.391247,5985082231.391247,782489121.9900532,782489121.9900591,895492884.066431,1087.762727827769
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,3095445840.938424,3095445840.938424,1462567012.723903,1462567012.723903,832165809.7196444,1413.464431734489
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,7123691861.21951,7123614366.21951,1851580745.860181,1851503250.860181,1728509469.079543,1903.674333733437
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",20004891208.71097,20004891208.71097,4611190476.455446,4611190476.455445,2647229290.218316,2959.481297085743
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,84977620251.19331,84977620251.19331,25070997869.60612,25070997869.60611,3549768071.009475,2068.554324604435
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4690973995.521751,4690973994.505758,1836121730.94681,1836121729.930816,1413640157.418463,1783.727749891721
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,94318579896.4886,65713488756.4886,41548361319.99998,12943270179.99998,5171941380.999999,2065.0
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,48216633062.02076,48205382674.48069,11054821123.77689,11043570736.23682,6819632263.195806,4024.691492534144
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",23870285346.1076,23850568804.80949,13181654619.84578,13161938078.54767,6591158349.595622,3747.129187227445
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,21646435410.40011,21646435410.40011,5983029818.103119,5983029818.103119,3226959700.375707,2948.401040257304
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,14424298731.11481,14424298731.11481,5303612360.039079,5303612360.039079,3222845186.326168,2413.966865142215
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,7532874705.525795,7532716788.235328,2519342380.470465,2519184463.179997,1331002788.068106,984.9086797829356
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",13889205362.6566,13889205362.6566,3021102572.463355,3021102572.463354,2935671446.689082,3348.149432550271
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,26 y 27,26|27,26|27,grupo_codigos_publicado,si,"Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico.",7997586301.992512,7997586301.992512,2815865920.233994,2815865920.23399,1498702552.027573,1304.510128556191
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2580235010.829647,2580235010.829647,951872923.625414,951872923.625414,608474240.0395687,556.9041937108411
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",32409644382.06126,32242975260.91941,5792712135.989747,5626043014.847899,3241101976.608372,3275.49526297452
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,2125451933.355611,2125451933.355611,1044064469.385812,1044064469.385812,707912721.916609,1099.628446802287
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1491921315.582646,1491705715.952551,836035469.075494,835819869.4453994,506143026.4605274,585.8402167684236
+2023,C,C,Rev.4,5,EAE_C1.1_2023.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,11810998912.47902,11802453781.82056,4983890608.502408,4975345477.843946,4109785168.620189,2571.91126127633
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,10,10,10,division_2_digitos,si,Elaboración de productos alimenticios.,352180034227.6948,352123054835.9999,84218183717.03197,84161204325.33702,49128076886.14134,46248.8105115388
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,11 y 12,11|12,11|12,grupo_codigos_publicado,si,Elaboración de bebidas y elaboración de productos de tabaco,60622789429.2271,47352019670.65911,29863085293.53996,16592315534.97196,8346489838.865474,3856.775076459811
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,13,13,13,division_2_digitos,si,Fabricación de productos textiles.,5307506879.689669,5307364045.817018,962075411.5801088,961932577.7074591,921803196.6566223,1146.527829684898
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,14,14,14,division_2_digitos,si,Fabricación de prendas de vestir.,2762952568.940226,2762952568.940226,1286725720.524318,1286725720.524318,888190724.8980532,1393.387792203318
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,15,15,15,division_2_digitos,si,Fabricación de cueros y productos conexos.,9496868914.057798,9496562290.651833,2618009769.093308,2617703145.687342,2200130145.562027,2147.163340017115
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,16,16,16,division_2_digitos,si,"Producción de madera y fabricación de productos de madera y corcho, excepto muebles; fabricación de artículos de paja y de materiales trenzables.",18419656297.41493,18419656297.41493,4303662769.034304,4303662769.0343,3095589850.508492,3306.896086682609
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,17,17,17,division_2_digitos,si,Fabricación de papel y de los productos de papel.,117733468860.8631,117733468860.8631,42016114413.31796,42016114413.31796,4155873458.370647,2263.105447459034
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,18,18,18,division_2_digitos,si,Actividades de impresión y reproducción de grabaciones.,4177789697.789854,4177789697.789854,1427434701.307499,1427434701.307499,1144046306.224212,1513.97331959198
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,19,19,19,division_2_digitos,si,Fabricación de coque y de productos de la refinación del petróleo.,86334638771.4249,54477929820.4249,30368750816.00001,-1487958134.99999,5717797939.000005,2124.0
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,20,20,20,division_2_digitos,si,Fabricación de sustancias y productos químicos.,47182381133.59901,47166650995.63106,13761574981.39683,13745844843.42888,6556451631.589742,3738.94792184416
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,21,21,21,division_2_digitos,si,"Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos.",26748830531.55282,26722686411.72101,14405602375.78415,14379458255.95235,7383368652.166212,3854.438198571876
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,22,22,22,division_2_digitos,si,Fabricación de productos de caucho y plástico.,24783657881.44367,24783657881.44367,8179072184.999937,8179072184.999936,3481922152.787028,3009.968563782624
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,23,23,23,division_2_digitos,si,Fabricación de otros productos minerales no metálicos.,14534465226.76139,14534465226.76139,5659381513.284786,5659381513.284786,3416951825.354361,2307.162117442761
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,24,24,24,division_2_digitos,si,Fabricación de metales comunes.,7340044145.303093,7339616707.622582,2730418792.689078,2729991355.008567,1456496542.349441,984.2297938537239
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,25,25,25,division_2_digitos,si,"Fabricación de productos derivados del metal, excepto maquinaria y equipo.",14128526200.5058,14128526191.30385,4114123705.110421,4114123695.908463,3396231183.644723,3534.234221032697
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,26 y 27,26|27,26|27,grupo_codigos_publicado,si,"Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico.",7648368896.292114,7648368896.292114,2424683060.504117,2424683060.504116,1632415850.772292,1346.356392172188
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,28,28,28,division_2_digitos,si,Fabricación de maquinaria y equipo n.c.p.,2652728301.991127,2652728301.991127,1044950964.707652,1044950964.707652,698956920.5872246,608.3174295224602
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,29 y 30,29|30,29|30,grupo_codigos_publicado,si,"Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte.",37455101928.07415,37321895066.77987,5264185310.253814,5130978448.95953,3676195843.95901,3251.11111826836
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,31,31,31,division_2_digitos,si,Fabricación de muebles.,2829361619.730428,2829361619.730428,1267871901.361119,1267871901.361119,846695054.1270897,1066.569294269697
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,32,32,32,division_2_digitos,si,Otras industrias manufactureras.,1837340603.122737,1837340603.122737,934053527.3543718,934053527.3543718,579821866.2413826,695.8186800179067
+2024,C,C,Rev.4,5,EAE_C1.1_2024.xls,33,33,33,division_2_digitos,si,Reparación e instalación de la maquinaria y equipo.,13895095517.64004,13885904305.15448,7120364398.789126,7111173186.303567,4200759762.081807,2466.134023605274

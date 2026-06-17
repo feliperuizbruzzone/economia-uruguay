@@ -157,6 +157,52 @@ Notas validadas:
   2008–2024, y la sección B falta en 2009–2011; no deben exigirse en la
   validación preliminar del panel C1.
 
+### Granularidad potencial de subramas EAAE
+
+**DECISIÓN METODOLÓGICA — Junio 2026:** si se construye una base de subramas
+desde los datos originales EAAE para dialogar con el panel 2001–2024, el nivel
+práctico recomendado es **división CIIU / dos dígitos**, no cuatro dígitos.
+
+El panel final vigente permanece a nivel `anno + seccion`. Los archivos fuente
+`C1`/`C1.1` de 2002–2024 tienen columnas `seccion`, `division` y
+`descripcion`, por lo que permiten construir un artefacto separado a nivel de
+división publicada. La clave tentativa sería:
+
+`anno + ciiu_version + seccion_fuente + division`.
+
+El año 2001 es una excepción: el RAR original trae carpetas `Letra`,
+`2 Digitos` y `4 Digitos`. Ese detalle a cuatro dígitos no define una
+granularidad comparable para toda la serie, porque no aparece como contrato
+estable en los cuadros `C1`/`C1.1` de 2002–2024. Por lo tanto, una base a cuatro
+dígitos solo debe tratarse como ejercicio puntual para 2001 o como insumo
+auxiliar, no como panel comparable 2001–2024.
+
+La documentación visualizable en GitHub queda en
+`docs/methodology/20260617_desagregacion-subrama-eaae-2001-2024.md`.
+
+**DECISIÓN METODOLÓGICA — Junio 2026:** a pedido del equipo, se construye una
+salida industrial de subramas homogenizada hacia CIIU Rev.4, pero como
+**grupos Rev.4 compatibles**, no como divisiones Rev.4 puras. La razón es que
+algunas correspondencias Rev.3 → Rev.4 son uno-a-muchos, cambian de sección o
+aparecen agrupadas en las fuentes publicadas. El flujo conserva dos artefactos:
+
+- `YYYYMMDD_panel_eaae_industria_subramas_fuente.csv`: panel fuente con filas
+  publicadas para manufactura, preservando `ciiu_version`, `seccion_fuente`,
+  `division_publicada`, `descripcion_fuente` y una marca
+  `usar_para_homologacion`.
+- `YYYYMMDD_panel_eaae_industria_subramas_rev4_homologado.csv`: panel derivado
+  por grupos Rev.4 compatibles, generado desde la codiguera operativa
+  `command-files/config/eaae_industria_subramas_rev4_homologacion.csv`.
+- `YYYYMMDD_validacion_panel_eaae_industria_subramas_rev4.csv`: validaciones
+  tidy de cobertura, consistencia, reconciliación y mapeo.
+
+El script reproducible es
+`command-files/processing-command-files/11_build_eaae_industria_subramas.py`.
+Para 2001 se usa `2 Digitos/EAE_cu1afe2_01.xls`, que publica divisiones para
+empresas de 5 y más personas ocupadas. Por eso la reconciliación 2001 contra el
+panel principal por letra queda como advertencia esperada: el panel principal
+usa el cuadro por letra `Total del País`.
+
 ### Entorno de trabajo
 - **Sistema operativo:** Linux (local)
 - **IDE:** Positron (IDE de Posit, basado en VS Code; soporta Python y R)
@@ -258,6 +304,74 @@ Contenido de cada RAR: archivos .xls (Excel 97-2003, formato BIFF8)
 Destino local de descarga: data/input-data/eaae/
 ```
 
+### Fuente primaria adicional: EAE 1998-2001 a 2 dígitos
+
+**INCORPORADO — Junio 2026:** se descargaron cuatro libros Excel externos con
+resultados de la Encuesta de Actividad Económica a **2 dígitos de actividad
+económica** para los años 1998, 1999, 2000 y 2001. La fuente corresponde a
+archivos publicados en la página de Series Económicas de la Unidad de Métodos y
+Acceso a Datos, Facultad de Ciencias Sociales, Udelar.
+
+Destino local de descarga:
+
+`data/input-data/eaae-1998-2001/`
+
+Archivos originales preservados:
+
+| Año | Archivo local | URL de origen |
+|---|---|---|
+| 1998 | `EAE_1998_2DIG.xls` | `https://cienciassociales.edu.uy/wp-content/uploads/2019/12/1_EAE_1998_2DIG.xls` |
+| 1999 | `EAE_1999_2DIG.xls` | `https://cienciassociales.edu.uy/wp-content/uploads/2019/12/1_EAE_1999_2DIG.xls` |
+| 2000 | `EAE_2000_2DIG.xls` | `https://cienciassociales.edu.uy/wp-content/uploads/2019/12/1_EAE_2000_2DIG.xls` |
+| 2001 | `EAE_2001_2DIG.xls` | `https://cienciassociales.edu.uy/wp-content/uploads/2019/12/1_EAE_2001_2DIG.xls` |
+
+Verificación inicial: los cuatro archivos son libros Excel 97-2003 (`.xls`) y
+`readxl` abre 37 hojas en cada uno.
+
+**DECISIÓN:** estos archivos quedan como fuente primaria histórica separada de
+los RAR oficiales EAAE 2001-2024 ya usados por el pipeline. No se transforman ni
+se integran al panel EAAE vigente en esta etapa. Si se decide extender o
+contrastar la serie a nivel de divisiones, cualquier derivado debe construirse
+con un script reproducible bajo `command-files/` y escribirse en
+`data/analysis-data/`.
+
+**PROCESAMIENTO — Junio 2026:** se creó
+`command-files/processing-command-files/10_process_eaae_1998_2001_2dig.R` para
+producir un panel histórico reutilizable:
+
+`data/analysis-data/eaae_1998_2001_2dig_panel.csv`
+
+Decisiones de procesamiento:
+
+- Se procesa únicamente el universo `empresas_5_mas` porque el bloque
+  `empresas_5_49` es un subconjunto y no debe sumarse ni duplicarse.
+- No se persiste una base larga de auditoría. Las validaciones quedan dentro
+  del script reproducible.
+- La clave operativa es `anno + seccion_fuente + division_publicada`. Se
+  conserva `seccion_fuente` Rev.3 y se agrega `seccion` homologada con la misma
+  regla del panel EAAE vigente.
+- Se conserva `division_publicada` tal como aparece en la fuente. Varias filas
+  son grupos publicados (`15-16`, `17-18-19`, etc.), no divisiones atómicas.
+- Las variables monetarias se convierten desde miles de pesos corrientes a
+  pesos corrientes. `puestos_trabajo` no se escala.
+- El cuadro 1 alimenta `vbp_pp`, `vab_pp`, `remuneraciones` y
+  `puestos_trabajo`. El cuadro 2 alimenta `consumo_intermedio`,
+  `impuestos_netos`, `consumo_capital_fijo` y `excedente_explotacion`. Los
+  cuadros 14, 15, 16 y 17 alimentan FBCF, stock de capital, variación de
+  existencias y componentes de FBKF.
+- Anomalía de fuente: en `EAE_1999_2DIG.xls`, las hojas 2, 14, 15, 16 y 17
+  están encabezadas como año 2000 y coinciden con las hojas del archivo 2000.
+  El script las omite. Por eso 1999 conserva sólo variables del cuadro 1
+  confiable: total, manufactura y subramas manufactureras; las variables de
+  consumo intermedio, cuentas, FBCF, stock y existencias quedan como NA para
+  ese año.
+
+Validaciones actuales: clave única sin duplicados; sin columnas completamente
+vacías; identidades `vbp_pp = consumo_intermedio + vab_pp`,
+`vab_pp = impuestos_netos + consumo_capital_fijo + remuneraciones +
+excedente_explotacion` y chequeos de FBCF cierran para los años con cuadros
+completos.
+
 ### Fuente primaria adicional: Encuesta Industrial Anual 1989-1997
 
 **INCORPORADO — Junio 2026:** se descargó una serie histórica externa de la
@@ -303,7 +417,7 @@ Artefactos derivados:
 |---|---|
 | `data/analysis-data/eia_1989_1997_cuadros_tidy.csv` | Base larga auditada: año, archivo, hoja, cuadro, título, código CIIU Rev.2, variable original, variable canónica, unidad y valor estandarizado a pesos corrientes. |
 | `data/analysis-data/eia_1989_1997_panel.csv` | Panel ancho por `anno` × `codigo_rama_original`, con variables canónicas pensadas para dialogar con los cálculos EAAE. |
-| `data/analysis-data/eia_1989_1997_validaciones.csv` | Cobertura de cuadros, chequeos de duplicados conceptuales y validaciones contables. |
+| `data/analysis-data/eia_1989_1997_validaciones.csv` | Cobertura de cuadros, chequeos de duplicados conceptuales, validaciones contables y controles de calidad equivalentes al panel EAAE cuando la variable existe en EIA. |
 
 Decisiones de procesamiento:
 
@@ -331,10 +445,22 @@ Decisiones de procesamiento:
   disponible.
 - Validación actual: se detectaron los 54 cuadros esperados (9 años × 6
   cuadros). Las identidades `vbp_corriente = consumo_intermedio +
-  vab_corriente` y la descomposición del VAB pasan en el panel. Queda una alerta
-  menor documentada en `eia_1989_1997_validaciones.csv`: en 1990, código Rev.2
-  `38`, `impuestos_netos` difiere en 2.000 pesos corrientes entre cuadro 2 y
-  cuadro 16; el panel usa cuadro 2 para preservar la identidad contable.
+  vab_corriente` y la descomposición del VAB pasan en el panel. Se agregaron
+  controles equivalentes al panel EAAE 2001–2024 para las variables disponibles
+  en EIA: continuidad temporal, clave única `anno + codigo_rama_original`,
+  cobertura de industria total, variables clave no nulas, `vbp_corriente >=
+  vab_corriente`, `vab_corriente >= remuneraciones`, consumo de capital fijo no
+  negativo, FBCF no negativa, `fbkf_maq_eq <= fbcf`, alineación de columnas de
+  cuentas y saltos interanuales mayores a 50% del VAB total industrial. Las
+  validaciones equivalentes a puestos de trabajo y VAB/VBP a precios básicos no
+  se incorporan porque esas variables no forman parte de los cuadros EIA
+  procesados. En la corrida vigente, `eia_1989_1997_validaciones.csv` registra
+  15.968 filas, con 114 marcas `revisar`: 71 por FBCF negativa en ramas finas,
+  29 por `fbkf_maq_eq > fbcf`, 10 por `vab_corriente < remuneraciones`, 3 por
+  saltos nominales del VAB total mayores a 50% y 1 duplicado conceptual menor
+  en 1990, código Rev.2 `38`, donde `impuestos_netos` difiere en 2.000 pesos
+  corrientes entre cuadro 2 y cuadro 16. El panel usa cuadro 2 para preservar la
+  identidad contable.
 
 ### Cinco épocas estructurales
 
@@ -1280,6 +1406,11 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Creación del post-proceso R `02_add_calculos_propios_eaae.R` y agregado de hojas de resultados corrientes, constantes, variaciones porcentuales e índices 2005=1 al XLSX | ✓ |
 | Jun 2026 | Incorporación de fuente primaria externa `EIA 1989-1997` desde Series Económicas FCS/Udelar en `data/input-data/`, preservando archivos Excel originales | ✓ |
 | Jun 2026 | Procesamiento reproducible de EIA 1989–1997: extracción de cuadros reales 2, 5, 9, 16, 17 y 19; creación de base larga, panel ancho y validaciones en `data/analysis-data/` | ✓ |
+| Jun 2026 | Ampliación de validaciones EIA 1989–1997 con controles equivalentes al panel EAAE para variables disponibles | ✓ |
+| Jun 2026 | Documentación de granularidad potencial de subramas EAAE: dos dígitos/división como nivel recomendado para serie comparable 2001–2024; cuatro dígitos solo como excepción 2001 | ✓ |
+| Jun 2026 | Incorporación de fuente primaria externa `eaae-1998-2001` con resultados EAE a 2 dígitos para 1998, 1999, 2000 y 2001 | ✓ |
+| Jun 2026 | Procesamiento reproducible de `eaae-1998-2001`: panel ancho a división publicada, sólo universo empresas de 5 y más, con omisión documentada de hojas 1999 duplicadas del año 2000 | ✓ |
+| Jun 2026 | Creación del panel EAAE industrial de subramas 2001–2024 en dos capas: fuente publicada y homologada a grupos CIIU Rev.4 compatibles, con validaciones tidy | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

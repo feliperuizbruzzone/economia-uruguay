@@ -1,0 +1,48 @@
+ciiu_version_fuente,codigo_fuente_2dig,grupo_rev4_homologado,descripcion_grupo_rev4_homologado,seccion_rev4_homologada,tipo_homologacion,calidad_homologacion,incluir_sector_industrial_rev4,notas_homologacion
+Rev.3,15,10_11_12_alimentos_bebidas_tabaco,Alimentos bebidas y tabaco,C,grupo_compatible_rev4,media,si,Rev3 15 se abre en Rev4 10 y 11; se agrega con tabaco por restricciones publicadas en 2001 y en varios anos Rev4.
+Rev.3,16,10_11_12_alimentos_bebidas_tabaco,Alimentos bebidas y tabaco,C,grupo_compatible_rev4,media,si,Rev3 16 corresponde a Rev4 12; se agrega con alimentos y bebidas por compatibilidad larga.
+Rev.3,17,13_14_15_textiles_prendas_cuero,Textiles prendas y cuero,C,grupo_compatible_rev4,media,si,Rev3 17-19 se agregan por la publicacion agrupada de 2001.
+Rev.3,18,13_14_15_textiles_prendas_cuero,Textiles prendas y cuero,C,grupo_compatible_rev4,media,si,Rev3 17-19 se agregan por la publicacion agrupada de 2001.
+Rev.3,19,13_14_15_textiles_prendas_cuero,Textiles prendas y cuero,C,grupo_compatible_rev4,media,si,Rev3 17-19 se agregan por la publicacion agrupada de 2001.
+Rev.3,20,16_madera,Madera y productos de madera,C,uno_a_uno_aproximado,baja,si,Correspondencia principal Rev3 20 a Rev4 16.
+Rev.3,21,17_18_papel_impresion,Papel impresion y reproduccion,C,grupo_compatible_rev4,alta,si,Rev3 22 incluye edicion/publicacion que en Rev4 pasa fuera de manufactura; se mantiene grupo con advertencia.
+Rev.3,22,17_18_papel_impresion,Papel impresion y reproduccion,C,parcial_con_cambio_de_seccion,alta,si,Rev3 22 incluye edicion/publicacion que en Rev4 pasa fuera de manufactura; se mantiene grupo con advertencia.
+Rev.3,23,19_refinacion,Coque y refinacion de petroleo,C,uno_a_uno_aproximado,media,si,Correspondencia principal Rev3 23 a Rev4 19.
+Rev.3,24,20_21_22_quimicos_farma_caucho_plastico,Quimicos farmaceuticos caucho y plastico,C,grupo_compatible_rev4,alta,si,Rev3 24 se abre en Rev4 20 y 21; se agrega con caucho y plastico por restricciones publicadas en 2001.
+Rev.3,25,20_21_22_quimicos_farma_caucho_plastico,Quimicos farmaceuticos caucho y plastico,C,grupo_compatible_rev4,media,si,Rev3 25 corresponde a Rev4 22; se agrega con quimicos/farmaceuticos por compatibilidad larga.
+Rev.3,26,23_24_minerales_metales,Minerales no metalicos y metales comunes,C,grupo_compatible_rev4,media,si,Rev3 26-27 se agregan por la publicacion agrupada de 2001.
+Rev.3,27,23_24_minerales_metales,Minerales no metalicos y metales comunes,C,grupo_compatible_rev4,media,si,Rev3 26-27 se agregan por la publicacion agrupada de 2001.
+Rev.3,28,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,grupo_compatible_rev4,alta,si,Rev4 33 reparacion e instalacion puede provenir de varias divisiones Rev3; se agrega con metal/equipos.
+Rev.3,29,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,grupo_compatible_rev4,alta,si,Rev4 33 reparacion e instalacion puede provenir de varias divisiones Rev3; se agrega con metal/equipos.
+Rev.3,30,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,grupo_compatible_rev4,alta,si,Rev3 30 y Rev3 32-33 convergen parcialmente en Rev4 26; se usa grupo amplio.
+Rev.3,31,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,grupo_compatible_rev4,alta,si,Rev4 33 reparacion e instalacion puede provenir de varias divisiones Rev3; se agrega con metal/equipos.
+Rev.3,32,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,grupo_compatible_rev4,alta,si,Rev3 30 y Rev3 32-33 convergen parcialmente en Rev4 26; se usa grupo amplio.
+Rev.3,33,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,grupo_compatible_rev4,alta,si,Rev3 30 y Rev3 32-33 convergen parcialmente en Rev4 26; se usa grupo amplio.
+Rev.3,34,29_30_vehiculos_transporte,Vehiculos y otros equipos de transporte,C,grupo_compatible_rev4,media,si,Rev3 34-35 se agregan por la publicacion agrupada de 2001.
+Rev.3,35,29_30_vehiculos_transporte,Vehiculos y otros equipos de transporte,C,grupo_compatible_rev4,media,si,Rev3 34-35 se agregan por la publicacion agrupada de 2001.
+Rev.3,36,31_32_muebles_otras_manufacturas,Muebles y otras manufacturas,C,grupo_compatible_rev4,media,si,Rev3 36 se abre en Rev4 31 y 32; se mantiene agregado.
+Rev.3,37,38_recuperacion_materiales_fuera_c,Recuperacion de materiales fuera de manufactura Rev4,E,salida_de_manufactura_rev4,alta,no,Rev3 reciclado sale de manufactura en Rev4; se conserva trazabilidad pero no integra C Rev4.
+Rev.4,10,10_11_12_alimentos_bebidas_tabaco,Alimentos bebidas y tabaco,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001 y agrupaciones publicadas.
+Rev.4,11,10_11_12_alimentos_bebidas_tabaco,Alimentos bebidas y tabaco,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001 y agrupaciones publicadas.
+Rev.4,12,10_11_12_alimentos_bebidas_tabaco,Alimentos bebidas y tabaco,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001 y agrupaciones publicadas.
+Rev.4,13,13_14_15_textiles_prendas_cuero,Textiles prendas y cuero,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,14,13_14_15_textiles_prendas_cuero,Textiles prendas y cuero,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,15,13_14_15_textiles_prendas_cuero,Textiles prendas y cuero,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,16,16_madera,Madera y productos de madera,C,uno_a_uno,baja,si,Division Rev4 conservada como grupo.
+Rev.4,17,17_18_papel_impresion,Papel impresion y reproduccion,C,agregacion_rev4_para_compatibilidad,media,si,Agregado Rev4 definido para compatibilidad con Rev3 21-22.
+Rev.4,18,17_18_papel_impresion,Papel impresion y reproduccion,C,agregacion_rev4_para_compatibilidad,media,si,Agregado Rev4 definido para compatibilidad con Rev3 21-22.
+Rev.4,19,19_refinacion,Coque y refinacion de petroleo,C,uno_a_uno,baja,si,Division Rev4 conservada como grupo.
+Rev.4,20,20_21_22_quimicos_farma_caucho_plastico,Quimicos farmaceuticos caucho y plastico,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con Rev3 24-25.
+Rev.4,21,20_21_22_quimicos_farma_caucho_plastico,Quimicos farmaceuticos caucho y plastico,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con Rev3 24-25.
+Rev.4,22,20_21_22_quimicos_farma_caucho_plastico,Quimicos farmaceuticos caucho y plastico,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con Rev3 24-25.
+Rev.4,23,23_24_minerales_metales,Minerales no metalicos y metales comunes,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,24,23_24_minerales_metales,Minerales no metalicos y metales comunes,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,25,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,agregacion_rev4_para_compatibilidad,media,si,Grupo amplio definido por reubicacion de reparacion e instalacion en Rev4 33.
+Rev.4,26,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,agregacion_rev4_para_compatibilidad,media,si,Grupo amplio definido por reubicacion de reparacion e instalacion en Rev4 33.
+Rev.4,27,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,agregacion_rev4_para_compatibilidad,media,si,Grupo amplio definido por reubicacion de reparacion e instalacion en Rev4 33.
+Rev.4,28,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,agregacion_rev4_para_compatibilidad,media,si,Grupo amplio definido por reubicacion de reparacion e instalacion en Rev4 33.
+Rev.4,33,25_26_27_28_33_metal_equipos_reparacion,Productos de metal equipos y reparacion,C,agregacion_rev4_para_compatibilidad,alta,si,Rev4 33 se agrega con metal/equipos para evitar quiebre artificial hacia atras.
+Rev.4,29,29_30_vehiculos_transporte,Vehiculos y otros equipos de transporte,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,30,29_30_vehiculos_transporte,Vehiculos y otros equipos de transporte,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con 2001.
+Rev.4,31,31_32_muebles_otras_manufacturas,Muebles y otras manufacturas,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con Rev3 36.
+Rev.4,32,31_32_muebles_otras_manufacturas,Muebles y otras manufacturas,C,agregacion_rev4_para_compatibilidad,baja,si,Agregado Rev4 definido para compatibilidad con Rev3 36.
