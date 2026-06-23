@@ -405,62 +405,82 @@ Archivos originales preservados:
 esta etapa. Cualquier base tidy derivada de esta serie debe construirse en un
 script reproducible bajo `command-files/` y escribirse en `data/analysis-data/`.
 
-**PROCESAMIENTO — Junio 2026:** se creó
-`command-files/processing-command-files/09_process_eia_1989_1997.R` para
-extraer los cuadros reales 2, 5, 9, 16, 17 y 19 desde los encabezados de cada
-hoja. La extracción no usa el número de hoja porque en algunos libros, en
-particular 1997, el número de hoja y el número real de cuadro no coinciden.
+**PROCESAMIENTO CONSOLIDADO — Junio 2026:** el script vigente para EIA es
+`command-files/processing-command-files/09_process_eia_1989_1997.R`. El flujo
+queda focalizado en construir un panel comparable con la hoja `rama-C` del
+panel EAAE, a nivel de total industrial CIIU Rev.2 (`3`) y división industrial
+CIIU Rev.2 (`31`–`39`). La extracción se hace desde los Excel originales,
+detectando cuadros por encabezado real y no por número de hoja, porque la
+posición de las hojas cambia entre archivos.
 
 Artefactos derivados:
 
 | Archivo | Contenido |
 |---|---|
-| `data/analysis-data/eia_1989_1997_cuadros_tidy.csv` | Base larga auditada: año, archivo, hoja, cuadro, título, código CIIU Rev.2, variable original, variable canónica, unidad y valor estandarizado a pesos corrientes. |
-| `data/analysis-data/eia_1989_1997_panel.csv` | Panel ancho por `anno` × `codigo_rama_original`, con variables canónicas pensadas para dialogar con los cálculos EAAE. |
-| `data/analysis-data/eia_1989_1997_validaciones.csv` | Cobertura de cuadros, chequeos de duplicados conceptuales, validaciones contables y controles de calidad equivalentes al panel EAAE cuando la variable existe en EIA. |
+| `data/analysis-data/20260623_panel_eia_1989_1997_2dig.csv` | Panel EIA consolidado para tasa de ganancia: total industrial Rev.2 (`3`) y divisiones industriales Rev.2 (`31`–`39`), con nombres equivalentes a `rama-C` del panel EAAE. |
+| `data/analysis-data/20260623_panel_eia_1989_1997_2dig.xlsx` | Libro Excel derivado del panel EIA consolidado. Contiene hoja `eia` con el panel y hoja `check-calidad` con validaciones equivalentes a las del libro EAAE para cada subrama y total industrial. |
+
+Artefactos retirados:
+
+| Archivo | Motivo |
+|---|---|
+| `data/analysis-data/eia_1989_1997_cuadros_tidy.csv` | Reemplazado por el panel focalizado; contenía variables y niveles no necesarios para la tasa de ganancia. |
+| `data/analysis-data/eia_1989_1997_panel.csv` | Reemplazado por el panel consolidado a dos dígitos y vocabulario EAAE. |
+| `data/analysis-data/eia_1989_1997_validaciones.csv` | Reemplazado por validaciones internas del script consolidado. |
 
 Decisiones de procesamiento:
 
-- La fuente queda identificada como `ciiu_version = "Rev.2"` y
-  `seccion_homologada = "C"` porque toda la serie corresponde a industria
-  manufacturera. No se homologan subramas Rev.2 hacia Rev.3/Rev.4 en esta
-  etapa.
-- El panel conserva `codigo_rama_original`, `nivel_codigo` y
-  `nivel_agregacion` para permitir una homologación experta posterior.
-- Se guardan `valor_original`, `unidad_original`,
-  `multiplicador_pesos_corrientes` y `valor_pesos_corrientes`. Cuando el título
-  declara "miles", el multiplicador es 1000. Por consistencia intercuadro, se
-  interpretan también como miles de pesos corrientes los cuadros 5 de 1989 y
-  1990, y el cuadro 9 de 1990, aunque el encabezado no lo declare de manera
-  explícita.
-- En 1997 los contenidos por número real de cuadro cambian respecto a años
-  previos: el cuadro 9 corresponde a compras de materias primas por origen, el
-  cuadro 17 a formación bruta de capital fijo, y el cuadro 19 a variación de
-  existencias. Se respeta el número real solicitado, no una equivalencia
-  temática artificial.
-- Si una variable canónica aparece en más de un cuadro, la base larga preserva
-  ambas observaciones. El panel ancho elige una fuente preferente: para
-  `impuestos_netos`, el cuadro 2; para `iva_neto`, el cuadro 17; para `fbcf`,
-  el cuadro 19 salvo 1997, donde el cuadro 17 es la fuente solicitada
-  disponible.
-- Validación actual: se detectaron los 54 cuadros esperados (9 años × 6
-  cuadros). Las identidades `vbp_corriente = consumo_intermedio +
-  vab_corriente` y la descomposición del VAB pasan en el panel. Se agregaron
-  controles equivalentes al panel EAAE 2001–2024 para las variables disponibles
-  en EIA: continuidad temporal, clave única `anno + codigo_rama_original`,
-  cobertura de industria total, variables clave no nulas, `vbp_corriente >=
-  vab_corriente`, `vab_corriente >= remuneraciones`, consumo de capital fijo no
-  negativo, FBCF no negativa, `fbkf_maq_eq <= fbcf`, alineación de columnas de
-  cuentas y saltos interanuales mayores a 50% del VAB total industrial. Las
-  validaciones equivalentes a puestos de trabajo y VAB/VBP a precios básicos no
-  se incorporan porque esas variables no forman parte de los cuadros EIA
-  procesados. En la corrida vigente, `eia_1989_1997_validaciones.csv` registra
-  15.968 filas, con 114 marcas `revisar`: 71 por FBCF negativa en ramas finas,
-  29 por `fbkf_maq_eq > fbcf`, 10 por `vab_corriente < remuneraciones`, 3 por
-  saltos nominales del VAB total mayores a 50% y 1 duplicado conceptual menor
-  en 1990, código Rev.2 `38`, donde `impuestos_netos` difiere en 2.000 pesos
-  corrientes entre cuadro 2 y cuadro 16. El panel usa cuadro 2 para preservar la
-  identidad contable.
+- La fuente queda identificada como `ciiu_version = "Rev.2"` y `seccion`
+  conserva el código original: `3` para el total de industrias manufactureras y
+  `31`–`39` para divisiones industriales. No se homologan subramas Rev.2 hacia
+  Rev.3/Rev.4 en esta etapa.
+- El panel incorpora `seccion_etiqueta` para conservar una descripción legible
+  de cada código de sección/división.
+- El panel conserva solo las variables primarias necesarias para calcular la
+  tasa de ganancia a precios productor con la lógica EAAE: `vbp_pp`, `vab_pp`,
+  `consumo_intermedio`, `remuneraciones`, `consumo_capital_fijo`,
+  `stock_capital` y `stock_capital_imputado`, más identificadores (`anno`,
+  `seccion`, `seccion_etiqueta`, `epoca`, `ciiu_version`).
+- `consumo_intermedio` es una variable directa de la EIA extraída desde el
+  Cuadro 2. No se usa el nombre `consumo_intermedio_estimado` en este panel,
+  porque ese nombre queda reservado al panel EAAE donde la variable se calcula.
+- Las variables de cuentas salen del Cuadro 2 de cada año. El script adapta la
+  posición de columnas por período: en 1989–1990 la depreciación/consumo de
+  capital aparece como `D`; en 1991–1996 aparece como `depreciación`; en 1997
+  aparece explícitamente como `consumo de capital fijo`. En todos los casos se
+  registra con el nombre canónico `consumo_capital_fijo`.
+- `stock_capital` conserva solo el dato original válido de activos fijos al
+  31/12 encontrado en 1997, Cuadro 18. Los cuadros 18 de 1989–1996 son flujos
+  de formación/adiciones de capital, no stock, y no se cargan como
+  `stock_capital`.
+- Para 1989–1996, `stock_capital_imputado` se calcula por división Rev.2 como
+  `consumo_capital_fijo_t * (stock_capital_1997 / consumo_capital_fijo_1997)`.
+  En 1997 replica `stock_capital`.
+- No se incorporan FBCF, impuestos, excedente, ventas, compras, combustibles ni
+  otros componentes porque no son insumos necesarios bajo la fórmula vigente de
+  tasa de ganancia a precios productor.
+- Validaciones internas del script: cobertura completa `anno + seccion` para
+  1989–1997, total `3` y divisiones `31`–`39`; clave única, variables
+  requeridas no nulas,
+  `stock_capital` solo en 1997, `stock_capital_imputado` completo, e identidad
+  `vbp_pp = consumo_intermedio + vab_pp`.
+- El libro Excel EIA se genera con
+  `command-files/processing-command-files/12_build_eia_1989_1997_workbook.py`
+  desde el CSV consolidado. La hoja `check-calidad` replica los indicadores del
+  libro EAAE para cada `anno + seccion`: `vab_vbp = vab_pp / vbp_pp`,
+  `consumo_intermedio` directo, `remuneraciones_vab = remuneraciones / vab_pp`
+  y `stock_vab = stock_capital_imputado / vab_pp`.
+- Validación interpretativa del libro EIA: el XLSX se abre correctamente con
+  `readxl`, contiene exactamente las hojas `eia` y `check-calidad`, y ambas
+  tienen 90 filas. No se detectan casos básicos problemáticos en
+  `check-calidad`: `vab_vbp` está entre 0 y 1, `remuneraciones_vab` no supera
+  1 y `stock_vab` es positivo en todas las filas. Para el total industrial
+  `seccion = 3`, `vab_vbp` se ubica entre 0,390 y 0,483;
+  `remuneraciones_vab`, entre 0,288 y 0,366; y `stock_vab`, entre 0,400 y
+  0,655. A nivel subrama hay mayor dispersión; los `stock_vab` más altos
+  aparecen en `36` en 1990, `37` en 1991 y `34` en 1997. Estos valores no
+  invalidan la base, pero conviene revisarlos al interpretar tasas porque el
+  stock 1989–1996 es imputado.
 
 ### Cinco épocas estructurales
 
@@ -1405,8 +1425,9 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Integración de `n_empresas` desde PDF de metodología/diseño muestral para años con desglose exacto verificable: 2001–2005, 2011 y 2020 | ✓ |
 | Jun 2026 | Creación del post-proceso R `02_add_calculos_propios_eaae.R` y agregado de hojas de resultados corrientes, constantes, variaciones porcentuales e índices 2005=1 al XLSX | ✓ |
 | Jun 2026 | Incorporación de fuente primaria externa `EIA 1989-1997` desde Series Económicas FCS/Udelar en `data/input-data/`, preservando archivos Excel originales | ✓ |
-| Jun 2026 | Procesamiento reproducible de EIA 1989–1997: extracción de cuadros reales 2, 5, 9, 16, 17 y 19; creación de base larga, panel ancho y validaciones en `data/analysis-data/` | ✓ |
-| Jun 2026 | Ampliación de validaciones EIA 1989–1997 con controles equivalentes al panel EAAE para variables disponibles | ✓ |
+| Jun 2026 | Consolidación del procesamiento EIA 1989–1997 en un panel a dos dígitos Rev.2 con vocabulario equivalente a `rama-C` del panel EAAE; retiro de la base larga, panel ancho y validaciones amplias previas | ✓ |
+| Jun 2026 | Decisión provisoria del equipo: para EIA 1989–1997, `stock_capital` conserva solo el dato original de activos fijos al 31/12 de 1997; `stock_capital_imputado` usa por división el ratio `stock_capital_1997 / consumo_capital_fijo_1997` | ✓ |
+| Jun 2026 | Creación del libro `20260623_panel_eia_1989_1997_2dig.xlsx` con hojas `eia` y `check-calidad` para revisar el panel EIA y sus indicadores de validación tipo EAAE | ✓ |
 | Jun 2026 | Documentación de granularidad potencial de subramas EAAE: dos dígitos/división como nivel recomendado para serie comparable 2001–2024; cuatro dígitos solo como excepción 2001 | ✓ |
 | Jun 2026 | Incorporación de fuente primaria externa `eaae-1998-2001` con resultados EAE a 2 dígitos para 1998, 1999, 2000 y 2001 | ✓ |
 | Jun 2026 | Procesamiento reproducible de `eaae-1998-2001`: panel ancho a división publicada, sólo universo empresas de 5 y más, con omisión documentada de hojas 1999 duplicadas del año 2000 | ✓ |

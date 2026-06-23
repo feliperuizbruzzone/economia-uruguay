@@ -11,11 +11,26 @@ suppressPackageStartupMessages({
 })
 
 INPUT_DIR <- "data/input-data/EIA 1989-1997"
-OUTPUT_TIDY <- "data/analysis-data/eia_1989_1997_cuadros_tidy.csv"
-OUTPUT_PANEL <- "data/analysis-data/eia_1989_1997_panel.csv"
-OUTPUT_VALIDACIONES <- "data/analysis-data/eia_1989_1997_validaciones.csv"
+OUTPUT_PANEL <- "data/analysis-data/20260623_panel_eia_1989_1997_2dig.csv"
 
-TARGET_CUADROS <- c(2L, 5L, 9L, 16L, 17L, 19L)
+YEARS <- 1989:1997
+INDUSTRY_CODES_REV2 <- c("3", as.character(31:39))
+
+section_labels_rev2 <- tibble(
+  seccion = INDUSTRY_CODES_REV2,
+  seccion_etiqueta = c(
+    "Industrias manufactureras",
+    "Productos alimenticios, bebidas y tabaco",
+    "Textiles, prendas de vestir e industrias del cuero",
+    "Industria de la madera y productos de madera, incluidos muebles",
+    "Fabricacion de papel y productos de papel; imprentas y editoriales",
+    "Fabricacion de sustancias quimicas y productos quimicos; derivados del petroleo y carbon; caucho y plastico",
+    "Fabricacion de productos minerales no metalicos, excepto derivados del petroleo y carbon",
+    "Industrias metalicas basicas",
+    "Fabricacion de productos metalicos, maquinaria y equipo",
+    "Otras industrias manufactureras"
+  )
+)
 
 normalize_text <- function(x) {
   x <- as.character(x)
@@ -75,403 +90,116 @@ extract_title <- function(sheet_data) {
   str_c(head(vals, 4), collapse = " | ")
 }
 
-detect_target_sheets <- function(path, anno) {
+infer_scale <- function(title) {
+  if (str_detect(str_to_upper(title), "MILES")) {
+    return(1000)
+  }
+  1
+}
+
+files_index <- function() {
+  files <- tibble(path = sort(list.files(INPUT_DIR, pattern = "\\.xlsx?$", full.names = TRUE))) %>%
+    mutate(anno = as.integer(str_extract(basename(.data$path), "\\d{4}"))) %>%
+    filter(.data$anno %in% YEARS)
+
+  if (nrow(files) != length(YEARS)) {
+    stop("Se esperaban ", length(YEARS), " archivos EIA y se encontraron ", nrow(files))
+  }
+
+  files
+}
+
+detect_sheet_index <- function(path, anno) {
   excel_sheets(path) %>%
     discard(~ .x == "ÍNDICE") %>%
     map_dfr(function(sheet) {
       head_data <- read_sheet_text(path, sheet, n_max = 15)
+      vals <- unlist(head_data, use.names = FALSE)
+      vals <- vals[!is.na(vals) & str_length(vals) > 0]
+      title <- extract_title(head_data)
       tibble(
         anno = anno,
         archivo = basename(path),
         sheet = sheet,
         cuadro = detect_cuadro_number(head_data),
-        cuadro_titulo = extract_title(head_data)
+        cuadro_titulo = title,
+        es_stock_capital = str_detect(
+          str_to_upper(paste(vals, collapse = " | ")),
+          "VALOR\\s+DE\\s+LOS\\s+ACTIVOS\\s+FIJOS\\s+AL\\s+31/12"
+        )
       )
-    }) %>%
-    filter(cuadro %in% TARGET_CUADROS)
+    })
 }
 
-var_map <- function(anno, cuadro) {
-  if (cuadro == 2L && anno <= 1990L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c("vbp", "ci", "vab", "ii_s", "d", "r", "ee"),
-      variable_canonica = c(
-        "vbp_corriente",
-        "consumo_intermedio",
-        "vab_corriente",
-        "impuestos_netos",
-        "consumo_capital_fijo",
-        "remuneraciones",
-        "excedente_explotacion"
-      )
-    ))
+require_unique_sheet <- function(sheet_index, anno, predicate, label) {
+  hits <- sheet_index %>% filter(.data$anno == !!anno) %>% filter({{ predicate }})
+  if (nrow(hits) != 1L) {
+    print(hits)
+    stop("No se detecto una unica hoja para ", label, " en ", anno)
   }
-
-  if (cuadro == 2L && anno %in% 1991:1996) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "vbp_total",
-        "consumo_intermedio",
-        "valor_agregado_bruto",
-        "remuneraciones",
-        "impuestos_indirectos",
-        "depreciacion",
-        "excedentes_explotacion"
-      ),
-      variable_canonica = c(
-        "vbp_corriente",
-        "consumo_intermedio",
-        "vab_corriente",
-        "remuneraciones",
-        "impuestos_netos",
-        "consumo_capital_fijo",
-        "excedente_explotacion"
-      )
-    ))
-  }
-
-  if (cuadro == 2L && anno == 1997L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "valor_bruto_produccion",
-        "consumo_intermedio",
-        "valor_agregado_bruto",
-        "impuestos_netos_subsidios",
-        "consumo_capital_fijo",
-        "remuneraciones",
-        "excedente_explotacion"
-      ),
-      variable_canonica = c(
-        "vbp_corriente",
-        "consumo_intermedio",
-        "vab_corriente",
-        "impuestos_netos",
-        "consumo_capital_fijo",
-        "remuneraciones",
-        "excedente_explotacion"
-      )
-    ))
-  }
-
-  if (cuadro == 5L && anno <= 1990L) {
-    return(tibble(
-      pos = 1:6,
-      variable_original = c(
-        "total",
-        "mayorista",
-        "minorista",
-        "gobierno",
-        "otras",
-        "publico"
-      ),
-      variable_canonica = c(
-        "ventas_pais_total",
-        "ventas_pais_mayorista",
-        "ventas_pais_minorista",
-        "ventas_pais_gobierno",
-        "ventas_pais_otras_empresas",
-        "ventas_pais_publico_general"
-      )
-    ))
-  }
-
-  if (cuadro == 5L && anno %in% 1991:1996) {
-    return(tibble(
-      pos = 1:6,
-      variable_original = c(
-        "ventas_en_el_pais",
-        "mayoristas",
-        "minoristas",
-        "gobierno",
-        "otras_empresas",
-        "publico_en_general"
-      ),
-      variable_canonica = c(
-        "ventas_pais_total",
-        "ventas_pais_mayorista",
-        "ventas_pais_minorista",
-        "ventas_pais_gobierno",
-        "ventas_pais_otras_empresas",
-        "ventas_pais_publico_general"
-      )
-    ))
-  }
-
-  if (cuadro == 5L && anno == 1997L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "total",
-        "empresas_publicas",
-        "gobiernos",
-        "empresas_privadas_zonas_francas",
-        "otras_empresas_privadas",
-        "publico_general",
-        "otros"
-      ),
-      variable_canonica = c(
-        "ventas_pais_total",
-        "ventas_pais_empresas_publicas",
-        "ventas_pais_gobiernos",
-        "ventas_pais_empresas_zonas_francas",
-        "ventas_pais_otras_empresas_privadas",
-        "ventas_pais_publico_general",
-        "ventas_pais_otros"
-      )
-    ))
-  }
-
-  if (cuadro == 9L && anno <= 1990L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "total",
-        "fueloil",
-        "lenia",
-        "gasoil",
-        "nafta",
-        "dieseloil",
-        "resto"
-      ),
-      variable_canonica = c(
-        "consumo_combustibles_total",
-        "consumo_combustibles_fuel_oil",
-        "consumo_combustibles_lenia",
-        "consumo_combustibles_gas_oil",
-        "consumo_combustibles_nafta",
-        "consumo_combustibles_diesel_oil",
-        "consumo_combustibles_resto"
-      )
-    ))
-  }
-
-  if (cuadro == 9L && anno %in% 1991:1996) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "total_consumo_combustible",
-        "diesel_oil",
-        "fuel_oil",
-        "nafta",
-        "gas_oil",
-        "lenia",
-        "resto"
-      ),
-      variable_canonica = c(
-        "consumo_combustibles_total",
-        "consumo_combustibles_diesel_oil",
-        "consumo_combustibles_fuel_oil",
-        "consumo_combustibles_nafta",
-        "consumo_combustibles_gas_oil",
-        "consumo_combustibles_lenia",
-        "consumo_combustibles_resto"
-      )
-    ))
-  }
-
-  if (cuadro == 9L && anno == 1997L) {
-    return(tibble(
-      pos = 1:3,
-      variable_original = c("total", "en_plaza", "importadas"),
-      variable_canonica = c(
-        "compras_materias_primas_total",
-        "compras_materias_primas_en_plaza",
-        "compras_materias_primas_importadas"
-      )
-    ))
-  }
-
-  if (cuadro == 16L && anno <= 1996L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "impuestos_indirectos_netos",
-        "total_impuestos_indirectos",
-        "impuesto_sueldos",
-        "iva_neto",
-        "imesi",
-        "otros_impuestos",
-        "devolucion_impuestos"
-      ),
-      variable_canonica = c(
-        "impuestos_netos",
-        "impuestos_indirectos_total",
-        "impuesto_sueldos",
-        "iva_neto",
-        "imesi",
-        "otros_impuestos",
-        "devolucion_impuestos"
-      )
-    ))
-  }
-
-  if (cuadro == 16L && anno == 1997L) {
-    return(tibble(
-      pos = 1:5,
-      variable_original = c(
-        "impuesto_sueldos",
-        "devolucion_impuestos",
-        "iva_neto",
-        "imesi",
-        "otros_impuestos"
-      ),
-      variable_canonica = c(
-        "impuesto_sueldos",
-        "devolucion_impuestos",
-        "iva_neto",
-        "imesi",
-        "otros_impuestos"
-      )
-    ))
-  }
-
-  if (cuadro == 17L && anno <= 1996L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "iva_neto",
-        "iva_sobre_ventas",
-        "iva_compras_total",
-        "iva_compras_deducibles",
-        "iva_compras_no_deducibles",
-        "iva_compras_plaza",
-        "iva_compras_importado"
-      ),
-      variable_canonica = c(
-        "iva_neto",
-        "iva_sobre_ventas",
-        "iva_compras_total",
-        "iva_compras_deducibles",
-        "iva_compras_no_deducibles",
-        "iva_compras_plaza",
-        "iva_compras_importado"
-      )
-    ))
-  }
-
-  if (cuadro == 17L && anno == 1997L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "formacion_bruta_capital_fijo",
-        "adquisiciones_activo_fijo_total",
-        "construccion_cuenta_propia",
-        "adquisiciones_total",
-        "adquisiciones_importadas",
-        "adquisiciones_en_plaza",
-        "disposiciones_activo_fijo"
-      ),
-      variable_canonica = c(
-        "fbcf",
-        "adquisiciones_activo_fijo_total",
-        "construccion_cuenta_propia",
-        "adquisiciones_total",
-        "adquisiciones_importadas",
-        "adquisiciones_en_plaza",
-        "disposiciones_activo_fijo"
-      )
-    ))
-  }
-
-  if (cuadro == 19L && anno <= 1996L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "formacion_bruta_capital_fijo",
-        "edificios_construcciones",
-        "maquinas_y_equipos",
-        "vehiculos_transporte",
-        "muebles_enseres",
-        "herramientas",
-        "otros"
-      ),
-      variable_canonica = c(
-        "fbcf",
-        "fbkf_edificios_construcciones",
-        "fbkf_maq_eq",
-        "fbkf_vehiculos_transporte",
-        "fbkf_muebles_enseres",
-        "fbkf_herramientas",
-        "fbkf_otros"
-      )
-    ))
-  }
-
-  if (cuadro == 19L && anno == 1997L) {
-    return(tibble(
-      pos = 1:7,
-      variable_original = c(
-        "total",
-        "mercaderias_compradas_reventa",
-        "materias_primas_materiales",
-        "productos_en_proceso",
-        "productos_terminados",
-        "envases_embalajes",
-        "repuestos_accesorios"
-      ),
-      variable_canonica = c(
-        "variacion_existencias",
-        "variacion_existencias_mercaderias_reventa",
-        "variacion_existencias_materias_primas",
-        "variacion_existencias_productos_en_proceso",
-        "variacion_existencias_productos_terminados",
-        "variacion_existencias_envases_embalajes",
-        "variacion_existencias_repuestos_accesorios"
-      )
-    ))
-  }
-
-  stop("No hay mapa de variables para anno=", anno, " cuadro=", cuadro)
+  hits %>% slice(1)
 }
 
-infer_scale <- function(anno, cuadro, titulo) {
-  # DECISION: algunos cuadros de ventas/combustibles 1989-1990 no declaran
-  # "miles" en el titulo, pero su escala solo queda consistente con los
-  # macroagregados si se interpretan como miles de pesos corrientes.
-  overrides <- tibble(
-    anno = c(1989L, 1990L, 1990L),
-    cuadro = c(5L, 5L, 9L),
-    unidad_original = "miles_pesos_corrientes_inferido",
-    multiplicador = 1000
-  )
-
-  hit <- overrides %>% filter(.data$anno == !!anno, .data$cuadro == !!cuadro)
-  if (nrow(hit) == 1) {
-    return(hit)
+account_var_map <- function(anno) {
+  if (anno <= 1990L) {
+    return(tibble(
+      pos = c(1L, 2L, 3L, 5L, 6L),
+      variable = c(
+        "vbp_pp",
+        "consumo_intermedio",
+        "vab_pp",
+        "consumo_capital_fijo",
+        "remuneraciones"
+      )
+    ))
   }
 
-  if (str_detect(str_to_upper(titulo), "MILES")) {
-    tibble(
-      anno = anno,
-      cuadro = cuadro,
-      unidad_original = "miles_pesos_corrientes",
-      multiplicador = 1000
+  if (anno %in% 1991:1996) {
+    return(tibble(
+      pos = c(1L, 2L, 3L, 6L, 4L),
+      variable = c(
+        "vbp_pp",
+        "consumo_intermedio",
+        "vab_pp",
+        "consumo_capital_fijo",
+        "remuneraciones"
+      )
+    ))
+  }
+
+  if (anno == 1997L) {
+    return(tibble(
+      pos = c(1L, 2L, 3L, 5L, 6L),
+      variable = c(
+        "vbp_pp",
+        "consumo_intermedio",
+        "vab_pp",
+        "consumo_capital_fijo",
+        "remuneraciones"
+      )
+    ))
+  }
+
+  stop("Anno fuera de rango EIA: ", anno)
+}
+
+extract_accounts <- function(path, sheet_info) {
+  anno <- sheet_info$anno[[1]]
+  raw <- read_sheet_text(path, sheet_info$sheet[[1]]) %>%
+    mutate(fila_excel = row_number())
+
+  data_rows <- raw %>%
+    filter(
+      is_code(.data$col_1),
+      str_trim(.data$col_1) %in% INDUSTRY_CODES_REV2
     )
-  } else {
-    tibble(
-      anno = anno,
-      cuadro = cuadro,
-      unidad_original = "pesos_corrientes",
-      multiplicador = 1
+
+  if (nrow(data_rows) != length(INDUSTRY_CODES_REV2)) {
+    stop(
+      "Cuadro 2 ", anno, ": se esperaban ",
+      length(INDUSTRY_CODES_REV2), " filas industriales y se detectaron ",
+      nrow(data_rows)
     )
-  }
-}
-
-extract_sheet_data <- function(path, anno, sheet_info) {
-  raw <- read_sheet_text(path, sheet_info$sheet)
-  if (ncol(raw) == 0) {
-    return(tibble())
-  }
-
-  raw <- raw %>% mutate(fila_excel = row_number())
-  code_col <- raw$col_1
-  data_rows <- raw %>% filter(is_code(.data$col_1))
-
-  if (nrow(data_rows) == 0) {
-    stop("No se detectaron filas de datos en ", basename(path), " hoja ", sheet_info$sheet)
   }
 
   first_row <- data_rows %>% slice(1)
@@ -479,563 +207,238 @@ extract_sheet_data <- function(path, anno, sheet_info) {
   has_description <- !is.na(second_value) && is.na(as_number(second_value))
   variable_start_col <- if (has_description) 3L else 2L
 
-  vars <- var_map(anno, sheet_info$cuadro) %>%
-    mutate(col = variable_start_col + .data$pos - 1L)
+  vars <- account_var_map(anno) %>%
+    mutate(col = .data$pos + variable_start_col - 1L)
+  scale <- infer_scale(sheet_info$cuadro_titulo[[1]])
 
-  scale <- infer_scale(anno, sheet_info$cuadro, sheet_info$cuadro_titulo)
+  vars %>%
+    pmap_dfr(function(pos, variable, col) {
+      col_name <- paste0("col_", col)
+      if (!col_name %in% names(data_rows)) {
+        stop("No existe ", col_name, " en Cuadro 2 ", anno)
+      }
 
-  map_dfr(seq_len(nrow(vars)), function(i) {
-    col_name <- paste0("col_", vars$col[[i]])
-    if (!col_name %in% names(data_rows)) {
-      return(tibble())
-    }
-
-    data_rows %>%
-      transmute(
-        anno = anno,
-        fuente = "Encuesta Industrial Anual 1989-1997",
-        archivo = basename(path),
-        sheet = sheet_info$sheet,
-        cuadro = sheet_info$cuadro,
-        cuadro_titulo = sheet_info$cuadro_titulo,
-        ciiu_version = "Rev.2",
-        seccion_homologada = "C",
-        codigo_rama_original = str_trim(.data$col_1),
-        nivel_codigo = str_length(.data$codigo_rama_original),
-        nivel_agregacion = case_when(
-          .data$codigo_rama_original == "3" ~ "industria_total",
-          .data$nivel_codigo == 2L ~ "division_2_digitos",
-          .data$nivel_codigo == 3L ~ "grupo_3_digitos",
-          .data$nivel_codigo == 4L ~ "clase_4_digitos",
-          .data$nivel_codigo == 5L ~ "subclase_5_digitos",
-          TRUE ~ "otro"
-        ),
-        descripcion_original = if (has_description) .data$col_2 else NA_character_,
-        variable_original = vars$variable_original[[i]],
-        variable_canonica = vars$variable_canonica[[i]],
-        valor_original = as_number(.data[[col_name]]),
-        unidad_original = scale$unidad_original[[1]],
-        multiplicador_pesos_corrientes = scale$multiplicador[[1]],
-        valor_pesos_corrientes = .data$valor_original * .data$multiplicador_pesos_corrientes,
-        fila_excel = .data$fila_excel
-      ) %>%
-      filter(!is.na(.data$valor_original))
-  })
+      data_rows %>%
+        transmute(
+          anno = anno,
+          seccion = str_trim(.data$col_1),
+          variable = variable,
+          valor = as_number(.data[[col_name]]) * scale
+        )
+    }) %>%
+    pivot_wider(names_from = variable, values_from = valor)
 }
 
-choose_panel_values <- function(tidy_data) {
-  # DECISION: para el panel ancho se prefiere el cuadro mas detallado cuando
-  # una misma variable canonica aparece duplicada en cuadros diferentes.
-  priority <- tidy_data %>%
-    mutate(
-      prioridad_panel = case_when(
-        .data$variable_canonica == "impuestos_netos" & .data$cuadro == 2L ~ 1L,
-        .data$variable_canonica == "impuestos_netos" & .data$cuadro == 16L ~ 2L,
-        .data$variable_canonica == "iva_neto" & .data$cuadro == 17L ~ 1L,
-        .data$variable_canonica == "iva_neto" & .data$cuadro == 16L ~ 2L,
-        .data$variable_canonica == "fbcf" & .data$cuadro == 19L ~ 1L,
-        .data$variable_canonica == "fbcf" & .data$cuadro == 17L ~ 2L,
-        TRUE ~ 1L
-      )
+extract_stock_capital <- function(path, sheet_info) {
+  anno <- sheet_info$anno[[1]]
+  raw <- read_sheet_text(path, sheet_info$sheet[[1]]) %>%
+    mutate(fila_excel = row_number())
+
+  data_rows <- raw %>%
+    filter(
+      is_code(.data$col_1),
+      str_trim(.data$col_1) %in% INDUSTRY_CODES_REV2
     )
 
-  chosen <- priority %>%
-    arrange(
-      .data$anno,
-      .data$codigo_rama_original,
-      .data$variable_canonica,
-      .data$prioridad_panel,
-      .data$cuadro
-    ) %>%
-    group_by(.data$anno, .data$codigo_rama_original, .data$variable_canonica) %>%
-    slice(1) %>%
-    ungroup()
-
-  meta <- tidy_data %>%
-    group_by(
-      .data$anno,
-      .data$seccion_homologada,
-      .data$ciiu_version,
-      .data$codigo_rama_original,
-      .data$nivel_codigo,
-      .data$nivel_agregacion
-    ) %>%
-    summarise(
-      descripcion_rama = first(na.omit(.data$descripcion_original)),
-      .groups = "drop"
+  if (nrow(data_rows) != length(INDUSTRY_CODES_REV2)) {
+    stop(
+      "Stock ", anno, ": se esperaban ",
+      length(INDUSTRY_CODES_REV2), " filas industriales y se detectaron ",
+      nrow(data_rows)
     )
-
-  desc_reference <- tidy_data %>%
-    filter(!is.na(.data$descripcion_original), .data$descripcion_original != "") %>%
-    group_by(.data$codigo_rama_original) %>%
-    summarise(descripcion_referencia = first(.data$descripcion_original), .groups = "drop")
-
-  panel_values <- chosen %>%
-    select(anno, codigo_rama_original, variable_canonica, valor_pesos_corrientes) %>%
-    pivot_wider(names_from = variable_canonica, values_from = valor_pesos_corrientes)
-
-  meta %>%
-    left_join(desc_reference, by = "codigo_rama_original") %>%
-    mutate(descripcion_rama = coalesce(.data$descripcion_rama, .data$descripcion_referencia)) %>%
-    select(-descripcion_referencia) %>%
-    left_join(panel_values, by = c("anno", "codigo_rama_original")) %>%
-    arrange(.data$anno, .data$codigo_rama_original)
-}
-
-validation_row <- function(
-    validacion,
-    estado,
-    anno = NA_integer_,
-    cuadro = NA_integer_,
-    codigo_rama_original = NA_character_,
-    variable_canonica = NA_character_,
-    detalle = NA_character_,
-    diferencia_abs = NA_real_,
-    diferencia_rel = NA_real_) {
-  tibble(
-    validacion = validacion,
-    estado = estado,
-    anno = anno,
-    cuadro = cuadro,
-    codigo_rama_original = as.character(codigo_rama_original),
-    variable_canonica = variable_canonica,
-    detalle = detalle,
-    diferencia_abs = diferencia_abs,
-    diferencia_rel = diferencia_rel
-  )
-}
-
-build_panel_quality_validations <- function(panel) {
-  expected_years <- 1989:1997
-
-  temporal_coverage <- tibble(anno = expected_years) %>%
-    mutate(
-      validacion = "cobertura_temporal_panel",
-      estado = if_else(.data$anno %in% panel$anno, "ok", "revisar"),
-      cuadro = NA_integer_,
-      codigo_rama_original = NA_character_,
-      variable_canonica = NA_character_,
-      detalle = if_else(
-        .data$estado == "ok",
-        "anio_presente",
-        "anio_faltante"
-      ),
-      diferencia_abs = NA_real_,
-      diferencia_rel = NA_real_
-    ) %>%
-    select(
-      validacion,
-      estado,
-      anno,
-      cuadro,
-      codigo_rama_original,
-      variable_canonica,
-      detalle,
-      diferencia_abs,
-      diferencia_rel
-    )
-
-  duplicated_keys <- panel %>%
-    count(.data$anno, .data$codigo_rama_original, name = "n") %>%
-    filter(.data$n > 1L)
-  unique_key <- if (nrow(duplicated_keys) == 0L) {
-    validation_row(
-      validacion = "clave_unica_panel",
-      estado = "ok",
-      detalle = "duplicados=0"
-    )
-  } else {
-    duplicated_keys %>%
-      transmute(
-        validacion = "clave_unica_panel",
-        estado = "revisar",
-        anno = .data$anno,
-        cuadro = NA_integer_,
-        codigo_rama_original = as.character(.data$codigo_rama_original),
-        variable_canonica = NA_character_,
-        detalle = paste0("duplicados=", .data$n),
-        diferencia_abs = as.numeric(.data$n - 1L),
-        diferencia_rel = NA_real_
-      )
   }
 
-  branch_coverage <- panel %>%
-    group_by(.data$anno) %>%
-    summarise(
-      n_filas = n(),
-      n_industria_total = sum(.data$nivel_agregacion == "industria_total"),
-      .groups = "drop"
-    ) %>%
+  # DECISION: en EIA solo se considera `stock_capital` original si el cuadro
+  # declara valor de activos fijos al 31/12. En la serie disponible esto ocurre
+  # solamente en 1997, Cuadro 18; los cuadros 18 de 1989-1996 son flujos de
+  # capital y no se cargan como stock.
+  data_rows %>%
     transmute(
-      validacion = "cobertura_ramas_panel",
-      estado = if_else(.data$n_filas > 0L & .data$n_industria_total == 1L, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = NA_integer_,
-      codigo_rama_original = NA_character_,
-      variable_canonica = NA_character_,
-      detalle = paste0("filas=", .data$n_filas, "; industria_total=", .data$n_industria_total),
-      diferencia_abs = as.numeric(.data$n_industria_total - 1L),
-      diferencia_rel = NA_real_
+      anno = anno,
+      seccion = str_trim(.data$col_1),
+      stock_capital = as_number(.data$col_2)
     )
-
-  key_variables <- c("vbp_corriente", "vab_corriente", "remuneraciones")
-  non_null_key_vars <- panel %>%
-    select("anno", "codigo_rama_original", all_of(key_variables)) %>%
-    pivot_longer(
-      cols = all_of(key_variables),
-      names_to = "variable_canonica",
-      values_to = "valor"
-    ) %>%
-    group_by(.data$anno, .data$variable_canonica) %>%
-    summarise(
-      n_faltantes = sum(is.na(.data$valor)),
-      .groups = "drop"
-    ) %>%
-    transmute(
-      validacion = "variables_clave_no_nulas",
-      estado = if_else(.data$n_faltantes == 0L, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = NA_integer_,
-      codigo_rama_original = NA_character_,
-      variable_canonica = .data$variable_canonica,
-      detalle = paste0("faltantes=", .data$n_faltantes),
-      diferencia_abs = as.numeric(.data$n_faltantes),
-      diferencia_rel = NA_real_
-    )
-
-  vbp_ge_vab <- panel %>%
-    filter(!is.na(.data$vbp_corriente), !is.na(.data$vab_corriente)) %>%
-    transmute(
-      validacion = "vbp_mayor_igual_vab",
-      estado = if_else(.data$vbp_corriente >= .data$vab_corriente, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = 2L,
-      codigo_rama_original = as.character(.data$codigo_rama_original),
-      variable_canonica = NA_character_,
-      detalle = "vbp_corriente >= vab_corriente",
-      diferencia_abs = .data$vbp_corriente - .data$vab_corriente,
-      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$vbp_corriente), 1)
-    )
-
-  vab_ge_rem <- panel %>%
-    filter(!is.na(.data$vab_corriente), !is.na(.data$remuneraciones)) %>%
-    transmute(
-      validacion = "vab_mayor_igual_remuneraciones",
-      estado = if_else(.data$vab_corriente >= .data$remuneraciones, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = 2L,
-      codigo_rama_original = as.character(.data$codigo_rama_original),
-      variable_canonica = NA_character_,
-      detalle = "vab_corriente >= remuneraciones",
-      diferencia_abs = .data$vab_corriente - .data$remuneraciones,
-      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$vab_corriente), 1)
-    )
-
-  capital_consumption_non_negative <- panel %>%
-    filter(!is.na(.data$consumo_capital_fijo)) %>%
-    transmute(
-      validacion = "consumo_capital_fijo_no_negativo",
-      estado = if_else(.data$consumo_capital_fijo >= 0, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = 2L,
-      codigo_rama_original = as.character(.data$codigo_rama_original),
-      variable_canonica = "consumo_capital_fijo",
-      detalle = "consumo_capital_fijo >= 0",
-      diferencia_abs = .data$consumo_capital_fijo,
-      diferencia_rel = NA_real_
-    )
-
-  fbcf_non_negative <- panel %>%
-    filter(!is.na(.data$fbcf)) %>%
-    transmute(
-      validacion = "fbcf_no_negativa",
-      estado = if_else(.data$fbcf >= 0, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = NA_integer_,
-      codigo_rama_original = as.character(.data$codigo_rama_original),
-      variable_canonica = "fbcf",
-      detalle = "fbcf >= 0",
-      diferencia_abs = .data$fbcf,
-      diferencia_rel = NA_real_
-    )
-
-  fbkf_maq_le_fbcf <- panel %>%
-    filter(!is.na(.data$fbkf_maq_eq), !is.na(.data$fbcf), .data$fbcf >= 0) %>%
-    transmute(
-      validacion = "fbkf_maq_eq_menor_igual_fbcf",
-      estado = if_else(.data$fbkf_maq_eq <= .data$fbcf, "ok", "revisar"),
-      anno = .data$anno,
-      cuadro = NA_integer_,
-      codigo_rama_original = as.character(.data$codigo_rama_original),
-      variable_canonica = "fbkf_maq_eq",
-      detalle = "fbkf_maq_eq <= fbcf",
-      diferencia_abs = .data$fbcf - .data$fbkf_maq_eq,
-      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$fbcf), 1)
-    )
-
-  accounts_alignment <- panel %>%
-    filter(
-      !is.na(.data$consumo_capital_fijo),
-      !is.na(.data$impuestos_netos),
-      !is.na(.data$vab_corriente),
-      !is.na(.data$remuneraciones)
-    ) %>%
-    group_by(.data$anno) %>%
-    summarise(
-      n = n(),
-      consumo_igual_vab = sum(.data$consumo_capital_fijo == .data$vab_corriente),
-      impuestos_igual_vab = sum(.data$impuestos_netos == .data$vab_corriente),
-      consumo_igual_rem = sum(.data$consumo_capital_fijo == .data$remuneraciones),
-      mediana_consumo_vab = median(.data$consumo_capital_fijo / .data$vab_corriente, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    transmute(
-      validacion = "alineacion_columnas_cuentas",
-      estado = if_else(
-        .data$consumo_igual_vab == .data$n |
-          .data$impuestos_igual_vab == .data$n |
-          .data$consumo_igual_rem == .data$n |
-          .data$mediana_consumo_vab > 0.4,
-        "revisar",
-        "ok"
-      ),
-      anno = .data$anno,
-      cuadro = 2L,
-      codigo_rama_original = NA_character_,
-      variable_canonica = NA_character_,
-      detalle = paste0(
-        "n=", .data$n,
-        "; consumo_igual_vab=", .data$consumo_igual_vab,
-        "; impuestos_igual_vab=", .data$impuestos_igual_vab,
-        "; consumo_igual_rem=", .data$consumo_igual_rem,
-        "; mediana_consumo_vab=", round(.data$mediana_consumo_vab, 4)
-      ),
-      diferencia_abs = .data$mediana_consumo_vab,
-      diferencia_rel = NA_real_
-    )
-
-  total_vab_yoy <- panel %>%
-    filter(.data$nivel_agregacion == "industria_total") %>%
-    arrange(.data$anno) %>%
-    mutate(
-      vab_lag = lag(.data$vab_corriente),
-      variacion_abs = abs(.data$vab_corriente / .data$vab_lag - 1)
-    ) %>%
-    filter(!is.na(.data$vab_lag)) %>%
-    transmute(
-      validacion = "variacion_vab_total_mayor_50pct",
-      estado = if_else(.data$variacion_abs > 0.5, "revisar", "ok"),
-      anno = .data$anno,
-      cuadro = NA_integer_,
-      codigo_rama_original = as.character(.data$codigo_rama_original),
-      variable_canonica = "vab_corriente",
-      detalle = paste0("variacion_abs_pct=", round(.data$variacion_abs * 100, 2)),
-      diferencia_abs = .data$variacion_abs,
-      diferencia_rel = .data$variacion_abs
-    )
-
-  # DECISION: EIA 1989-1997 no incluye puestos de trabajo ni VAB a precios
-  # basicos en los cuadros objetivo procesados. Las validaciones equivalentes
-  # del panel EAAE se incorporan solo para variables efectivamente disponibles.
-  bind_rows(
-    temporal_coverage,
-    unique_key,
-    branch_coverage,
-    non_null_key_vars,
-    vbp_ge_vab,
-    vab_ge_rem,
-    capital_consumption_non_negative,
-    fbcf_non_negative,
-    fbkf_maq_le_fbcf,
-    accounts_alignment,
-    total_vab_yoy
-  )
 }
 
-build_validations <- function(tidy_data, panel, sheet_index) {
-  coverage <- expand_grid(
-    anno = sort(unique(sheet_index$anno)),
-    cuadro = TARGET_CUADROS
+add_stock_imputation <- function(panel) {
+  ratios <- panel %>%
+    filter(.data$anno == 1997L) %>%
+    transmute(
+      seccion,
+      stock_consumo_ratio_1997 = .data$stock_capital / .data$consumo_capital_fijo
+    )
+
+  if (any(is.na(ratios$stock_consumo_ratio_1997))) {
+    print(ratios)
+    stop("No se pudo calcular el ratio stock/consumo de capital fijo 1997 para todas las divisiones")
+  }
+
+  panel %>%
+    left_join(ratios, by = "seccion") %>%
+    mutate(
+      # DECISION: `stock_capital` preserva solo el dato original valido de 1997.
+      # `stock_capital_imputado` replica ese dato cuando existe y para 1989-1996
+      # imputa por division Rev.2 usando consumo_capital_fijo_t *
+      # (stock_capital_1997 / consumo_capital_fijo_1997).
+      stock_capital_imputado = if_else(
+        !is.na(.data$stock_capital),
+        .data$stock_capital,
+        .data$consumo_capital_fijo * .data$stock_consumo_ratio_1997
+      )
+    ) %>%
+    select(-stock_consumo_ratio_1997)
+}
+
+validate_panel <- function(panel) {
+  expected <- expand_grid(anno = YEARS, seccion = INDUSTRY_CODES_REV2)
+  missing_keys <- expected %>%
+    anti_join(panel, by = c("anno", "seccion"))
+  duplicate_keys <- panel %>%
+    count(.data$anno, .data$seccion) %>%
+    filter(.data$n != 1L)
+
+  if (nrow(missing_keys) > 0 || nrow(duplicate_keys) > 0) {
+    print(missing_keys)
+    print(duplicate_keys)
+    stop("Falla de cobertura o unicidad anno + seccion")
+  }
+
+  missing_labels <- panel %>%
+    filter(is.na(.data$seccion_etiqueta) | .data$seccion_etiqueta == "")
+
+  if (nrow(missing_labels) > 0) {
+    print(missing_labels)
+    stop("Hay secciones sin etiqueta")
+  }
+
+  required_complete <- c(
+    "vbp_pp",
+    "vab_pp",
+    "consumo_intermedio",
+    "remuneraciones",
+    "consumo_capital_fijo",
+    "stock_capital_imputado"
+  )
+
+  missing_values <- panel %>%
+    summarise(across(all_of(required_complete), ~ sum(is.na(.x)))) %>%
+    pivot_longer(everything(), names_to = "variable", values_to = "n_na") %>%
+    filter(.data$n_na > 0)
+
+  if (nrow(missing_values) > 0) {
+    print(missing_values)
+    stop("Hay valores faltantes en variables requeridas para tasa de ganancia")
+  }
+
+  invalid_stock <- panel %>%
+    filter((.data$anno == 1997L & is.na(.data$stock_capital)) |
+      (.data$anno != 1997L & !is.na(.data$stock_capital)))
+
+  if (nrow(invalid_stock) > 0) {
+    print(invalid_stock)
+    stop("`stock_capital` debe existir solo como dato original 1997")
+  }
+
+  accounting_gap <- panel %>%
+    mutate(
+      gap = abs(.data$vbp_pp - .data$consumo_intermedio - .data$vab_pp),
+      tol = pmax(1, abs(.data$vbp_pp) * 1e-8)
+    ) %>%
+    filter(.data$gap > .data$tol)
+
+  if (nrow(accounting_gap) > 0) {
+    print(accounting_gap)
+    stop("Falla identidad VBP = consumo intermedio + VAB")
+  }
+
+  total_consistency <- c(
+    "vbp_pp",
+    "vab_pp",
+    "consumo_intermedio",
+    "remuneraciones",
+    "consumo_capital_fijo"
   ) %>%
-    left_join(
-      sheet_index %>%
-        count(.data$anno, .data$cuadro, name = "n_sheets"),
-      by = c("anno", "cuadro")
-    ) %>%
-    mutate(
-      n_sheets = replace_na(.data$n_sheets, 0L),
-      validacion = "cobertura_cuadros",
-      estado = if_else(.data$n_sheets == 1L, "ok", "revisar"),
-      detalle = paste0("hojas_detectadas=", .data$n_sheets),
-      codigo_rama_original = NA_character_,
-      variable_canonica = NA_character_,
-      diferencia_abs = NA_real_,
-      diferencia_rel = NA_real_
-    ) %>%
-    select(
-      validacion,
-      estado,
-      anno,
-      cuadro,
-      codigo_rama_original,
-      variable_canonica,
-      detalle,
-      diferencia_abs,
-      diferencia_rel
-    )
+    map_dfr(function(variable_name) {
+      panel %>%
+        group_by(.data$anno) %>%
+        summarise(
+          total = first(.data[[variable_name]][.data$seccion == "3"]),
+          suma_divisiones = sum(.data[[variable_name]][.data$seccion != "3"], na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        mutate(
+          variable = variable_name,
+          diferencia_abs = abs(.data$total - .data$suma_divisiones),
+          diferencia_rel = .data$diferencia_abs / pmax(1, abs(.data$total))
+        )
+    }) %>%
+    filter(.data$diferencia_rel > 1e-5)
 
-  duplicate_checks <- tidy_data %>%
-    group_by(.data$anno, .data$codigo_rama_original, .data$variable_canonica) %>%
-    summarise(
-      n_fuentes = n_distinct(.data$cuadro),
-      min_valor = min(.data$valor_pesos_corrientes, na.rm = TRUE),
-      max_valor = max(.data$valor_pesos_corrientes, na.rm = TRUE),
-      cuadros = paste(sort(unique(.data$cuadro)), collapse = "+"),
-      .groups = "drop"
-    ) %>%
-    filter(.data$n_fuentes > 1L) %>%
-    mutate(
-      validacion = "duplicados_variable_canonica",
-      cuadro = NA_integer_,
-      diferencia_abs = abs(.data$max_valor - .data$min_valor),
-      diferencia_rel = if_else(
-        .data$max_valor == 0,
-        0,
-        .data$diferencia_abs / abs(.data$max_valor)
-      ),
-      estado = if_else(.data$diferencia_abs <= 1000 | .data$diferencia_rel <= 1e-8, "ok", "revisar"),
-      detalle = paste0("cuadros=", .data$cuadros, "; n_fuentes=", .data$n_fuentes)
-    ) %>%
-    select(
-      validacion,
-      estado,
-      anno,
-      cuadro,
-      codigo_rama_original,
-      variable_canonica,
-      detalle,
-      diferencia_abs,
-      diferencia_rel
-    )
+  if (nrow(total_consistency) > 0) {
+    print(total_consistency)
+    stop("El total industrial 3 no coincide con la suma de divisiones 31-39")
+  }
 
-  identidad_vbp <- panel %>%
-    filter(
-      !is.na(.data$vbp_corriente),
-      !is.na(.data$consumo_intermedio),
-      !is.na(.data$vab_corriente)
-    ) %>%
-    transmute(
-      validacion = "vbp_igual_ci_mas_vab",
-      estado = if_else(
-        abs(.data$vbp_corriente - .data$consumo_intermedio - .data$vab_corriente) <= 1000,
-        "ok",
-        "revisar"
-      ),
-      anno = .data$anno,
-      cuadro = 2L,
-      codigo_rama_original = .data$codigo_rama_original,
-      variable_canonica = NA_character_,
-      detalle = "vbp_corriente - consumo_intermedio - vab_corriente",
-      diferencia_abs = abs(.data$vbp_corriente - .data$consumo_intermedio - .data$vab_corriente),
-      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$vbp_corriente), 1)
-    )
-
-  identidad_vab <- panel %>%
-    filter(
-      !is.na(.data$vab_corriente),
-      !is.na(.data$remuneraciones),
-      !is.na(.data$impuestos_netos),
-      !is.na(.data$consumo_capital_fijo),
-      !is.na(.data$excedente_explotacion)
-    ) %>%
-    transmute(
-      validacion = "vab_igual_componentes",
-      estado = if_else(
-        abs(
-          .data$vab_corriente -
-            .data$remuneraciones -
-            .data$impuestos_netos -
-            .data$consumo_capital_fijo -
-            .data$excedente_explotacion
-        ) <= 1000,
-        "ok",
-        "revisar"
-      ),
-      anno = .data$anno,
-      cuadro = 2L,
-      codigo_rama_original = .data$codigo_rama_original,
-      variable_canonica = NA_character_,
-      detalle = "vab_corriente - remuneraciones - impuestos_netos - consumo_capital_fijo - excedente_explotacion",
-      diferencia_abs = abs(
-        .data$vab_corriente -
-          .data$remuneraciones -
-          .data$impuestos_netos -
-          .data$consumo_capital_fijo -
-          .data$excedente_explotacion
-      ),
-      diferencia_rel = .data$diferencia_abs / pmax(abs(.data$vab_corriente), 1)
-    )
-
-  bind_rows(coverage, duplicate_checks, identidad_vbp, identidad_vab) %>%
-    bind_rows(build_panel_quality_validations(panel)) %>%
-    arrange(.data$validacion, .data$anno, .data$cuadro, .data$codigo_rama_original, .data$variable_canonica)
+  invisible(TRUE)
 }
 
 main <- function() {
-  files <- tibble(path = sort(list.files(INPUT_DIR, pattern = "\\.xlsx?$", full.names = TRUE))) %>%
-    mutate(anno = as.integer(str_extract(basename(.data$path), "\\d{4}"))) %>%
-    filter(.data$anno %in% 1989:1997)
-
-  if (nrow(files) != 9L) {
-    stop("Se esperaban 9 archivos EIA 1989-1997 y se encontraron ", nrow(files))
-  }
-
+  files <- files_index()
   sheet_index <- files %>%
-    pmap_dfr(function(path, anno) detect_target_sheets(path, anno))
+    pmap_dfr(function(path, anno) detect_sheet_index(path, anno))
 
-  expected <- expand_grid(anno = 1989:1997, cuadro = TARGET_CUADROS)
-  missing <- expected %>%
-    anti_join(sheet_index, by = c("anno", "cuadro"))
-  duplicated_sheets <- sheet_index %>%
-    count(.data$anno, .data$cuadro, name = "n") %>%
-    filter(.data$n != 1L)
+  accounts <- files %>%
+    mutate(sheet_info = map2(.data$path, .data$anno, function(path, anno) {
+      require_unique_sheet(sheet_index, anno, .data$cuadro == 2L, "Cuadro 2")
+    })) %>%
+    mutate(data = map2(.data$path, .data$sheet_info, extract_accounts)) %>%
+    select(data) %>%
+    unnest(cols = c(data))
 
-  if (nrow(missing) > 0 || nrow(duplicated_sheets) > 0) {
-    print(missing)
-    print(duplicated_sheets)
-    stop("Fallo la deteccion unica de cuadros objetivo")
+  stock_sheet <- sheet_index %>%
+    filter(.data$es_stock_capital)
+
+  if (nrow(stock_sheet) != 1L || stock_sheet$anno[[1]] != 1997L) {
+    print(stock_sheet)
+    stop("Se esperaba una unica fuente de stock original en 1997")
   }
 
-  tidy_data <- sheet_index %>%
-    left_join(files, by = "anno") %>%
-    arrange(.data$anno, .data$cuadro) %>%
-    pmap_dfr(function(anno, archivo, sheet, cuadro, cuadro_titulo, path) {
-      extract_sheet_data(
-        path = path,
-        anno = anno,
-        sheet_info = tibble(
-          archivo = archivo,
-          sheet = sheet,
-          cuadro = cuadro,
-          cuadro_titulo = cuadro_titulo
-        )
-      )
-    }) %>%
-    arrange(.data$anno, .data$cuadro, .data$codigo_rama_original, .data$variable_canonica)
+  stock <- files %>%
+    filter(.data$anno == 1997L) %>%
+    mutate(data = map(.data$path, ~ extract_stock_capital(.x, stock_sheet))) %>%
+    select(data) %>%
+    unnest(cols = c(data))
 
-  panel <- choose_panel_values(tidy_data)
-  validations <- build_validations(tidy_data, panel, sheet_index)
+  panel <- accounts %>%
+    left_join(stock, by = c("anno", "seccion")) %>%
+    left_join(section_labels_rev2, by = "seccion") %>%
+    mutate(
+      epoca = "EIA_1989_1997",
+      ciiu_version = "Rev.2"
+    ) %>%
+    add_stock_imputation() %>%
+    arrange(.data$anno, .data$seccion) %>%
+    select(
+      anno,
+      seccion,
+      seccion_etiqueta,
+      epoca,
+      ciiu_version,
+      vbp_pp,
+      vab_pp,
+      consumo_intermedio,
+      remuneraciones,
+      consumo_capital_fijo,
+      stock_capital,
+      stock_capital_imputado
+    )
 
-  dir.create(dirname(OUTPUT_TIDY), recursive = TRUE, showWarnings = FALSE)
-  write_csv(tidy_data, OUTPUT_TIDY, na = "")
+  validate_panel(panel)
+
+  dir.create(dirname(OUTPUT_PANEL), recursive = TRUE, showWarnings = FALSE)
   write_csv(panel, OUTPUT_PANEL, na = "")
-  write_csv(validations, OUTPUT_VALIDACIONES, na = "")
 
-  n_review <- validations %>% filter(.data$estado != "ok") %>% nrow()
-
-  message("Escrito: ", OUTPUT_TIDY, " (", nrow(tidy_data), " filas)")
   message("Escrito: ", OUTPUT_PANEL, " (", nrow(panel), " filas)")
-  message("Escrito: ", OUTPUT_VALIDACIONES, " (", nrow(validations), " filas; revisar=", n_review, ")")
 }
 
 main()
