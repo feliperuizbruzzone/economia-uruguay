@@ -1,6 +1,7 @@
 ---
 title: "Minuta: deflactores BCU para análisis EAAE por subrama industrial"
 date: "2026-06-23"
+updated: "2026-06-27"
 lang: es-UY
 ---
 
@@ -71,6 +72,7 @@ anno + grupo_rev4_homologado
 Esa tabla debería incluir, al menos:
 
 - `indice_precio_vab_bcu_2005`
+- `metodo_empalme`
 - `calidad_deflactor`
 - `tipo_deflactor`
 - `nota_deflactor`
@@ -82,6 +84,125 @@ Las categorías sugeridas para `calidad_deflactor` son:
 | `directo` | La categoría BCU coincide razonablemente con el grupo EAAE. |
 | `reconstruido_por_suma` | El grupo EAAE se obtiene sumando varias categorías BCU compatibles. |
 | `proxy_grupo_amplio` | BCU publica un agregado más amplio o con fronteras no equivalentes. |
+
+## Método de empalme de deflactores
+
+Antes de empalmar, el deflactor debe calcularse luego de agregar las categorías
+BCU al grupo compatible con EAAE. Esto es preferible a promediar índices, porque
+preserva la ponderación implícita de cada actividad:
+
+```text
+indice_precio_vab_grupo =
+  sum(vab_corriente_bcu_grupo) / sum(vab_constante_bcu_grupo)
+```
+
+Luego se debe llevar cada tramo a una base común. Para el análisis EAAE
+2001-2024, la base recomendada es 2005=1, porque existe como año de empalme
+entre la serie base 1997 y la serie base 2005, y porque es la base ya usada en
+otros resultados del proyecto.
+
+### Opción 1: empalme por año común
+
+Esta es la opción más simple y auditable. Para EAAE 2001-2024 implicaría usar:
+
+```text
+1997-base: 2001-2005
+2005-base: 2005-2016 o 2005-2019
+2016-base: 2016-2024
+```
+
+Con base final 2005=1:
+
+```text
+indice_1997_empalmado[t] =
+  indice_1997[t] / indice_1997[2005]
+
+indice_2005_empalmado[t] =
+  indice_2005[t] / indice_2005[2005]
+
+indice_2016_empalmado[t] =
+  indice_2005_empalmado[2016] *
+  (indice_2016[t] / indice_2016[2016])
+```
+
+La ventaja es que el procedimiento es transparente y fácil de reproducir. La
+desventaja es que el empalme queda muy sensible al año elegido. Si 2016 tiene
+un cambio metodológico fuerte, el nivel de toda la cola 2016-2024 puede quedar
+afectado.
+
+### Opción 2: empalme por promedio de años solapados
+
+Para el salto entre la serie base 2005 y la serie base 2016 existe solapamiento
+en 2016-2019. En vez de empalmar sólo en 2016, se puede calcular un factor
+promedio:
+
+```text
+factor_empalme_2016 =
+  promedio(indice_2005_empalmado[t] / indice_2016[t])
+  para t = 2016, 2017, 2018, 2019
+
+indice_2016_empalmado[t] =
+  indice_2016[t] * factor_empalme_2016
+```
+
+La ventaja es que reduce la dependencia de un único año. La desventaja es que,
+si los años 2017-2019 tienen carácter preliminar o diferencias de clasificación,
+el promedio puede mezclar cambios de precios con diferencias metodológicas.
+
+### Opción 3: empalme por variaciones interanuales
+
+Esta opción prioriza la dinámica de cada fuente y evita forzar niveles entre
+bases distintas. Se fija 2005=1 y se proyecta hacia atrás o hacia adelante con
+las variaciones de la fuente correspondiente:
+
+```text
+indice_empalmado[t] =
+  indice_empalmado[t-1] *
+  (indice_fuente[t] / indice_fuente[t-1])
+```
+
+Operativamente:
+
+- fijar `indice_empalmado[2005] = 1`;
+- proyectar 2001-2004 hacia atrás con variaciones de la serie base 1997;
+- proyectar 2006-2016 con variaciones de la serie base 2005;
+- proyectar 2017-2024 con variaciones de la serie base 2016.
+
+La ventaja es que cada tramo conserva su propia dinámica interanual. La
+desventaja es que no resuelve por sí solo los problemas de equivalencia de
+clasificación; por eso debe combinarse con la marca de calidad del deflactor.
+
+### Opción 4: empalme sobre grupos BCU-compatibles más agregados
+
+Cuando la equivalencia BCU-EAAE sea débil, conviene crear una versión de
+sensibilidad más agregada. Algunos candidatos son:
+
+```text
+16_madera + 17_18_papel_impresion
+23_24_minerales_metales + 25_26_27_28_33_metal_equipos_reparacion
+31_32_muebles_otras_manufacturas, según compatibilidad del tramo
+```
+
+La ventaja es que mejora la calidad estadística del deflactor. La desventaja es
+que se pierde detalle de subrama en la presentación final.
+
+### Recomendación de empalme
+
+Para la serie principal se recomienda usar el **empalme por variaciones
+interanuales**, con base 2005=1, porque es el método más robusto frente a
+cambios de nivel entre bases y clasificaciones. Como control de sensibilidad,
+conviene comparar los resultados contra el empalme por promedio de años
+solapados en 2016-2019.
+
+La tabla final de deflactores debería conservar la trazabilidad del empalme con
+campos como:
+
+- `fuente_base`: `1997`, `2005` o `2016`;
+- `metodo_empalme`: por ejemplo `variacion_interanual` o `promedio_solape`;
+- `anno_base_indice`: `2005`;
+- `factor_empalme`, cuando corresponda;
+- `calidad_deflactor`;
+- `nota_deflactor`.
 
 ## Factibilidad por grupo EAAE
 
@@ -106,14 +227,17 @@ integra manufactura en la homologación final.
 
 1. Construir una tabla de deflactores BCU por subrama compatible, tomando como
    variable principal el índice implícito del VAB.
-2. Empalmar los tramos de distinta base a un índice común 2005=1.
+2. Empalmar los tramos de distinta base a un índice común 2005=1. Para la
+   serie principal se recomienda el empalme por variaciones interanuales.
 3. Asignar cada deflactor BCU al grupo EAAE homologado y registrar la calidad
    del empalme.
 4. Deflactar `vab_pp` de EAAE por subrama como resultado principal.
 5. Deflactar `vbp_pp`, `vbp_pb` y consumo intermedio sólo si el equipo acepta
    usar el deflactor de VAB como proxy para 2001-2015.
-6. Mantener una versión alternativa BCU-compatible, más agregada, para pruebas
-   de sensibilidad.
+6. Construir una prueba de sensibilidad con empalme por promedio de años
+   solapados en 2016-2019.
+7. Mantener una versión alternativa BCU-compatible, más agregada, para pruebas
+   de sensibilidad en los grupos de menor equivalencia.
 
 ## Recomendación al equipo
 
@@ -133,4 +257,4 @@ La fuente BCU no reproduce exactamente toda la homologación EAAE de subramas,
 pero sí alcanza para construir deflactores operativos para un análisis EAAE
 2001-2024. La salida más sólida es un panel EAAE de subramas con valores
 corrientes, valores constantes del VAB y una metadata explícita sobre la calidad
-del deflactor aplicado.
+del deflactor aplicado y el método de empalme usado.

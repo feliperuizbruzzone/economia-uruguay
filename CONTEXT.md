@@ -203,6 +203,52 @@ empresas de 5 y más personas ocupadas. Por eso la reconciliación 2001 contra e
 panel principal por letra queda como advertencia esperada: el panel principal
 usa el cuadro por letra `Total del País`.
 
+**PROCESAMIENTO INTEGRADO EAAE-BCU — Junio 2026:** se creó un panel largo para
+integrar economía total, rama industrial y subramas manufactureras homologadas
+con deflactores BCU/Oyanthabal y variables necesarias para tasa de ganancia.
+
+Artefactos:
+
+| Archivo | Contenido |
+|---|---|
+| `command-files/processing-command-files/13_build_panel_eaae_bcu_total_industria_subrama.R` | Script reproducible específico para construir el panel integrado. |
+| `command-files/processing-command-files/eaae_subrama_capital_direct.py` | Helper de extracción directa de `consumo_capital_fijo`, `impuestos_netos` y `stock_capital` a nivel de subrama industrial desde los RAR EAAE. |
+| `data/analysis-data/20260627_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
+| `docs/methodology/20260627_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes e imputaciones. |
+
+Decisiones del panel integrado:
+
+- La clave es `anno + nivel_panel + grupo_rev4_homologado`. En economía total
+  e industria total, `grupo_rev4_homologado` queda vacío porque el agregado se
+  identifica por `nivel_panel`.
+- Para economía total se agregan las secciones del panel EAAE principal y se
+  usa `gdp_price_index_base_2005` de `oyanthabal_indices_precios.csv` como
+  deflactor.
+- Para industria total y subramas se construye un deflactor implícito BCU del
+  VAB (`vab_corriente_bcu / vab_constante_bcu`) y se empalma a base 2005=1.
+  La serie principal usa base 1997 normalizada en 2005 para 2001–2005, base
+  2005 para 2005–2016 y base 2016 encadenada por variaciones interanuales para
+  2017–2024.
+- El panel conserva trazabilidad del deflactor con `fuente_base_bcu`,
+  `metodo_empalme_bcu`, `calidad_deflactor_bcu`, `codigos_bcu_deflactor` y
+  `nota_deflactor_bcu`.
+- Para economía total y rama industrial, `consumo_capital_fijo`,
+  `stock_capital` y `stock_capital_imputado` se toman del panel EAAE principal.
+- Para subramas industriales, `consumo_capital_fijo`, `impuestos_netos` y
+  `stock_capital` se extraen directamente desde los RAR EAAE preservando la
+  división publicada antes de homologar a grupos Rev.4 compatibles. Las fuentes
+  son C2/C2.1 para consumo de capital fijo; C15 a dos dígitos para el stock de
+  2001; C11 para 2003-2005; y C7 para 2006-2010 y 2012-2024.
+- En subramas, `stock_capital` queda vacío sólo en 2002 y 2011 porque no hay
+  cuadro de activos fijos publicado. `stock_capital_imputado` se completa con
+  la regla histórica por subrama: promedio del ratio
+  `stock_capital / consumo_capital_fijo` de 2003-2005 para imputar 2002 y de
+  2012-2024 para imputar 2011.
+- La salida incluye columnas metodológicas `metodo_capital_eaae`,
+  `metodo_stock_capital`, `metodo_consumo_capital_fijo` y
+  `calidad_capital_eaae`, además de `codigos_capital_fuente` y
+  `archivos_capital_fuente` para trazabilidad de los cuadros usados.
+
 ### Entorno de trabajo
 - **Sistema operativo:** Linux (local)
 - **IDE:** Positron (IDE de Posit, basado en VS Code; soporta Python y R)
@@ -1432,6 +1478,7 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Incorporación de fuente primaria externa `eaae-1998-2001` con resultados EAE a 2 dígitos para 1998, 1999, 2000 y 2001 | ✓ |
 | Jun 2026 | Procesamiento reproducible de `eaae-1998-2001`: panel ancho a división publicada, sólo universo empresas de 5 y más, con omisión documentada de hojas 1999 duplicadas del año 2000 | ✓ |
 | Jun 2026 | Creación del panel EAAE industrial de subramas 2001–2024 en dos capas: fuente publicada y homologada a grupos CIIU Rev.4 compatibles, con validaciones tidy | ✓ |
+| Jun 2026 | Creación del panel integrado EAAE-BCU para economía total, industria total y subramas industriales homologadas, con deflactores empalmados base 2005, extracción directa de consumo/stock de capital subrama e imputación de stock solo en 2002 y 2011 | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
