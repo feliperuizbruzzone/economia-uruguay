@@ -205,7 +205,7 @@ usa el cuadro por letra `Total del País`.
 
 **PROCESAMIENTO INTEGRADO EAAE-BCU — Junio 2026:** se creó un panel largo para
 integrar economía total, rama industrial y subramas manufactureras homologadas
-con deflactores BCU/Oyanthabal y variables necesarias para tasa de ganancia.
+con deflactores BCU y variables necesarias para tasa de ganancia.
 
 Artefactos:
 
@@ -213,8 +213,8 @@ Artefactos:
 |---|---|
 | `command-files/processing-command-files/13_build_panel_eaae_bcu_total_industria_subrama.R` | Script reproducible específico para construir el panel integrado. |
 | `command-files/processing-command-files/eaae_subrama_capital_direct.py` | Helper de extracción directa de `consumo_capital_fijo`, `impuestos_netos` y `stock_capital` a nivel de subrama industrial desde los RAR EAAE. |
-| `data/analysis-data/20260627_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
-| `docs/methodology/20260627_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes e imputaciones. |
+| `data/analysis-data/20260629_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
+| `docs/methodology/20260629_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes e imputaciones. |
 
 Decisiones del panel integrado:
 
@@ -222,16 +222,29 @@ Decisiones del panel integrado:
   e industria total, `grupo_rev4_homologado` queda vacío porque el agregado se
   identifica por `nivel_panel`.
 - Para economía total se agregan las secciones del panel EAAE principal y se
-  usa `gdp_price_index_base_2005` de `oyanthabal_indices_precios.csv` como
-  deflactor.
+  usa un deflactor implícito BCU del VAB de sectores de actividad. Las filas
+  BCU usadas son `Subtotal` en base 1997,
+  `VALOR AGREGADO BRUTO DE LOS SECTORES DE ACTIVIDAD` en base 2005 y
+  `Total VAB` en base 2016. No se usa la fila de PIB total BCU porque incluye
+  impuestos netos sobre productos y no reproduce la misma frontera contable
+  del agregado EAAE por sectores.
 - Para industria total y subramas se construye un deflactor implícito BCU del
   VAB (`vab_corriente_bcu / vab_constante_bcu`) y se empalma a base 2005=1.
   La serie principal usa base 1997 normalizada en 2005 para 2001–2005, base
   2005 para 2005–2016 y base 2016 encadenada por variaciones interanuales para
   2017–2024.
+- **DECISIÓN 2026-06-29:** en este artefacto integrado, `deflactor_2005`
+  replica `deflactor_vab_bcu_2005` para todos los niveles y
+  `fuente_deflactor` queda como `bcu_indice_implicito_vab` en todas las filas.
+  La columna `gdp_price_index_base_2005` de Oyanthabal/BCU ya no se exporta en
+  `YYYYMMDD_panel_eeae_bcu_total_industria_subrama.csv`; sigue siendo válida
+  para otros productos donde esté documentada, pero no para este panel
+  integrado.
 - El panel conserva trazabilidad del deflactor con `fuente_base_bcu`,
   `metodo_empalme_bcu`, `calidad_deflactor_bcu`, `codigos_bcu_deflactor` y
-  `nota_deflactor_bcu`.
+  `nota_deflactor_bcu`. En economía total, `calidad_deflactor_bcu =
+  "directo_total_economia"` indica que el deflactor procede directamente del
+  VAB agregado de sectores publicado por BCU.
 - Para economía total y rama industrial, `consumo_capital_fijo`,
   `stock_capital` y `stock_capital_imputado` se toman del panel EAAE principal.
 - Para subramas industriales, `consumo_capital_fijo`, `impuestos_netos` y
@@ -1479,6 +1492,7 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Procesamiento reproducible de `eaae-1998-2001`: panel ancho a división publicada, sólo universo empresas de 5 y más, con omisión documentada de hojas 1999 duplicadas del año 2000 | ✓ |
 | Jun 2026 | Creación del panel EAAE industrial de subramas 2001–2024 en dos capas: fuente publicada y homologada a grupos CIIU Rev.4 compatibles, con validaciones tidy | ✓ |
 | Jun 2026 | Creación del panel integrado EAAE-BCU para economía total, industria total y subramas industriales homologadas, con deflactores empalmados base 2005, extracción directa de consumo/stock de capital subrama e imputación de stock solo en 2002 y 2011 | ✓ |
+| Jun 2026 | Actualización del panel integrado EAAE-BCU para usar deflactores BCU también en economía total, reemplazando el índice procesado de Oyanthabal en ese artefacto | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

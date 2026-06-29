@@ -17,8 +17,8 @@ documentación metodológica en `docs/`.
 
 ### Panel Integrado EAAE-BCU
 
-- [20260627_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260627_panel_eeae_bcu_total_industria_subrama.csv): panel integrado para economía total, industria manufacturera y subramas industriales homologadas, con deflactores BCU/Oyanthabal, capital directo subrama e insumos para tasa de ganancia.
-- [20260627_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260627_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta metodológica del panel integrado, incluyendo homologación CIIU, empalme de deflactores, imputaciones y validaciones de calidad.
+- [20260629_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260629_panel_eeae_bcu_total_industria_subrama.csv): panel integrado para economía total, industria manufacturera y subramas industriales homologadas, con deflactores BCU, capital directo subrama e insumos para tasa de ganancia.
+- [20260629_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260629_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta metodológica del panel integrado, incluyendo homologación CIIU, empalme de deflactores, imputaciones y validaciones de calidad.
 
 ## Otros Resultados Fechados
 
@@ -46,7 +46,7 @@ documentación metodológica en `docs/`.
 - [20260617_confiabilidad-datos-eaae-1998-2001.md](docs/methodology/20260617_confiabilidad-datos-eaae-1998-2001.md): evaluación de confiabilidad de datos históricos EAAE 1998-2001.
 - [20260617_desagregacion-subrama-eaae-2001-2024.md](docs/methodology/20260617_desagregacion-subrama-eaae-2001-2024.md): análisis de desagregación posible por subrama EAAE.
 - [20260623_minuta_deflactores_bcu_eaae_subramas_industria_2001_2024.md](docs/methodology/20260623_minuta_deflactores_bcu_eaae_subramas_industria_2001_2024.md): minuta sobre deflactores BCU para subramas industriales.
-- [20260627_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260627_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta del panel integrado EAAE-BCU.
+- [20260629_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260629_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta del panel integrado EAAE-BCU.
 - [eaae_resultados_visuales.md](docs/eaae_resultados_visuales.md): informe visual de resultados EAAE.
 
 ## Estructura Del Repositorio

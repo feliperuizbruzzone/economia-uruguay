@@ -1,6 +1,7 @@
 ---
 title: "Minuta: panel integrado EAAE-BCU total, industria y subramas"
 date: "2026-06-27"
+updated: "2026-06-29"
 lang: es-UY
 ---
 
@@ -18,7 +19,7 @@ BCU en tres niveles de análisis:
 El archivo resultante es:
 
 ```text
-data/analysis-data/20260627_panel_eeae_bcu_total_industria_subrama.csv
+data/analysis-data/20260629_panel_eeae_bcu_total_industria_subrama.csv
 ```
 
 El script reproducible específico es:
@@ -158,29 +159,113 @@ El panel conserva trazabilidad con las columnas `metodo_stock_capital`,
 
 ## Deflactores BCU y empalme
 
-Para economía total se usa el índice ya procesado:
+Actualización del 2026-06-29: los tres niveles del panel integrado usan
+deflactores implícitos BCU del VAB. Por lo tanto, la economía total ya no se
+deflacta con el índice procesado de Oyanthabal. La razón es mantener una regla
+homogénea dentro de este artefacto: economía total, industria total y subramas
+industriales pasan por el mismo criterio de deflactor BCU empalmado a
+2005=1.
 
-```text
-gdp_price_index_base_2005
-```
-
-Para industria y subramas se construyen deflactores implícitos BCU del VAB:
+El deflactor se calcula como:
 
 ```text
 deflactor_vab_bcu = vab_corriente_bcu / vab_constante_bcu
 ```
 
-Luego se empalman a base 2005=1. El criterio aplicado es:
+Para economía total, el agregado elegido es el VAB de sectores de actividad,
+consistente con la economía total EAAE construida por suma sectorial. No se usa
+la fila de PIB total porque incorpora impuestos netos sobre productos y no
+replica la misma frontera contable del agregado EAAE por sectores.
+
+Las filas BCU usadas para economía total son:
+
+| Base BCU | Fila usada | Código operativo en el panel |
+|---|---|---|
+| 1997 | `Subtotal` | `__TOTAL_VAB_SECTORES__` |
+| 2005 | `VALOR AGREGADO BRUTO DE LOS SECTORES DE ACTIVIDAD` | `__TOTAL_VAB_SECTORES__` |
+| 2016 | `Total VAB` | `__TOTAL_VAB_SECTORES__` |
+
+Para industria y subramas se conserva el criterio ya documentado: usar las
+filas BCU compatibles con la industria manufacturera y con cada grupo
+homologado Rev.4. Cuando BCU no publica una frontera exacta, el panel marca la
+calidad del deflactor como `reconstruido_por_suma` o `proxy_grupo_amplio`.
+
+### Unificación de clasificaciones BCU-EAAE
+
+El empalme de precios requiere que cada serie BCU dialogue con la misma unidad
+analítica del panel EAAE. Por eso, antes de encadenar los índices, se construye
+un mapa común para tres niveles:
+
+- `economia_total`: agregado de VAB de sectores de actividad BCU, compatible
+  con la economía total EAAE construida por suma sectorial.
+- `industria_total`: industria manufacturera agregada; en las bases Rev.3 de
+  BCU se identifica como `D`, y en la base 2016 se reconstruye desde las filas
+  manufactureras `C.*`.
+- `subrama_industrial`: grupos industriales Rev.4 compatibles definidos para
+  la homologación EAAE. No son divisiones Rev.4 puras, sino agrupamientos
+  comparables que resuelven correspondencias Rev.3 -> Rev.4 uno-a-muchos o
+  fronteras publicadas más agregadas.
+
+En las bases BCU 1997 y 2005 predominan códigos compatibles con CIIU Rev.3,
+por ejemplo `D.15-D.16`, `D.17 a D.19` o `D.24 - D.25`. En la base BCU 2016
+se usan códigos Rev.4, por ejemplo `C.101T.0`, `C.13TT.0`, `C.20TV.0` o
+`C.3PTT.0`. El script no fuerza una equivalencia atomizada cuando la fuente no
+la permite: si la categoría BCU coincide razonablemente con el grupo EAAE se
+marca como `directo`; si debe sumarse más de una fila BCU se marca como
+`reconstruido_por_suma`; y si BCU solo publica una frontera más amplia o
+cruzada se marca como `proxy_grupo_amplio`. Los códigos efectivamente usados
+quedan registrados en `codigos_bcu_deflactor`.
+
+### Encadenamiento temporal de bases BCU
+
+Todos los deflactores se empalman a base 2005=1. El criterio aplicado es:
 
 - 2001-2005: serie BCU base 1997 normalizada en 2005;
 - 2005-2016: serie BCU base 2005;
 - 2017-2024: serie BCU base 2016 encadenada desde 2016 por variaciones
   interanuales.
 
-El panel conserva:
+Operativamente, para cada nivel o grupo homologado se calcula primero el índice
+implícito dentro de cada base:
+
+```text
+indice_precio_vab_fuente = vab_corriente_bcu / vab_constante_bcu
+```
+
+Luego se transforma cada tramo a una métrica común con base 2005=1:
+
+```text
+2001-2005:
+deflactor_vab_bcu_2005[t] =
+  indice_precio_vab_1997[t] / indice_precio_vab_1997[2005]
+
+2005-2016:
+deflactor_vab_bcu_2005[t] =
+  indice_precio_vab_2005[t] / indice_precio_vab_2005[2005]
+
+2017-2024:
+deflactor_vab_bcu_2005[t] =
+  deflactor_vab_bcu_2005[2016] *
+  (indice_precio_vab_2016[t] / indice_precio_vab_2016[2016])
+```
+
+La serie base 1997 se usa solo para proyectar hacia atrás hasta 2001,
+normalizada en 2005. La serie base 2005 fija el tramo central y entrega el
+nivel de 2016 expresado en base 2005. Desde 2017 se aplican las variaciones de
+la base 2016 sobre ese nivel 2016. Así se evita mezclar niveles absolutos de
+bases distintas y se aprovecha cada base en el tramo donde ofrece la
+clasificación y cobertura más pertinentes.
+
+En la salida actual, `deflactor_2005` replica el deflactor BCU empalmado
+`deflactor_vab_bcu_2005`, y `fuente_deflactor` queda como
+`bcu_indice_implicito_vab` para todas las filas. La columna
+`gdp_price_index_base_2005` ya no se incluye en este panel integrado.
+
+El panel conserva las siguientes columnas de trazabilidad:
 
 - `deflactor_vab_bcu_2005`;
 - `deflactor_2005`;
+- `fuente_deflactor`;
 - `fuente_base_bcu`;
 - `metodo_empalme_bcu`;
 - `calidad_deflactor_bcu`;
@@ -194,7 +279,7 @@ La calidad del deflactor puede ser:
 | `directo` | BCU publica una categoría razonablemente coincidente. |
 | `reconstruido_por_suma` | Se suma más de una fila BCU compatible. |
 | `proxy_grupo_amplio` | BCU publica una frontera más amplia o cruzada. |
-| `directo_total_economia` | Índice total del PIB ya procesado. |
+| `directo_total_economia` | BCU publica o permite leer directamente el VAB agregado de sectores de actividad usado para economía total. |
 
 ## Validaciones aplicadas
 
@@ -207,14 +292,24 @@ El script detiene la ejecución si:
   `vab_pp`, `remuneraciones`, `consumo_capital_fijo` o
   `stock_capital_imputado`.
 
-La corrida del 2026-06-27 produjo:
+La corrida del 2026-06-29 produjo:
 
 | Control | Resultado |
 |---|---:|
 | filas | 288 |
-| columnas | 79 |
+| columnas | 78 |
 | filas sin deflactor | 0 |
 | filas sin insumos básicos de tasa de ganancia | 0 |
+
+Controles específicos del cambio de deflactor:
+
+| Control | Resultado |
+|---|---|
+| `fuente_deflactor` | `bcu_indice_implicito_vab` en todas las filas |
+| `deflactor_vab_bcu_2005` | sin valores faltantes |
+| `deflactor_2005` | sin valores faltantes |
+| `gdp_price_index_base_2005` | no incluido en el panel integrado |
+| código BCU de economía total | `__TOTAL_VAB_SECTORES__` |
 
 ### Validaciones de calidad tipo 20260605
 

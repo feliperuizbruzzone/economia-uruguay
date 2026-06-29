@@ -240,6 +240,13 @@ def candidate_extractors() -> list[tuple[str, list[str]]]:
                 ],
             )
         )
+
+    seven_zip = shutil.which("7z")
+    if seven_zip:
+        # DECISION: Use 7z as a last-resort local fallback. Some RAR5 methods
+        # can be listed but not extracted by 7z, so prefer unrar/bsdtar when
+        # they are available.
+        extractors.append(("7z", [seven_zip]))
     return extractors
 
 
@@ -253,9 +260,19 @@ def list_members(rar_path: Path, extractors: list[tuple[str, list[str]]]) -> lis
         try:
             if kind == "unrar":
                 result = run_extractor([*prefix, "lb", str(rar_path)])
+            elif kind == "7z":
+                result = run_extractor([*prefix, "l", "-slt", str(rar_path)])
             else:
                 result = run_extractor([*prefix, "-tf", str(rar_path)])
-            members = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+            if kind == "7z":
+                members = [
+                    line.split("=", 1)[1].strip()
+                    for line in result.stdout.splitlines()
+                    if line.startswith("Path = ")
+                    and line.split("=", 1)[1].strip() != str(rar_path)
+                ]
+            else:
+                members = [line.strip() for line in result.stdout.splitlines() if line.strip()]
             if members:
                 return members
         except (subprocess.CalledProcessError, FileNotFoundError) as exc:
@@ -277,6 +294,9 @@ def extract_member(
             if kind == "unrar":
                 run_extractor([*prefix, "e", "-y", str(rar_path), member, str(output_dir) + "/"])
                 extracted = output_dir / Path(member).name
+            elif kind == "7z":
+                run_extractor([*prefix, "x", "-y", f"-o{output_dir}", str(rar_path), member])
+                extracted = output_dir / member
             else:
                 run_extractor([*prefix, "-xf", str(rar_path), "-C", str(output_dir), member])
                 extracted = output_dir / member

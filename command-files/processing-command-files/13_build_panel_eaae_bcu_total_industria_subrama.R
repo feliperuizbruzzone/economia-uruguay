@@ -28,7 +28,6 @@ subrama_eaae_path <- file.path(
   analysis_dir,
   "20260617_panel_eaae_industria_subramas_rev4_homologado.csv"
 )
-price_index_path <- file.path(analysis_dir, "oyanthabal_indices_precios.csv")
 direct_capital_helper <- file.path(
   "command-files",
   "processing-command-files",
@@ -185,13 +184,29 @@ read_bcu_wide <- function(
     mutate(.row = row_number()) %>%
     filter(.row > header_row) %>%
     transmute(
-      codigo_bcu = clean_code(.data[[paste0("col", code_col)]]),
-      descripcion_bcu = str_squish(as.character(.data[[paste0("col", desc_col)]])),
+      codigo_bcu_raw = clean_code(.data[[paste0("col", code_col)]]),
+      descripcion_bcu_raw = str_squish(as.character(.data[[paste0("col", desc_col)]])),
       across(
         all_of(paste0("col", year_cols$col_index)),
         ~ suppressWarnings(as.numeric(.x))
       )
     ) %>%
+    mutate(
+      # DECISION: In the BCU 2016 VAB current-price workbook, the aggregate
+      # "Total VAB" label appears in the code column instead of the description
+      # column. Normalize that layout so the total-economy deflator can be read
+      # from BCU directly and not from the Oyanthabal processed index.
+      descripcion_bcu = case_when(
+        (is.na(descripcion_bcu_raw) | descripcion_bcu_raw == "") &
+          str_to_upper(coalesce(codigo_bcu_raw, "")) == "TOTAL VAB" ~ "Total VAB",
+        TRUE ~ descripcion_bcu_raw
+      ),
+      codigo_bcu = case_when(
+        str_to_upper(coalesce(codigo_bcu_raw, "")) == "TOTAL VAB" ~ NA_character_,
+        TRUE ~ codigo_bcu_raw
+      )
+    ) %>%
+    select(-codigo_bcu_raw, -descripcion_bcu_raw) %>%
     filter(!is.na(descripcion_bcu), descripcion_bcu != "") %>%
     pivot_longer(
       cols = all_of(paste0("col", year_cols$col_index)),
@@ -219,6 +234,9 @@ read_bcu_wide <- function(
 
 bcu_group_map <- tribble(
   ~nivel_panel, ~grupo_rev4_homologado, ~descripcion_nivel, ~fuente_base, ~codigos_bcu, ~calidad_deflactor_bcu, ~nota_deflactor_bcu,
+  "economia_total", NA_character_, "Economia total BCU - VAB sectores", "1997", "__TOTAL_VAB_SECTORES__", "directo_total_economia", "VAB de sectores de actividad BCU; en base 1997 figura como Subtotal.",
+  "economia_total", NA_character_, "Economia total BCU - VAB sectores", "2005", "__TOTAL_VAB_SECTORES__", "directo_total_economia", "VAB de sectores de actividad BCU.",
+  "economia_total", NA_character_, "Economia total BCU - VAB sectores", "2016", "__TOTAL_VAB_SECTORES__", "directo_total_economia", "Total VAB de sectores de actividad BCU.",
   "industria_total", NA_character_, "Industria manufacturera", "1997", "D", "directo", "Total industria manufacturera BCU Rev.3.",
   "industria_total", NA_character_, "Industria manufacturera", "2005", "D", "directo", "Total industria manufacturera BCU Rev.3.",
   "industria_total", NA_character_, "Industria manufacturera", "2016", "__ALL_C__", "reconstruido_por_suma", "Total manufacturero reconstruido por suma de filas C publicadas en el libro BCU 2016.",
@@ -280,6 +298,16 @@ read_all_bcu_vab <- function() {
     read_bcu_wide(
       bcu_2016_constant_path, "VAB_K", "2016", "constante", 2, 3, 1000000
     )
+  ) %>%
+    mutate(
+      codigo_bcu = case_when(
+        fuente_base == "1997" & descripcion_bcu == "Subtotal" ~ "__TOTAL_VAB_SECTORES__",
+        fuente_base == "2005" &
+          descripcion_bcu == "VALOR AGREGADO BRUTO DE LOS SECTORES DE ACTIVIDAD" ~
+          "__TOTAL_VAB_SECTORES__",
+        fuente_base == "2016" & descripcion_bcu == "Total VAB" ~ "__TOTAL_VAB_SECTORES__",
+        TRUE ~ codigo_bcu
+      )
   )
 }
 
@@ -362,10 +390,10 @@ build_bcu_deflators <- function() {
 
   source_indexes <- bcu_mapped %>%
     mutate(
-      id_deflactor = if_else(
-        nivel_panel == "industria_total",
-        "industria_total",
-        grupo_rev4_homologado
+      id_deflactor = case_when(
+        nivel_panel == "economia_total" ~ "economia_total",
+        nivel_panel == "industria_total" ~ "industria_total",
+        TRUE ~ grupo_rev4_homologado
       )
     ) %>%
     group_by(id_deflactor, fuente_base) %>%
@@ -561,45 +589,14 @@ build_eaae_rows <- function() {
 }
 
 add_deflators <- function(eaae_panel, bcu_deflators) {
-  price_indexes <- readr::read_csv(price_index_path, show_col_types = FALSE) %>%
-    filter(variable == "gdp_price_index_base_2005") %>%
-    transmute(
-      anno = as.integer(anno),
-      gdp_price_index_base_2005 = as.numeric(valor)
-    )
-
   eaae_panel %>%
     left_join(
       bcu_deflators,
       by = c("anno", "nivel_panel", "grupo_rev4_homologado")
     ) %>%
-    left_join(price_indexes, by = "anno") %>%
     mutate(
-      deflactor_2005 = if_else(
-        nivel_panel == "economia_total",
-        gdp_price_index_base_2005,
-        deflactor_vab_bcu_2005
-      ),
-      fuente_deflactor = if_else(
-        nivel_panel == "economia_total",
-        "oyanthabal_bcu_gdp_price_index",
-        "bcu_indice_implicito_vab"
-      ),
-      metodo_empalme_bcu = if_else(
-        nivel_panel == "economia_total",
-        "indice_pib_base_2005_oyanthabal_bcu",
-        metodo_empalme_bcu
-      ),
-      calidad_deflactor_bcu = if_else(
-        nivel_panel == "economia_total",
-        "directo_total_economia",
-        calidad_deflactor_bcu
-      ),
-      nota_deflactor_bcu = if_else(
-        nivel_panel == "economia_total",
-        "Deflactor de PIB total base 2005 ya procesado en oyanthabal_indices_precios.csv.",
-        nota_deflactor_bcu
-      )
+      deflactor_2005 = deflactor_vab_bcu_2005,
+      fuente_deflactor = "bcu_indice_implicito_vab"
     )
 }
 
@@ -685,7 +682,6 @@ main <- function() {
       starts_with("tasa_ganancia_pb_constante_2005"),
       starts_with("tasa_ganancia_pp_constante_2005"),
       starts_with("productividad_constante_2005"),
-      gdp_price_index_base_2005,
       deflactor_vab_bcu_2005,
       deflactor_2005,
       fuente_deflactor,
