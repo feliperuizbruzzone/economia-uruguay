@@ -14,7 +14,10 @@ suppressPackageStartupMessages({
 analysis_dir <- file.path("data", "analysis-data")
 fig_dir <- file.path("output", "figures", "eaae")
 docs_dir <- "docs"
-report_path <- file.path(docs_dir, "eaae_resultados_visuales.md")
+report_path <- file.path(
+  docs_dir,
+  "20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md"
+)
 
 latest_analysis_file <- function(pattern) {
   paths <- list.files(

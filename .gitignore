@@ -18,6 +18,8 @@ output/*
 output/figures/*
 !output/figures/eaae/
 !output/figures/eaae/*.png
+!output/figures/eaae_bcu_total_industria_subrama/
+!output/figures/eaae_bcu_total_industria_subrama/*.png
 *.log
 *.tmp
 

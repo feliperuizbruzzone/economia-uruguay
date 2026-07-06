@@ -1,7 +1,7 @@
 ---
 title: "Minuta: panel integrado EAAE-BCU total, industria y subramas"
 date: "2026-06-27"
-updated: "2026-06-29"
+updated: "2026-07-06"
 lang: es-UY
 ---
 
@@ -19,7 +19,7 @@ BCU en tres niveles de análisis:
 El archivo resultante es:
 
 ```text
-data/analysis-data/20260629_panel_eeae_bcu_total_industria_subrama.csv
+data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv
 ```
 
 El script reproducible específico es:
@@ -101,18 +101,57 @@ costo_laboral = remuneraciones
 ganancia_pb = vab_pb_estimado - consumo_capital_fijo - costo_laboral
 ganancia_pp = vab_pp - consumo_capital_fijo - costo_laboral
 consumo_intermedio = vbp_pp - vab_pp
-capital_circulante_adelantado = (costo_laboral + consumo_intermedio) / rotacion
+capital_circulante_adelantado = (costo_laboral + consumo_intermedio) / rotacion_calibrada_sobre_6_6
 capital_total_adelantado = stock_capital_imputado + capital_circulante_adelantado
 tasa_ganancia_pb = ganancia_pb / capital_total_adelantado
 tasa_ganancia_pp = ganancia_pp / capital_total_adelantado
 ```
 
-Las rotaciones usadas son:
+La rotación operativa de estos cálculos es
+`rotacion_calibrada_sobre_6_6`. La columna genérica `rotacion` ya no se exporta
+en el panel integrado.
 
-| Nivel | Rotación |
+## Rotación calibrada Damodaran
+
+Actualización del 2026-07-06: se incorpora al panel la variable
+`rotacion_calibrada_sobre_6_6`, extraída desde:
+
+```text
+data/input-data/damodaran/20260630_rotacion_damodaran_eaae.xlsx
+```
+
+La extracción usa la hoja `Resumen` y toma dos columnas: `rama` y
+`rotacion_calibrada_sobre_6_6`. La etiqueta `rama` se armoniza contra
+`descripcion_nivel` del panel integrado, de modo que la rotación queda asignada
+a `economia_total`, `industria_total` y cada `subrama_industrial`.
+
+La variable es constante en el tiempo: el mismo valor se repite para todos los
+años 2001-2024 dentro de cada nivel o subrama. Su función es conservar en el
+panel la calibración sectorial basada en Damodaran y normalizada sobre la
+rotación industrial 6,6.
+
+Desde la actualización del 2026-07-06, esta variable reemplaza la columna
+genérica `rotacion` como insumo operativo para calcular capital adelantado y
+tasas de ganancia en este panel integrado. Esto mantiene `4,2` para economía
+total y `6,6` para la rama industrial agregada, pero permite usar rotaciones
+específicas para cada subrama industrial.
+
+Valores incorporados:
+
+| Nivel / subrama | `rotacion_calibrada_sobre_6_6` |
 |---|---:|
-| economía total | 4,2 |
-| industria total y subramas industriales | 6,6 |
+| Economia total EAAE | 4,20 |
+| Industria manufacturera EAAE | 6,60 |
+| Alimentos bebidas y tabaco | 6,77 |
+| Textiles prendas y cuero | 5,68 |
+| Madera y productos de madera | 6,56 |
+| Papel impresion y reproduccion | 6,99 |
+| Coque y refinacion de petroleo | 8,76 |
+| Quimicos farmaceuticos caucho y plastico | 4,98 |
+| Minerales no metalicos y metales comunes | 5,69 |
+| Productos de metal equipos y reparacion | 4,80 |
+| Vehiculos y otros equipos de transporte | 5,88 |
+| Muebles y otras manufacturas | 6,47 |
 
 ## Consumo de capital fijo y stock de capital
 
@@ -291,8 +330,10 @@ El script detiene la ejecución si:
 - falta algún insumo básico para tasa de ganancia:
   `vab_pp`, `remuneraciones`, `consumo_capital_fijo` o
   `stock_capital_imputado`.
+- queda alguna fila sin `rotacion_calibrada_sobre_6_6`.
+- aparece la columna genérica `rotacion` en la salida final.
 
-La corrida del 2026-06-29 produjo:
+La corrida del 2026-07-06 produjo:
 
 | Control | Resultado |
 |---|---:|
@@ -300,6 +341,7 @@ La corrida del 2026-06-29 produjo:
 | columnas | 78 |
 | filas sin deflactor | 0 |
 | filas sin insumos básicos de tasa de ganancia | 0 |
+| filas sin rotación calibrada | 0 |
 
 Controles específicos del cambio de deflactor:
 
@@ -310,6 +352,16 @@ Controles específicos del cambio de deflactor:
 | `deflactor_2005` | sin valores faltantes |
 | `gdp_price_index_base_2005` | no incluido en el panel integrado |
 | código BCU de economía total | `__TOTAL_VAB_SECTORES__` |
+
+Control específico de rotación calibrada:
+
+| Control | Resultado |
+|---|---|
+| `rotacion_calibrada_sobre_6_6` | sin valores faltantes |
+| `rotacion` | no incluida en el panel integrado |
+| cantidad de valores únicos por nivel/subrama | 12 |
+| periodicidad | constante para todos los años 2001-2024 dentro de cada nivel/subrama |
+| uso operativo | capital adelantado y tasas de ganancia calculados con `rotacion_calibrada_sobre_6_6` |
 
 ### Validaciones de calidad tipo 20260605
 

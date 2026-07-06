@@ -8,17 +8,22 @@ primarios se conservan en `data/input-data/`, los scripts reproducibles en
 `command-files/`, las bases procesadas en `data/analysis-data/` y la
 documentación metodológica en `docs/`.
 
+## Resultados EAAE-BCU Total, Industria Y Subramas
+
+- [20260706_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx): libro de resultados en formato largo para economía total, industria manufacturera agregada y subramas industriales homologadas.
+- [20260706_resultados_eaae_bcu_total_industria_subrama.md](docs/20260706_resultados_eaae_bcu_total_industria_subrama.md): informe visual basado en el libro largo, con resultados agregados y sección específica para subramas industriales.
+
 ## Resultados Principales
+
+### Panel Integrado EAAE-BCU
+
+- [20260706_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv): panel integrado para economía total, industria manufacturera y subramas industriales homologadas, con deflactores BCU, rotación calibrada Damodaran, capital directo subrama e insumos para tasa de ganancia.
+- [20260706_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta metodológica del panel integrado, incluyendo homologación CIIU, empalme de deflactores, rotaciones, imputaciones y validaciones de calidad.
 
 ### Panel EAAE 2001-2024
 
 - [20260605_panel_eaae.csv](data/analysis-data/20260605_panel_eaae.csv): panel EAAE principal por año y sección CIIU homologada.
 - [20260605_panel_eaae.xlsx](data/analysis-data/20260605_panel_eaae.xlsx): libro de revisión con hojas base, validaciones, economía total, rama C y resultados propios.
-
-### Panel Integrado EAAE-BCU
-
-- [20260629_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260629_panel_eeae_bcu_total_industria_subrama.csv): panel integrado para economía total, industria manufacturera y subramas industriales homologadas, con deflactores BCU, capital directo subrama e insumos para tasa de ganancia.
-- [20260629_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260629_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta metodológica del panel integrado, incluyendo homologación CIIU, empalme de deflactores, imputaciones y validaciones de calidad.
 
 ## Otros Resultados Fechados
 
@@ -46,8 +51,8 @@ documentación metodológica en `docs/`.
 - [20260617_confiabilidad-datos-eaae-1998-2001.md](docs/methodology/20260617_confiabilidad-datos-eaae-1998-2001.md): evaluación de confiabilidad de datos históricos EAAE 1998-2001.
 - [20260617_desagregacion-subrama-eaae-2001-2024.md](docs/methodology/20260617_desagregacion-subrama-eaae-2001-2024.md): análisis de desagregación posible por subrama EAAE.
 - [20260623_minuta_deflactores_bcu_eaae_subramas_industria_2001_2024.md](docs/methodology/20260623_minuta_deflactores_bcu_eaae_subramas_industria_2001_2024.md): minuta sobre deflactores BCU para subramas industriales.
-- [20260629_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260629_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta del panel integrado EAAE-BCU.
-- [eaae_resultados_visuales.md](docs/eaae_resultados_visuales.md): informe visual de resultados EAAE.
+- [20260706_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta del panel integrado EAAE-BCU.
+- [20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md](docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md): informe visual de resultados EAAE/Oyanthabal para economía total e industria.
 
 ## Estructura Del Repositorio
 

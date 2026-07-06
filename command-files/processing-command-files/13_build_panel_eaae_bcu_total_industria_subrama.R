@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
 
 analysis_dir <- file.path("data", "analysis-data")
 input_bcu_dir <- file.path("data", "input-data", "bcu", "indices-precios-1988-2024")
+input_damodaran_dir <- file.path("data", "input-data", "damodaran")
 
 date_prefix <- format(Sys.Date(), "%Y%m%d")
 output_path <- file.path(
@@ -33,6 +34,10 @@ direct_capital_helper <- file.path(
   "processing-command-files",
   "eaae_subrama_capital_direct.py"
 )
+rotation_calibration_path <- file.path(
+  input_damodaran_dir,
+  "20260630_rotacion_damodaran_eaae.xlsx"
+)
 
 bcu_1997_current_path <- file.path(input_bcu_dir, "1997-2005", "cuadro_9a97.xls")
 bcu_1997_constant_path <- file.path(input_bcu_dir, "1997-2005", "cuadro_10a97.xls")
@@ -48,9 +53,6 @@ bcu_2016_constant_path <- file.path(
   "2016 - 2024",
   "12_2016_2024_Cuenta Produccion Industrias_K.xlsx"
 )
-
-rotacion_total <- 4.2
-rotacion_industria <- 6.6
 
 panel_numeric_cols <- c(
   "vbp_pp",
@@ -343,6 +345,17 @@ read_direct_subrama_capital <- function() {
     )
 }
 
+read_rotation_calibration <- function() {
+  readxl::read_excel(rotation_calibration_path, sheet = "Resumen") %>%
+    transmute(
+      descripcion_nivel = str_squish(as.character(rama)),
+      rotacion_calibrada_sobre_6_6 =
+        suppressWarnings(as.numeric(rotacion_calibrada_sobre_6_6))
+    ) %>%
+    filter(!is.na(descripcion_nivel), descripcion_nivel != "") %>%
+    distinct(descripcion_nivel, .keep_all = TRUE)
+}
+
 build_bcu_deflators <- function() {
   bcu_vab <- read_all_bcu_vab()
 
@@ -480,7 +493,6 @@ build_eaae_rows <- function() {
       seccion = "economia_total",
       grupo_rev4_homologado = NA_character_,
       descripcion_nivel = "Economia total EAAE",
-      rotacion = rotacion_total,
       metodo_capital_eaae = "agregacion_secciones_eaae",
       metodo_stock_capital = "stock_original_e_imputado_agregado_desde_panel_eaae",
       metodo_consumo_capital_fijo = "suma_consumo_capital_fijo_original_eaae",
@@ -495,7 +507,6 @@ build_eaae_rows <- function() {
       descripcion_nivel = "Industria manufacturera EAAE",
       epoca = as.character(epoca),
       ciiu_version = as.character(ciiu_version),
-      rotacion = rotacion_industria,
       metodo_capital_eaae = "rama_c_panel_eaae",
       metodo_stock_capital = if_else(
         anno %in% c(2002L, 2011L),
@@ -553,7 +564,6 @@ build_eaae_rows <- function() {
     mutate(
       nivel_panel = "subrama_industrial",
       descripcion_nivel = descripcion_grupo_rev4_homologado,
-      rotacion = rotacion_industria,
       consumo_intermedio_estimado = vbp_pp - vab_pb_estimado,
       fbcf = fbcf_c * participacion_vab_pp_rama_c,
       fbkf_maq_eq = fbkf_maq_eq_c * participacion_vab_pp_rama_c,
@@ -574,14 +584,8 @@ build_eaae_rows <- function() {
     mutate(
       costo_laboral = remuneraciones,
       consumo_intermedio = vbp_pp - vab_pp,
-      capital_variable_adelantado = remuneraciones / rotacion,
-      capital_circulante_constante_adelantado = consumo_intermedio_estimado / rotacion,
-      capital_circulante_adelantado = (costo_laboral + consumo_intermedio) / rotacion,
-      capital_total_adelantado = stock_capital_imputado + capital_circulante_adelantado,
       ganancia_pb = vab_pb_estimado - consumo_capital_fijo - costo_laboral,
       ganancia_pp = vab_pp - consumo_capital_fijo - costo_laboral,
-      tasa_ganancia_pb = safe_divide(ganancia_pb, capital_total_adelantado),
-      tasa_ganancia_pp = safe_divide(ganancia_pp, capital_total_adelantado),
       excedente_bruto = vab_pp - remuneraciones,
       part_salarial = safe_divide(remuneraciones, vab_pp),
       productividad = safe_divide(vab_pp, puestos_trabajo)
@@ -597,6 +601,28 @@ add_deflators <- function(eaae_panel, bcu_deflators) {
     mutate(
       deflactor_2005 = deflactor_vab_bcu_2005,
       fuente_deflactor = "bcu_indice_implicito_vab"
+    )
+}
+
+add_rotation_calibration <- function(panel) {
+  rotation_calibration <- read_rotation_calibration()
+
+  panel %>%
+    left_join(rotation_calibration, by = "descripcion_nivel") %>%
+    mutate(
+      # DECISION: From 2026-07-06 onward, the integrated EAAE-BCU panel uses
+      # the Damodaran-calibrated rotation for advanced-capital calculations.
+      # The previous generic `rotacion` column is not exported.
+      capital_variable_adelantado =
+        remuneraciones / rotacion_calibrada_sobre_6_6,
+      capital_circulante_constante_adelantado =
+        consumo_intermedio_estimado / rotacion_calibrada_sobre_6_6,
+      capital_circulante_adelantado =
+        (costo_laboral + consumo_intermedio) / rotacion_calibrada_sobre_6_6,
+      capital_total_adelantado =
+        stock_capital_imputado + capital_circulante_adelantado,
+      tasa_ganancia_pb = safe_divide(ganancia_pb, capital_total_adelantado),
+      tasa_ganancia_pp = safe_divide(ganancia_pp, capital_total_adelantado)
     )
 }
 
@@ -641,6 +667,18 @@ validate_output <- function(panel) {
   if (nrow(missing_profit_inputs) > 0) {
     stop("Hay filas sin insumos basicos para tasa de ganancia.")
   }
+  if (any(is.na(panel$rotacion_calibrada_sobre_6_6))) {
+    missing_rotation <- panel %>%
+      filter(is.na(rotacion_calibrada_sobre_6_6)) %>%
+      distinct(nivel_panel, grupo_rev4_homologado, descripcion_nivel)
+    stop(
+      "Hay filas sin rotacion calibrada Damodaran: ",
+      paste(capture.output(print(missing_rotation)), collapse = " ")
+    )
+  }
+  if ("rotacion" %in% names(panel)) {
+    stop("La columna rotacion no debe exportarse en el panel integrado.")
+  }
 }
 
 main <- function() {
@@ -649,6 +687,7 @@ main <- function() {
 
   output <- eaae_panel %>%
     add_deflators(bcu_deflators) %>%
+    add_rotation_calibration() %>%
     add_constant_values() %>%
     arrange(
       anno,
@@ -663,7 +702,7 @@ main <- function() {
       descripcion_nivel,
       epoca,
       ciiu_version,
-      rotacion,
+      rotacion_calibrada_sobre_6_6,
       any_of(eaae_value_cols),
       starts_with("vbp_pp_constante_2005"),
       starts_with("vbp_pb_constante_2005"),

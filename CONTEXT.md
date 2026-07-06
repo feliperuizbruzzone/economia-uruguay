@@ -213,8 +213,13 @@ Artefactos:
 |---|---|
 | `command-files/processing-command-files/13_build_panel_eaae_bcu_total_industria_subrama.R` | Script reproducible específico para construir el panel integrado. |
 | `command-files/processing-command-files/eaae_subrama_capital_direct.py` | Helper de extracción directa de `consumo_capital_fijo`, `impuestos_netos` y `stock_capital` a nivel de subrama industrial desde los RAR EAAE. |
-| `data/analysis-data/20260629_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
-| `docs/methodology/20260629_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes e imputaciones. |
+| `command-files/analysis-command-files/04_build_resultados_eaae_bcu_workbook.R` | Script reproducible para construir el libro XLSX de resultados largos desde el panel integrado. |
+| `command-files/analysis-command-files/05_visualizar_resultados_eaae_bcu_subrama.R` | Script reproducible para construir el informe visual largo EAAE-BCU con sección adicional de subramas industriales. |
+| `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
+| `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
+| `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
+| `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md` | Informe visual EAAE/Oyanthabal para economía total e industria, con prefijo de fecha de elaboración. |
+| `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
 
 Decisiones del panel integrado:
 
@@ -245,6 +250,20 @@ Decisiones del panel integrado:
   `nota_deflactor_bcu`. En economía total, `calidad_deflactor_bcu =
   "directo_total_economia"` indica que el deflactor procede directamente del
   VAB agregado de sectores publicado por BCU.
+- **DECISIÓN 2026-07-06:** se incorpora la columna
+  `rotacion_calibrada_sobre_6_6` desde
+  `data/input-data/damodaran/20260630_rotacion_damodaran_eaae.xlsx`, hoja
+  `Resumen`, usando las columnas `rama` y `rotacion_calibrada_sobre_6_6`. Las
+  etiquetas de `rama` se armonizan contra `descripcion_nivel` del panel
+  integrado. El valor es constante para todos los años dentro de cada nivel:
+  `4,2` para `Economia total EAAE`, `6,6` para
+  `Industria manufacturera EAAE` y valores específicos para cada subrama
+  industrial. Desde esta actualización, esta es la rotación operativa usada
+  para calcular `capital_variable_adelantado`,
+  `capital_circulante_constante_adelantado`,
+  `capital_circulante_adelantado`, `capital_total_adelantado` y las tasas de
+  ganancia del panel integrado. La columna genérica `rotacion` deja de
+  exportarse en `YYYYMMDD_panel_eeae_bcu_total_industria_subrama.csv`.
 - Para economía total y rama industrial, `consumo_capital_fijo`,
   `stock_capital` y `stock_capital_imputado` se toman del panel EAAE principal.
 - Para subramas industriales, `consumo_capital_fijo`, `impuestos_netos` y
@@ -261,6 +280,22 @@ Decisiones del panel integrado:
   `metodo_stock_capital`, `metodo_consumo_capital_fijo` y
   `calidad_capital_eaae`, además de `codigos_capital_fuente` y
   `archivos_capital_fuente` para trazabilidad de los cuadros usados.
+- **DECISIÓN 2026-07-06:** el libro
+  `20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` replica la lógica
+  de resultados del libro EAAE 20260605, pero en formato largo. La columna
+  `seccion` opera como filtro: `economia_total` para el agregado de la economía,
+  `industria-total` para industria manufacturera agregada y el código
+  `grupo_rev4_homologado` para cada subrama industrial. La columna
+  `seccion_fuente_panel` conserva la sección original del CSV integrado, que en
+  subramas es `C`. Las hojas de resultados constantes deflactan las variables
+  monetarias con `deflactor_2005`, que procede de los índices BCU empalmados.
+- **DECISIÓN 2026-07-06:** el informe
+  `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` replica la
+  lógica argumental de
+  `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md`, pero usa
+  el libro largo EAAE-BCU y agrega una sección específica para subramas
+  industriales. Las figuras se guardan en
+  `output/figures/eaae_bcu_total_industria_subrama/`.
 
 ### Entorno de trabajo
 - **Sistema operativo:** Linux (local)
@@ -1493,6 +1528,9 @@ mkdir -p data/input-data/eaae \
 | Jun 2026 | Creación del panel EAAE industrial de subramas 2001–2024 en dos capas: fuente publicada y homologada a grupos CIIU Rev.4 compatibles, con validaciones tidy | ✓ |
 | Jun 2026 | Creación del panel integrado EAAE-BCU para economía total, industria total y subramas industriales homologadas, con deflactores empalmados base 2005, extracción directa de consumo/stock de capital subrama e imputación de stock solo en 2002 y 2011 | ✓ |
 | Jun 2026 | Actualización del panel integrado EAAE-BCU para usar deflactores BCU también en economía total, reemplazando el índice procesado de Oyanthabal en ese artefacto | ✓ |
+| Jul 2026 | Incorporación de `rotacion_calibrada_sobre_6_6` desde Damodaran/EAAE al panel integrado EAAE-BCU, con valores constantes por nivel y subrama | ✓ |
+| Jul 2026 | Creación del libro `20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` con resultados largos para economía total, industria total y subramas industriales | ✓ |
+| Jul 2026 | Creación del informe visual `20260706_resultados_eaae_bcu_total_industria_subrama.md` con sección adicional para subramas industriales | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
