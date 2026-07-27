@@ -217,6 +217,8 @@ Artefactos:
 | `command-files/analysis-command-files/05_visualizar_resultados_eaae_bcu_subrama.R` | Script reproducible para construir el informe visual largo EAAE-BCU con sección adicional de subramas industriales. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
+| `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
+| `data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo derivado del panel 20260727; agrega el filtro operativo `industria-sin-papel-coque-refinacion` en todas las hojas. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md` | Informe visual EAAE/Oyanthabal para economía total e industria, con prefijo de fecha de elaboración. |
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
@@ -280,6 +282,20 @@ Decisiones del panel integrado:
   `metodo_stock_capital`, `metodo_consumo_capital_fijo` y
   `calidad_capital_eaae`, además de `codigos_capital_fuente` y
   `archivos_capital_fuente` para trazabilidad de los cuadros usados.
+- **DECISIÓN 2026-07-27:** se agrega el nivel derivado
+  `industria_sin_papel_coque_refinacion`, identificado en el libro como
+  `industria-sin-papel-coque-refinacion`. Se construye anualmente desde las
+  subramas industriales homologadas, excluyendo
+  `17_18_papel_impresion` y `19_refinacion`. Las tasas de ganancia de este
+  nivel se recalculan como `sum(ganancia) / sum(capital_total_adelantado)`;
+  no se promedian tasas subramales. Los insumos de capital adelantado se suman
+  desde las subramas incluidas. Como no existe una fila Damodaran propia para
+  este agregado, `rotacion_calibrada_sobre_6_6` se reporta como rotación
+  implícita agregada:
+  `(costo_laboral + consumo_intermedio) / capital_circulante_adelantado`.
+  El deflactor BCU del agregado se deriva desde las subramas incluidas y
+  conserva las advertencias de calidad de los proxies usados por cada
+  componente.
 - **DECISIÓN 2026-07-06:** el libro
   `20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` replica la lógica
   de resultados del libro EAAE 20260605, pero en formato largo. La columna
@@ -289,6 +305,11 @@ Decisiones del panel integrado:
   `seccion_fuente_panel` conserva la sección original del CSV integrado, que en
   subramas es `C`. Las hojas de resultados constantes deflactan las variables
   monetarias con `deflactor_2005`, que procede de los índices BCU empalmados.
+- **DECISIÓN 2026-07-27:** el libro
+  `20260727_resultados_eaae_bcu_total_industria_subrama.xlsx` mantiene las
+  mismas siete hojas largas del libro 20260706, pero eleva la cobertura a 312
+  filas por hoja de datos al incorporar el nivel
+  `industria-sin-papel-coque-refinacion`.
 - **DECISIÓN 2026-07-06:** el informe
   `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` replica la
   lógica argumental de
@@ -1531,6 +1552,7 @@ mkdir -p data/input-data/eaae \
 | Jul 2026 | Incorporación de `rotacion_calibrada_sobre_6_6` desde Damodaran/EAAE al panel integrado EAAE-BCU, con valores constantes por nivel y subrama | ✓ |
 | Jul 2026 | Creación del libro `20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` con resultados largos para economía total, industria total y subramas industriales | ✓ |
 | Jul 2026 | Creación del informe visual `20260706_resultados_eaae_bcu_total_industria_subrama.md` con sección adicional para subramas industriales | ✓ |
+| Jul 2026 | Creación de versiones `20260727` del panel y libro EAAE-BCU con tasa de ganancia para industria manufacturera excluyendo papel/impresión y coque/refinación | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

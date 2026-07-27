@@ -18,7 +18,7 @@ analysis_dir <- file.path("data", "analysis-data")
 input_bcu_dir <- file.path("data", "input-data", "bcu", "indices-precios-1988-2024")
 input_damodaran_dir <- file.path("data", "input-data", "damodaran")
 
-date_prefix <- format(Sys.Date(), "%Y%m%d")
+date_prefix <- Sys.getenv("EAAE_OUTPUT_DATE", unset = format(Sys.Date(), "%Y%m%d"))
 output_path <- file.path(
   analysis_dir,
   paste0(date_prefix, "_panel_eeae_bcu_total_industria_subrama.csv")
@@ -114,6 +114,16 @@ eaae_value_cols <- c(
   "productividad"
 )
 
+excluded_industry_groups <- c(
+  "17_18_papel_impresion",
+  "19_refinacion"
+)
+
+industry_excluding_level <- "industria_sin_papel_coque_refinacion"
+industry_excluding_section <- "industria-sin-papel-coque-refinacion"
+industry_excluding_description <-
+  "Industria manufacturera EAAE sin papel, coque y refinacion de petroleo"
+
 safe_divide <- function(numerator, denominator) {
   result <- numerator / denominator
   result[is.na(numerator) | is.na(denominator) | denominator == 0] <- NA_real_
@@ -126,6 +136,15 @@ sum_present <- function(x) {
     return(NA_real_)
   }
   sum(x)
+}
+
+collapse_present <- function(x) {
+  values <- sort(unique(na.omit(as.character(x))))
+  values <- values[values != ""]
+  if (length(values) == 0) {
+    return(NA_character_)
+  }
+  paste(values, collapse = "|")
 }
 
 clean_code <- function(x) {
@@ -626,6 +645,130 @@ add_rotation_calibration <- function(panel) {
     )
 }
 
+add_industry_excluding_groups <- function(panel) {
+  included_groups <- setdiff(
+    sort(unique(panel$grupo_rev4_homologado[panel$nivel_panel == "subrama_industrial"])),
+    excluded_industry_groups
+  )
+
+  included_subramas <- panel %>%
+    filter(
+      nivel_panel == "subrama_industrial",
+      grupo_rev4_homologado %in% included_groups
+    )
+
+  if (nrow(included_subramas) == 0) {
+    stop("No hay subramas para construir el agregado industrial excluyente.")
+  }
+
+  additive_cols <- intersect(
+    c(
+      "vbp_pp",
+      "vbp_pb",
+      "vab_pp",
+      "vab_pb",
+      "vab_pb_estimado",
+      "consumo_intermedio_estimado",
+      "consumo_intermedio",
+      "remuneraciones",
+      "costo_laboral",
+      "puestos_trabajo",
+      "n_empresas",
+      "fbcf",
+      "fbkf_maq_eq",
+      "adquisiciones_importadas",
+      "adquisiciones_origen_importado",
+      "importaciones_maquinaria",
+      "consumo_capital_fijo",
+      "impuestos_netos",
+      "stock_capital",
+      "stock_capital_imputado",
+      "capital_variable_adelantado",
+      "capital_circulante_constante_adelantado",
+      "capital_circulante_adelantado",
+      "capital_total_adelantado",
+      "ganancia_pb",
+      "ganancia_pp",
+      "excedente_bruto",
+      "vab_bcu_corriente",
+      "vab_bcu_constante_fuente"
+    ),
+    names(panel)
+  )
+
+  aggregate <- included_subramas %>%
+    group_by(anno) %>%
+    summarise(
+      across(all_of(additive_cols), sum_present),
+      bcu_constante_2005_agregado = sum_present(vab_bcu_corriente / deflactor_2005),
+      epoca = collapse_present(epoca),
+      ciiu_version = collapse_present(ciiu_version),
+      fuente_base_bcu = collapse_present(fuente_base_bcu),
+      metodo_empalme_bcu = collapse_present(metodo_empalme_bcu),
+      codigos_bcu_deflactor = collapse_present(codigos_bcu_deflactor),
+      dato_preliminar_bcu = any(dato_preliminar_bcu, na.rm = TRUE),
+      codigos_capital_fuente = collapse_present(codigos_capital_fuente),
+      archivos_capital_fuente = collapse_present(archivos_capital_fuente),
+      codigos_fuente_incluidos = collapse_present(codigos_fuente_incluidos),
+      divisiones_publicadas_incluidas =
+        collapse_present(divisiones_publicadas_incluidas),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      nivel_panel = industry_excluding_level,
+      seccion = industry_excluding_section,
+      grupo_rev4_homologado = NA_character_,
+      descripcion_nivel = industry_excluding_description,
+      # DECISION: This level is not present as a source row. It is a derived
+      # aggregate built from Rev.4-compatible manufacturing subbranches,
+      # excluding paper/printing and coke/petroleum refining. Profit rates are
+      # recalculated from aggregate profits and aggregate advanced capital,
+      # never averaged from subbranch rates.
+      deflactor_vab_bcu_2005 =
+        safe_divide(vab_bcu_corriente, bcu_constante_2005_agregado),
+      deflactor_2005 = deflactor_vab_bcu_2005,
+      fuente_deflactor = "bcu_indice_implicito_vab_agregado_subramas",
+      calidad_deflactor_bcu =
+        "agregado_subramas_excluye_papel_coque_refinacion",
+      nota_deflactor_bcu = paste(
+        "Agregado desde subramas EAAE-BCU homologadas, excluyendo",
+        paste(excluded_industry_groups, collapse = " y "),
+        ". En tramos con proxies BCU amplios conserva las advertencias de",
+        "las subramas componentes."
+      ),
+      metodo_capital_eaae =
+        "agregado_subramas_industriales_excluye_papel_coque_refinacion",
+      metodo_stock_capital = if_else(
+        anno %in% c(2002L, 2011L),
+        "suma_stock_imputado_subramas_incluidas",
+        "suma_stock_original_subramas_incluidas"
+      ),
+      metodo_consumo_capital_fijo =
+        "suma_consumo_capital_fijo_original_subramas_incluidas",
+      calidad_capital_eaae = if_else(
+        anno %in% c(2002L, 2011L),
+        "agregado_con_stock_imputado",
+        "directo_agregado"
+      ),
+      rotacion_calibrada_sobre_6_6 =
+        safe_divide(costo_laboral + consumo_intermedio, capital_circulante_adelantado),
+      part_salarial = safe_divide(remuneraciones, vab_pp),
+      productividad = safe_divide(vab_pp, puestos_trabajo),
+      tasa_ganancia_pb = safe_divide(ganancia_pb, capital_total_adelantado),
+      tasa_ganancia_pp = safe_divide(ganancia_pp, capital_total_adelantado),
+      participacion_vab_pp_rama_c = NA_real_,
+      tipo_homologacion = "agregado_derivado_desde_subramas_rev4_compatibles",
+      calidad_homologacion = "media",
+      notas_homologacion = paste(
+        "Agregado industrial derivado que suma subramas homologadas Rev.4",
+        "compatibles y excluye 17_18_papel_impresion y 19_refinacion."
+      )
+    ) %>%
+    select(-bcu_constante_2005_agregado)
+
+  bind_rows(panel, aggregate)
+}
+
 add_constant_values <- function(panel) {
   monetary_cols <- intersect(
     eaae_value_cols,
@@ -641,7 +784,7 @@ add_constant_values <- function(panel) {
 }
 
 validate_output <- function(panel) {
-  expected_rows <- 24 * (1 + 1 + 10)
+  expected_rows <- 24 * (1 + 1 + 1 + 10)
   if (nrow(panel) != expected_rows) {
     stop("Cantidad inesperada de filas: ", nrow(panel), "; esperado: ", expected_rows)
   }
@@ -688,10 +831,19 @@ main <- function() {
   output <- eaae_panel %>%
     add_deflators(bcu_deflators) %>%
     add_rotation_calibration() %>%
+    add_industry_excluding_groups() %>%
     add_constant_values() %>%
     arrange(
       anno,
-      factor(nivel_panel, levels = c("economia_total", "industria_total", "subrama_industrial")),
+      factor(
+        nivel_panel,
+        levels = c(
+          "economia_total",
+          "industria_total",
+          "industria_sin_papel_coque_refinacion",
+          "subrama_industrial"
+        )
+      ),
       grupo_rev4_homologado
     ) %>%
     select(

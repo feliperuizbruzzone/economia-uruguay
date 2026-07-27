@@ -11,14 +11,18 @@ suppressPackageStartupMessages({
 })
 
 analysis_dir <- file.path("data", "analysis-data")
+date_prefix <- Sys.getenv("EAAE_OUTPUT_DATE", unset = format(Sys.Date(), "%Y%m%d"))
+input_panel_date <- Sys.getenv("EAAE_INPUT_PANEL_DATE", unset = date_prefix)
 input_panel_path <- file.path(
   analysis_dir,
-  "20260706_panel_eeae_bcu_total_industria_subrama.csv"
+  paste0(input_panel_date, "_panel_eeae_bcu_total_industria_subrama.csv")
 )
 output_workbook_path <- file.path(
   analysis_dir,
-  "20260706_resultados_eaae_bcu_total_industria_subrama.xlsx"
+  paste0(date_prefix, "_resultados_eaae_bcu_total_industria_subrama.xlsx")
 )
+
+expected_panel_rows <- 24 * 13
 
 safe_divide <- function(numerator, denominator) {
   result <- numerator / denominator
@@ -37,6 +41,8 @@ prepare_eaae_sheet <- function(panel) {
       # group.
       seccion = case_when(
         nivel_panel == "industria_total" ~ "industria-total",
+        nivel_panel == "industria_sin_papel_coque_refinacion" ~
+          "industria-sin-papel-coque-refinacion",
         nivel_panel == "subrama_industrial" ~ grupo_rev4_homologado,
         TRUE ~ seccion
       )
@@ -94,29 +100,52 @@ add_context_totals <- function(eaae) {
 build_current_results <- function(eaae) {
   add_context_totals(eaae) %>%
     mutate(
-      costo_laboral = remuneraciones,
-      ganancia_pb = vab_pb_estimado - consumo_capital_fijo - costo_laboral,
-      ganancia_pp = vab_pp - consumo_capital_fijo - costo_laboral,
-      consumo_intermedio = vbp_pp - vab_pp,
-      capital_variable_adelantado =
-        remuneraciones / rotacion_calibrada_sobre_6_6,
-      capital_circulante_constante_adelantado =
-        consumo_intermedio_estimado / rotacion_calibrada_sobre_6_6,
-      capital_circulante_adelantado =
-        (costo_laboral + consumo_intermedio) / rotacion_calibrada_sobre_6_6,
-      capital_total_adelantado =
-        stock_capital_imputado + capital_circulante_adelantado,
-      tasa_ganancia_pb = safe_divide(ganancia_pb, capital_total_adelantado),
-      tasa_ganancia_pp = safe_divide(ganancia_pp, capital_total_adelantado),
+      costo_laboral = coalesce(costo_laboral, remuneraciones),
+      consumo_intermedio = coalesce(consumo_intermedio, vbp_pp - vab_pp),
+      ganancia_pb = coalesce(
+        ganancia_pb,
+        vab_pb_estimado - consumo_capital_fijo - costo_laboral
+      ),
+      ganancia_pp = coalesce(
+        ganancia_pp,
+        vab_pp - consumo_capital_fijo - costo_laboral
+      ),
+      capital_variable_adelantado = coalesce(
+        capital_variable_adelantado,
+        remuneraciones / rotacion_calibrada_sobre_6_6
+      ),
+      capital_circulante_constante_adelantado = coalesce(
+        capital_circulante_constante_adelantado,
+        consumo_intermedio_estimado / rotacion_calibrada_sobre_6_6
+      ),
+      capital_circulante_adelantado = coalesce(
+        capital_circulante_adelantado,
+        (costo_laboral + consumo_intermedio) / rotacion_calibrada_sobre_6_6
+      ),
+      capital_total_adelantado = coalesce(
+        capital_total_adelantado,
+        stock_capital_imputado + capital_circulante_adelantado
+      ),
+      tasa_ganancia_pb = coalesce(
+        tasa_ganancia_pb,
+        safe_divide(ganancia_pb, capital_total_adelantado)
+      ),
+      tasa_ganancia_pp = coalesce(
+        tasa_ganancia_pp,
+        safe_divide(ganancia_pp, capital_total_adelantado)
+      ),
       vab_eaae_bcu_pct = safe_divide(vab_pp, vab_bcu_corriente) * 100,
       vab_pp_participacion_total =
         safe_divide(vab_pp, vab_total_economia),
       vab_pp_participacion_industria = if_else(
-        nivel_panel == "subrama_industrial",
+        nivel_panel %in% c(
+          "subrama_industrial",
+          "industria_sin_papel_coque_refinacion"
+        ),
         safe_divide(vab_pp, vab_total_industria),
         NA_real_
       ),
-      part_salarial = safe_divide(remuneraciones, vab_pp)
+      part_salarial = coalesce(part_salarial, safe_divide(remuneraciones, vab_pp))
     ) %>%
     select(
       anno,
@@ -193,13 +222,13 @@ deflate_current_results <- function(current_results) {
         safe_divide(consumo_intermedio_estimado, deflactor_2005),
       consumo_intermedio = vbp_pp - vab_pp,
       capital_variable_adelantado =
-        remuneraciones / rotacion_calibrada_sobre_6_6,
+        safe_divide(capital_variable_adelantado, deflactor_2005),
       capital_circulante_constante_adelantado =
-        consumo_intermedio_estimado / rotacion_calibrada_sobre_6_6,
+        safe_divide(capital_circulante_constante_adelantado, deflactor_2005),
       capital_circulante_adelantado =
-        (costo_laboral + consumo_intermedio) / rotacion_calibrada_sobre_6_6,
+        safe_divide(capital_circulante_adelantado, deflactor_2005),
       capital_total_adelantado =
-        stock_capital_imputado + capital_circulante_adelantado,
+        safe_divide(capital_total_adelantado, deflactor_2005),
       ganancia_pb = vab_pb_estimado - consumo_capital_fijo - costo_laboral,
       ganancia_pp = vab_pp - consumo_capital_fijo - costo_laboral,
       tasa_ganancia_pb = safe_divide(ganancia_pb, capital_total_adelantado),
@@ -208,7 +237,10 @@ deflate_current_results <- function(current_results) {
       vab_pp_participacion_total =
         safe_divide(vab_pp, vab_total_economia),
       vab_pp_participacion_industria = if_else(
-        nivel_panel == "subrama_industrial",
+        nivel_panel %in% c(
+          "subrama_industrial",
+          "industria_sin_papel_coque_refinacion"
+        ),
         safe_divide(vab_pp, vab_total_industria),
         NA_real_
       ),
@@ -353,19 +385,26 @@ build_indices_2005 <- function(variation_results, base_year = 2005) {
   bind_rows(indexed) %>% arrange(seccion, anno)
 }
 
-build_methodology_sheet <- function(eaae, results_cols, constant_cols, var_cols, index_cols) {
+build_methodology_sheet <- function(
+    eaae,
+    results_cols,
+    constant_cols,
+    var_cols,
+    index_cols,
+    source_panel_path) {
+  source_panel_name <- basename(source_panel_path)
   sheet_rows <- tibble::tribble(
     ~seccion_contenido, ~nombre, ~tipo, ~aplica_en, ~definicion, ~fuente_formula,
     "estructura_libro", "metodología", "hoja", "Libro completo", "Describe cada hoja y contiene el diccionario de variables.", "Construida por este script.",
-    "estructura_libro", "eaae", "hoja", "Panel base", "Panel integrado EAAE-BCU completo: economía total, industria agregada y subramas industriales en formato largo.", "data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv.",
+    "estructura_libro", "eaae", "hoja", "Panel base", "Panel integrado EAAE-BCU completo: economía total, industria agregada, industria excluyendo papel/coque/refinación y subramas industriales en formato largo.", paste0("data/analysis-data/", source_panel_name, "."),
     "estructura_libro", "check-calidad", "hoja", "Validación", "Controles tipo libro EAAE 20260605 para cada año y sección operativa.", "vab/vbp, remuneraciones/vab, stock/vab y banderas de consistencia.",
     "estructura_libro", "resultados-corrientes", "hoja", "Resultados", "Insumos y cálculos propios en valores corrientes para todos los niveles.", "Cálculos desde la hoja eaae.",
     "estructura_libro", "resultados-constantes", "hoja", "Resultados", "Resultados corrientes expresados en precios constantes de 2005.", "Deflactación con deflactor BCU empalmado base 2005.",
     "estructura_libro", "resultados-var-pct", "hoja", "Resultados", "Variación porcentual interanual de los resultados constantes.", "(x[t] / x[t-1] - 1) * 100 por seccion.",
     "estructura_libro", "resultados-ind-2005", "hoja", "Resultados", "Índices encadenados con base 2005=1.", "Encadenamiento por seccion desde las variaciones interanuales.",
     "diccionario_variables", "anno", "identificador", "Todas las hojas", "Año de referencia.", "EAAE/BCU.",
-    "diccionario_variables", "seccion", "identificador", "Todas las hojas", "Filtro operativo del libro: economia_total, industria-total o grupo industrial homologado Rev.4 compatible.", "Para industria agregada se usa industria-total; para subramas se toma grupo_rev4_homologado.",
-    "diccionario_variables", "nivel_panel", "identificador", "Todas las hojas", "Nivel analítico: economia_total, industria_total o subrama_industrial.", "Panel integrado.",
+    "diccionario_variables", "seccion", "identificador", "Todas las hojas", "Filtro operativo del libro: economia_total, industria-total, industria-sin-papel-coque-refinacion o grupo industrial homologado Rev.4 compatible.", "Para industria agregada se usa industria-total; para subramas se toma grupo_rev4_homologado.",
+    "diccionario_variables", "nivel_panel", "identificador", "Todas las hojas", "Nivel analítico: economia_total, industria_total, industria_sin_papel_coque_refinacion o subrama_industrial.", "Panel integrado.",
     "diccionario_variables", "grupo_rev4_homologado", "identificador", "Todas las hojas", "Grupo industrial homologado Rev.4 compatible para subramas.", "Codiguera de homologación EAAE.",
     "diccionario_variables", "descripcion_nivel", "identificador", "Todas las hojas", "Etiqueta legible del nivel o subrama.", "Panel integrado.",
     "diccionario_variables", "seccion_fuente_panel", "trazabilidad", "eaae", "Sección tal como viene en el CSV integrado antes de crear el filtro operativo del libro.", "En subramas conserva C.",
@@ -408,7 +447,7 @@ build_methodology_sheet <- function(eaae, results_cols, constant_cols, var_cols,
     tipo = "columna",
     aplica_en = "eaae",
     definicion = "Columna preservada desde el panel integrado o creada como filtro operativo del libro.",
-    fuente_formula = "20260706_panel_eeae_bcu_total_industria_subrama.csv"
+    fuente_formula = source_panel_name
   )
   result_columns <- tibble(
     seccion_contenido = "columnas_resultados",
@@ -694,8 +733,8 @@ write_xlsx_workbook <- function(path, sheets) {
 }
 
 validate_workbook_inputs <- function(eaae, current_results, constant_results) {
-  if (nrow(eaae) != 288) {
-    stop("La hoja eaae debe tener 288 filas.")
+  if (nrow(eaae) != expected_panel_rows) {
+    stop("La hoja eaae debe tener ", expected_panel_rows, " filas.")
   }
   if (anyDuplicated(eaae[c("anno", "seccion")]) > 0) {
     stop("La clave anno + seccion no es unica en la hoja eaae.")
@@ -709,8 +748,11 @@ validate_workbook_inputs <- function(eaae, current_results, constant_results) {
   if (any(is.na(eaae$deflactor_2005))) {
     stop("Hay filas sin deflactor_2005.")
   }
-  if (nrow(current_results) != 288 || nrow(constant_results) != 288) {
-    stop("Las hojas de resultados deben tener 288 filas.")
+  if (
+    nrow(current_results) != expected_panel_rows ||
+      nrow(constant_results) != expected_panel_rows
+  ) {
+    stop("Las hojas de resultados deben tener ", expected_panel_rows, " filas.")
   }
 }
 
@@ -727,7 +769,8 @@ main <- function() {
     names(resultados_corrientes),
     names(resultados_constantes),
     names(resultados_var_pct),
-    names(resultados_ind_2005)
+    names(resultados_ind_2005),
+    input_panel_path
   )
 
   validate_workbook_inputs(eaae, resultados_corrientes, resultados_constantes)

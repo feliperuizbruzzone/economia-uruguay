@@ -8,16 +8,19 @@ primarios se conservan en `data/input-data/`, los scripts reproducibles en
 `command-files/`, las bases procesadas en `data/analysis-data/` y la
 documentación metodológica en `docs/`.
 
-## Resultados EAAE-BCU Total, Industria Y Subramas
+## Resultados EAAE-BCU: Tres Niveles Y Subramas
 
-- [20260706_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx): libro de resultados en formato largo para economía total, industria manufacturera agregada y subramas industriales homologadas.
-- [20260706_resultados_eaae_bcu_total_industria_subrama.md](docs/20260706_resultados_eaae_bcu_total_industria_subrama.md): informe visual basado en el libro largo, con resultados agregados y sección específica para subramas industriales.
+- [20260727_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv): panel integrado en formato largo para economía total, industria manufacturera agregada, industria depurada de papel/impresión y coque/refinación, y subramas industriales homologadas.
+- [20260727_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx): libro de resultados en formato largo derivado del panel integrado, con hojas de metodología, base EAAE-BCU, controles de calidad y resultados corrientes, constantes, variaciones interanuales e índices 2005=1.
+- [20260727_resultados_eaae_bcu_tres_niveles.md](docs/20260727_resultados_eaae_bcu_tres_niveles.md): minuta visual de resultados centrada en tasa de ganancia para economía total, industria total e industria depurada.
+- [Figuras 20260727](output/figures/eaae_bcu_tres_niveles_20260727/): gráficos respaldados para la última minuta de resultados.
 
 ## Resultados Principales
 
 ### Panel Integrado EAAE-BCU
 
-- [20260706_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv): panel integrado para economía total, industria manufacturera y subramas industriales homologadas, con deflactores BCU, rotación calibrada Damodaran, capital directo subrama e insumos para tasa de ganancia.
+- [20260727_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv): última versión del panel integrado para economía total, industria manufacturera, industria depurada y subramas industriales homologadas, con deflactores BCU, rotación calibrada Damodaran, capital directo subrama e insumos para tasa de ganancia.
+- [20260727_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx): última versión del libro de resultados del panel integrado.
 - [20260706_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta metodológica del panel integrado, incluyendo homologación CIIU, empalme de deflactores, rotaciones, imputaciones y validaciones de calidad.
 
 ### Panel EAAE 2001-2024
@@ -27,6 +30,9 @@ documentación metodológica en `docs/`.
 
 ## Otros Resultados Fechados
 
+- [20260706_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv): versión previa del panel integrado EAAE-BCU.
+- [20260706_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx): versión previa del libro de resultados EAAE-BCU.
+- [20260706_resultados_eaae_bcu_total_industria_subrama.md](docs/20260706_resultados_eaae_bcu_total_industria_subrama.md): informe visual previo con economía total, industria manufacturera y subramas industriales.
 - [20260617_panel_eaae_industria_subramas_fuente.csv](data/analysis-data/20260617_panel_eaae_industria_subramas_fuente.csv): panel fuente de subramas industriales EAAE.
 - [20260617_panel_eaae_industria_subramas_rev4_homologado.csv](data/analysis-data/20260617_panel_eaae_industria_subramas_rev4_homologado.csv): panel de subramas industriales homologadas a grupos compatibles con CIIU Rev.4.
 - [20260617_validacion_panel_eaae_industria_subramas_rev4.csv](data/analysis-data/20260617_validacion_panel_eaae_industria_subramas_rev4.csv): validaciones del panel de subramas industriales.
