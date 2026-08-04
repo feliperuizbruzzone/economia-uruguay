@@ -14,8 +14,9 @@ suppressPackageStartupMessages({
 
 analysis_dir <- file.path("data", "analysis-data")
 docs_dir <- "docs"
-report_date <- Sys.getenv("EAAE_REPORT_DATE", unset = "20260727")
+report_date <- Sys.getenv("EAAE_REPORT_DATE", unset = "20260804")
 workbook_date <- Sys.getenv("EAAE_WORKBOOK_DATE", unset = "20260727")
+source_caption <- "Fuente: Elaboración propia en base a EAAE. Índices de precios extraídos de BCU."
 
 workbook_path <- file.path(
   analysis_dir,
@@ -29,6 +30,7 @@ report_path <- file.path(
 
 dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(docs_dir, recursive = TRUE, showWarnings = FALSE)
+unlink(list.files(fig_dir, pattern = "\\.png$", full.names = TRUE))
 
 safe_divide <- function(numerator, denominator) {
   result <- numerator / denominator
@@ -117,6 +119,28 @@ label_decomposition_points <- function(data) {
     mutate(etiqueta = percent(participacion, accuracy = 1))
 }
 
+label_break_points <- function(
+    data,
+    group_cols,
+    value_col = "valor",
+    label_accuracy = 1,
+    n_changes = 2) {
+  data %>%
+    filter(!is.na(.data[[value_col]])) %>%
+    group_by(across(all_of(group_cols))) %>%
+    arrange(anno, .by_group = TRUE) %>%
+    mutate(.delta = abs(.data[[value_col]] - lag(.data[[value_col]]))) %>%
+    filter(
+      anno == max(anno, na.rm = TRUE) |
+        .data[[value_col]] == max(.data[[value_col]], na.rm = TRUE) |
+        .data[[value_col]] == min(.data[[value_col]], na.rm = TRUE) |
+        min_rank(desc(.delta)) <= n_changes
+    ) %>%
+    ungroup() %>%
+    distinct(across(all_of(c(group_cols, "anno"))), .keep_all = TRUE) %>%
+    mutate(etiqueta = paste0(anno, ": ", percent(.data[[value_col]], accuracy = label_accuracy)))
+}
+
 build_decomposition_plot <- function(data, title) {
   decomposition <- data %>%
     transmute(
@@ -169,7 +193,7 @@ build_decomposition_plot <- function(data, title) {
       title = title,
       subtitle = "Participación en el VAB a precios productor, en valores corrientes",
       y = "Participación del VAB",
-      caption = "Fuente: elaboración propia con panel integrado EAAE-BCU."
+      caption = source_caption
     ) +
     theme_eaae()
 }
@@ -262,13 +286,68 @@ fig_01 <- ggplot(representatividad, aes(anno, valor)) +
   geom_line(color = "#1B4E89", linewidth = 0.95, na.rm = TRUE) +
   geom_point(color = "#1B4E89", size = 1.6, na.rm = TRUE) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
-  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0.08, 0.18))
+  ) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Representatividad y peso manufacturero: EAAE y BCU",
     subtitle = "Tres lecturas complementarias del peso industrial y la cobertura de la encuesta",
     y = "Porcentaje",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU."
+    caption = source_caption
+  ) +
+  theme_eaae()
+
+representatividad_depurada <- corrientes %>%
+  filter(seccion %in% c("industria-total", "industria-sin-papel-coque-refinacion")) %>%
+  select(anno, seccion, vab_pp, stock_capital_imputado) %>%
+  pivot_wider(
+    names_from = seccion,
+    values_from = c(vab_pp, stock_capital_imputado)
+  ) %>%
+  transmute(
+    anno,
+    `VAB manufactura depurada / VAB manufactura total` =
+      safe_divide(
+        `vab_pp_industria-sin-papel-coque-refinacion`,
+        `vab_pp_industria-total`
+      ),
+    `Stock manufactura depurada / stock manufactura total` =
+      safe_divide(
+        `stock_capital_imputado_industria-sin-papel-coque-refinacion`,
+        `stock_capital_imputado_industria-total`
+      )
+  ) %>%
+  pivot_longer(
+    cols = -anno,
+    names_to = "indicador",
+    values_to = "valor"
+  ) %>%
+  mutate(
+    indicador = factor(
+      indicador,
+      levels = c(
+        "VAB manufactura depurada / VAB manufactura total",
+        "Stock manufactura depurada / stock manufactura total"
+      )
+    )
+  )
+
+fig_01b <- ggplot(representatividad_depurada, aes(anno, valor)) +
+  geom_line(color = "#2E7D32", linewidth = 0.95, na.rm = TRUE) +
+  geom_point(color = "#2E7D32", size = 1.6, na.rm = TRUE) +
+  facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0.08, 0.16))
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+  labs(
+    title = "Representatividad de la manufactura depurada",
+    subtitle = "Peso de la industria depurada respecto de la manufactura total EAAE",
+    y = "Porcentaje",
+    caption = source_caption
   ) +
   theme_eaae()
 
@@ -291,19 +370,38 @@ tasas_ganancia <- three_corrientes %>%
     )
   )
 
+tasas_ganancia_labels <- label_break_points(
+  tasas_ganancia,
+  group_cols = c("serie", "ambito_label"),
+  value_col = "valor",
+  label_accuracy = 1,
+  n_changes = 1
+)
+
 fig_02 <- ggplot(tasas_ganancia, aes(anno, valor, color = ambito_label)) +
   geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
   geom_line(linewidth = 0.95, na.rm = TRUE) +
   geom_point(size = 1.5, na.rm = TRUE) +
+  geom_text(
+    data = tasas_ganancia_labels,
+    aes(label = etiqueta),
+    size = 2.55,
+    vjust = -0.75,
+    show.legend = FALSE,
+    check_overlap = TRUE
+  ) +
   facet_wrap(~ serie, ncol = 1) +
   scale_color_manual(values = scope_palette) +
-  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0.08, 0.18))
+  ) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Tasa de ganancia en tres niveles",
     subtitle = "Economía total, industria manufacturera agregada e industria depurada de papel/impresión y coque/refinación",
     y = "Porcentaje",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
@@ -371,19 +469,22 @@ fig_05 <- ggplot(
     title = "Capital adelantado, VAB y ganancia",
     subtitle = "Variables en precios constantes, expresadas como índice base 2004=100",
     y = "Índice 2004=100",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU y deflactores BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
 inversion_industrial <- constantes %>%
-  filter(seccion == "industria-total") %>%
+  filter(seccion %in% c("industria-total", "industria-sin-papel-coque-refinacion")) %>%
   mutate(inversion_vab = safe_divide(fbcf, vab_pp))
+
+inversion_industria_total <- inversion_industrial %>%
+  filter(seccion == "industria-total")
 
 paper_investment <- constantes %>%
   filter(seccion == "17_18_papel_impresion") %>%
   select(anno, fbcf_papel = fbcf)
 
-inversion_note_data <- inversion_industrial %>%
+inversion_note_data <- inversion_industria_total %>%
   left_join(paper_investment, by = "anno") %>%
   mutate(papel_pct = safe_divide(fbcf_papel, fbcf)) %>%
   slice_max(inversion_vab, n = 1, with_ties = FALSE)
@@ -403,12 +504,14 @@ inversion_plot <- bind_rows(
   inversion_industrial %>%
     transmute(
       anno,
+      ambito_label,
       indicador = "Inversión / VAB manufacturero",
       valor = inversion_vab * 100
     ),
   inversion_industrial %>%
     transmute(
       anno,
+      ambito_label,
       indicador = "Inversiones a precios constantes",
       valor = fbcf / 1e9
     )
@@ -416,29 +519,30 @@ inversion_plot <- bind_rows(
 
 peak_label <- tibble(
   anno = peak_year,
+  ambito_label = "Industria manufacturera",
   indicador = "Inversión / VAB manufacturero",
   valor = investment_peak * 100,
   etiqueta = paste0(peak_year, ": ", percent(investment_peak, accuracy = 1))
 )
 
-fig_06 <- ggplot(inversion_plot, aes(anno, valor, color = indicador)) +
+fig_06 <- ggplot(inversion_plot, aes(anno, valor, color = ambito_label)) +
   geom_line(linewidth = 0.95, na.rm = TRUE) +
   geom_point(size = 1.6, na.rm = TRUE) +
   geom_label(
     data = peak_label,
     aes(label = etiqueta),
-    nudge_y = 0.04,
+    nudge_y = 3,
     size = 3,
     show.legend = FALSE
   ) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
-  scale_color_manual(values = series_palette) +
+  scale_color_manual(values = scope_palette) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Inversión manufacturera",
-    subtitle = "Panel superior: porcentaje del VAB manufacturero. Panel inferior: FBCF en miles de millones de pesos de 2005",
+    subtitle = "Comparación entre industria manufacturera total e industria depurada",
     y = "Valor según panel",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU y deflactores BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
@@ -482,7 +586,7 @@ fig_07 <- ggplot(indices_industria, aes(anno, valor, color = ambito_label)) +
     title = "Resultados manufactureros en índices",
     subtitle = "Comparación entre manufactura total y manufactura depurada; base 2005=1",
     y = "Índice 2005=1",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU y deflactores BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
@@ -509,11 +613,12 @@ fig_08 <- ggplot(productividad, aes(anno, valor, color = ambito_label)) +
     title = "Productividad del trabajo en índice",
     subtitle = "VAB a precios constantes por puesto de trabajo; base 2005=1",
     y = "Índice 2005=1",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU y deflactores BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
-ganancias_indice <- three_indices %>%
+ganancias_indice <- indices_2005 %>%
+  filter(seccion %in% c("industria-total", "industria-sin-papel-coque-refinacion")) %>%
   select(anno, ambito_label, ganancia_pb_ind_2005, ganancia_pp_ind_2005) %>%
   pivot_longer(
     cols = starts_with("ganancia"),
@@ -528,7 +633,7 @@ ganancias_indice <- three_indices %>%
     ),
     ambito_label = factor(
       ambito_label,
-      levels = c("Economía total", "Industria manufacturera", "Industria depurada")
+      levels = c("Industria manufacturera", "Industria depurada")
     )
   ) %>%
   filter(!is.na(valor))
@@ -542,39 +647,95 @@ fig_09 <- ggplot(ganancias_indice, aes(anno, valor, color = ambito_label)) +
   scale_y_continuous(labels = label_number(accuracy = 0.1, decimal.mark = ",")) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
-    title = "Ganancia en índice de volumen",
+    title = "Ganancia industrial en índice de volumen",
     subtitle = "Índices encadenados con base 2005=1, construidos desde resultados en precios de 2005",
     y = "Índice 2005=1",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU y deflactores BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
-subrama_tasa <- corrientes %>%
-  filter(nivel_panel == "subrama_industrial", !is.na(tasa_ganancia_pp)) %>%
-  mutate(
-    subrama_label = vapply(
-      descripcion_nivel,
-      function(value) paste(strwrap(value, width = 28), collapse = "\n"),
-      character(1)
+referencia_tasa <- corrientes %>%
+  filter(
+    seccion %in% c(
+      "economia_total",
+      "industria-total",
+      "industria-sin-papel-coque-refinacion",
+      "19_refinacion",
+      "17_18_papel_impresion"
     )
-  )
+  ) %>%
+  select(anno, seccion, tasa_ganancia_pb, tasa_ganancia_pp) %>%
+  pivot_longer(
+    cols = starts_with("tasa_ganancia"),
+    names_to = "serie",
+    values_to = "valor"
+  ) %>%
+  mutate(
+    serie = recode(
+      serie,
+      tasa_ganancia_pb = "Precios básicos",
+      tasa_ganancia_pp = "Precios productor"
+    ),
+    ambito_label = case_when(
+      seccion == "economia_total" ~ "Economía total",
+      seccion == "industria-total" ~ "Industria manufacturera total",
+      seccion == "industria-sin-papel-coque-refinacion" ~
+        "Industria manufacturera depurada",
+      seccion == "19_refinacion" ~ "Coque y refinación de petróleo",
+      seccion == "17_18_papel_impresion" ~ "Papel impresión y reproducción",
+      TRUE ~ seccion
+    ),
+    ambito_label = factor(
+      ambito_label,
+      levels = c(
+        "Economía total",
+        "Industria manufacturera total",
+        "Industria manufacturera depurada",
+        "Coque y refinación de petróleo",
+        "Papel impresión y reproducción"
+      )
+    )
+  ) %>%
+  filter(!is.na(valor))
 
-fig_10 <- ggplot(subrama_tasa, aes(anno, tasa_ganancia_pp)) +
+referencia_tasa_labels <- label_break_points(
+  referencia_tasa,
+  group_cols = c("ambito_label", "serie"),
+  value_col = "valor",
+  label_accuracy = 1,
+  n_changes = 1
+)
+
+fig_10 <- ggplot(referencia_tasa, aes(anno, valor, color = serie)) +
   geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
-  geom_line(color = "#B23A48", linewidth = 0.75) +
-  facet_wrap(~ subrama_label, ncol = 2, scales = "free_y") +
-  scale_y_continuous(labels = percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks = pretty_breaks(n = 5)) +
+  geom_line(linewidth = 0.85, na.rm = TRUE) +
+  geom_point(size = 1.3, na.rm = TRUE) +
+  geom_text(
+    data = referencia_tasa_labels,
+    aes(label = etiqueta),
+    size = 2.45,
+    vjust = -0.7,
+    show.legend = FALSE,
+    check_overlap = TRUE
+  ) +
+  facet_wrap(~ ambito_label, ncol = 1, scales = "free_y") +
+  scale_color_manual(values = series_palette) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    expand = expansion(mult = c(0.08, 0.18))
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 7)) +
   labs(
-    title = "Tasa de ganancia por subrama industrial",
-    subtitle = "Ganancia a precios productor sobre capital total adelantado, en valores corrientes",
+    title = "Tasa de ganancia a diferentes niveles de desagregación: exploración inicial",
+    subtitle = "Ganancia a precios básicos y productor sobre capital total adelantado, en valores corrientes",
     y = "Porcentaje",
-    caption = "Fuente: elaboración propia con panel integrado EAAE-BCU."
+    caption = source_caption
   ) +
   theme_eaae()
 
 figure_files <- c(
   "01_representatividad_peso_manufacturero.png",
+  "01b_representatividad_manufactura_depurada.png",
   "02_tasa_ganancia_tres_niveles.png",
   "03_descomposicion_vab_total_corrientes.png",
   "04_descomposicion_vab_industria_corrientes.png",
@@ -583,20 +744,21 @@ figure_files <- c(
   "07_indices_industria_depurada.png",
   "08_productividad_tres_niveles.png",
   "09_ganancia_indice_2005.png",
-  "10_tasa_ganancia_subramas_corrientes.png"
+  "10_tasa_ganancia_niveles_desagregacion.png"
 )
 
 figures <- c(
   save_plot(fig_01, figure_files[[1]], width = 10, height = 7),
-  save_plot(fig_02, figure_files[[2]], width = 10, height = 7),
-  save_plot(fig_03, figure_files[[3]], width = 10.5, height = 6),
-  save_plot(fig_04, figure_files[[4]], width = 10.5, height = 6),
-  save_plot(fig_05, figure_files[[5]], width = 11, height = 8),
-  save_plot(fig_06, figure_files[[6]], width = 10, height = 7),
-  save_plot(fig_07, figure_files[[7]], width = 10, height = 8),
-  save_plot(fig_08, figure_files[[8]], width = 10, height = 6),
-  save_plot(fig_09, figure_files[[9]], width = 10, height = 7),
-  save_plot(fig_10, figure_files[[10]], width = 12, height = 12)
+  save_plot(fig_01b, figure_files[[2]], width = 10, height = 6),
+  save_plot(fig_02, figure_files[[3]], width = 10, height = 7),
+  save_plot(fig_03, figure_files[[4]], width = 10.5, height = 6),
+  save_plot(fig_04, figure_files[[5]], width = 10.5, height = 6),
+  save_plot(fig_05, figure_files[[6]], width = 11, height = 8),
+  save_plot(fig_06, figure_files[[7]], width = 10, height = 7),
+  save_plot(fig_07, figure_files[[8]], width = 10, height = 8),
+  save_plot(fig_08, figure_files[[9]], width = 10, height = 6),
+  save_plot(fig_09, figure_files[[10]], width = 10, height = 7),
+  save_plot(fig_10, figure_files[[11]], width = 12, height = 13)
 )
 
 report_lines <- c(
@@ -608,6 +770,7 @@ report_lines <- c(
   "",
   "## Criterios de lectura",
   "",
+  "- Todos los resultados construidos provienen de la EAAE. Se usan índices de precios del BCU para deflactar valores corrientes.",
   "- Los tres niveles agregados son `economia_total`, `industria-total` e `industria-sin-papel-coque-refinacion`.",
   "- Las tasas de ganancia se muestran a precios básicos y a precios productor.",
   "- Las descomposiciones del VAB usan valores corrientes para conservar cobertura anual completa.",
@@ -619,64 +782,71 @@ report_lines <- c(
   "### 1. Representatividad y peso manufacturero",
   "",
   "La primera lectura compara el peso de la manufactura en BCU, el peso de la manufactura en EAAE y la cobertura de la manufactura EAAE respecto de la manufactura BCU. Se presentan como paneles separados para evitar mezclar lecturas de composición y representatividad.",
+  "Puede observarse cómo el peso de la manufactura está sobre representado en la EAAE (panel 1 vs panel 2) mientras que en general esta fuente representa entre el 80% y 90% del VAB reportado a nivel de cuentas nacionales, a lo largo de todo el período.",
   "",
   fig_md("Representatividad y peso manufacturero", figure_files[[1]]),
+  "",
+  "La segunda lectura compara el peso de la manufactura depurada dentro de la manufactura total, usando tanto el VAB como el stock de capital operativo. Esta depuración permite dimensionar el peso de los grupos excluidos antes de interpretar las tasas de ganancia.",
+  "",
+  fig_md("Representatividad de la manufactura depurada", figure_files[[2]]),
   "",
   "### 2. Tasa de ganancia",
   "",
   "La comparación principal incorpora tres niveles: economía total, manufactura total y manufactura depurada. La manufactura depurada permite observar cuánto cambia la trayectoria al retirar los grupos con comportamiento más singular dentro de la rama industrial.",
   "",
-  fig_md("Tasa de ganancia en tres niveles", figure_files[[2]]),
+  fig_md("Tasa de ganancia en tres niveles", figure_files[[3]]),
   "",
   "### 3. Descomposición del VAB: economía total",
   "",
   "La descomposición distribuye el VAB a precios productor entre costo laboral, consumo de capital fijo y ganancia a precios productor. Las etiquetas marcan años extremos, años de referencia y el último punto disponible.",
   "",
-  fig_md("Descomposición del VAB total", figure_files[[3]]),
+  fig_md("Descomposición del VAB total", figure_files[[4]]),
   "",
   "### 4. Descomposición del VAB: industria",
   "",
   "La misma descomposición se replica para la manufactura agregada. Esta figura ayuda a distinguir si los cambios de tasa de ganancia provienen de la ganancia, del costo laboral o del consumo de capital fijo.",
   "",
-  fig_md("Descomposición del VAB industrial", figure_files[[4]]),
+  fig_md("Descomposición del VAB industrial", figure_files[[5]]),
   "",
   "### 5. Capital adelantado, VAB y ganancia",
   "",
   "Este gráfico deja las variables en base 100 en 2004. Se excluye el capital total adelantado para evitar duplicar sus componentes y se agregan VAB y ganancia a precios constantes como referencia de desempeño.",
   "",
-  fig_md("Capital adelantado, VAB y ganancia", figure_files[[5]]),
+  fig_md("Capital adelantado, VAB y ganancia", figure_files[[6]]),
   "",
   "### 6. Inversión manufacturera",
   "",
-  "La inversión manufacturera se separa en dos paneles para que el pico de inversión sobre VAB no quede oculto por la escala de la FBCF constante.",
+  "La inversión manufacturera se separa en dos paneles y en cada uno se diferencia entre industria manufacturera total e industria depurada. Esto permite revisar si la depuración cambia la lectura del esfuerzo inversor.",
   "",
   investment_note,
   "",
-  fig_md("Inversión manufacturera", figure_files[[6]]),
+  fig_md("Inversión manufacturera", figure_files[[7]]),
   "",
   "### 7. Resultados manufactureros en índices",
   "",
   "La comparación se focaliza en manufactura total y manufactura depurada para VAB, ganancia y capital adelantado. Esto permite evaluar si la depuración cambia sólo niveles o también la dinámica relativa.",
   "",
-  fig_md("Resultados manufactureros en índices", figure_files[[7]]),
+  fig_md("Resultados manufactureros en índices", figure_files[[8]]),
   "",
   "### 8. Productividad del trabajo",
   "",
   "La productividad se calcula como VAB a precios constantes por puesto de trabajo. Se mantienen las tres líneas agregadas para comparar economía total, manufactura total y manufactura depurada.",
   "",
-  fig_md("Productividad del trabajo", figure_files[[8]]),
+  fig_md("Productividad del trabajo", figure_files[[9]]),
   "",
-  "### 9. Ganancia en índice de volumen",
+  "## Anexos",
   "",
-  "Se desplaza esta figura hacia el cierre de la sección agregada porque funciona mejor como síntesis de la dinámica real de la ganancia una vez revisados composición, capital adelantado, inversión y productividad.",
+  "### 9. Ganancia industrial en índice de volumen",
   "",
-  fig_md("Ganancia en índice de volumen", figure_files[[9]]),
+  "Se desplaza esta figura al anexo porque funciona como síntesis de la dinámica real de la ganancia industrial, luego de revisar composición, capital adelantado, inversión y productividad.",
   "",
-  "## Referencia por subrama",
+  fig_md("Ganancia industrial en índice de volumen", figure_files[[10]]),
   "",
-  "La lectura por subrama se conserva como referencia para interpretar la heterogeneidad interna de la manufactura. La tasa se muestra a precios productor.",
+  "### 10. Tasa de ganancia a diferentes niveles de desagregación: exploración inicial",
   "",
-  fig_md("Tasa de ganancia por subrama industrial", figure_files[[10]]),
+  "Referencia por subrama: se comparan economía total, industria manufacturera total, industria manufacturera depurada y los dos grupos excluidos de la depuración. La figura muestra tasas a precios básicos y a precios productor, con etiquetas en puntos de quiebre relevantes.",
+  "",
+  fig_md("Tasa de ganancia a diferentes niveles de desagregación", figure_files[[11]]),
   "",
   "## Reproducción",
   "",
