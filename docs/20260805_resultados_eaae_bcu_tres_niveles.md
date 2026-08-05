@@ -92,6 +92,37 @@ En el panel de papel, impresión y reproducción, la serie a precios básicos ta
 
 ![Tasa de ganancia a diferentes niveles de desagregación](../output/figures/eaae_bcu_tres_niveles_20260805/10_tasa_ganancia_niveles_desagregacion.png)
 
+### 11. Comparación del stock de capital industrial EAAE-CIU
+
+La comparación toma como referencia el stock de capital fijo en maquinaria y equipos de la industria publicado por CIU, cuya cobertura excluye refinería ANCAP y empresas de zonas francas. Para aproximar una frontera comparable desde EAAE, se extrae directamente la columna de maquinaria y equipos de los cuadros originales de activos fijos y se resta la maquinaria y equipos de la actividad de refinación (`23` en CIIU Rev.3 y `19_refinacion` en CIIU Rev.4). No se utiliza la operación `stock total - construcciones`, porque esa alternativa conservaría dentro del agregado otros activos e intangibles. La serie EAAE en pesos corrientes se convierte a dólares con el tipo de cambio venta de INE-BROU correspondiente al último valor disponible de diciembre de cada año. Luego se deflacta con un proxy BCU construido como deflactor implícito del VAB de subramas industriales excluyendo refinación, base 2005=1, y se expresa como índice 2008=100. El equipo debe leer esta deflactación como aproximación sectorial, no como deflactor específico de bienes de capital. Los años 2002 y 2011 quedan sin dato EAAE porque no existe cuadro de activos fijos por tipo y no se imputa la composición maquinaria/equipos para este ejercicio.
+
+| año | CIU USD corr. | CIU ind. | EAAE USD corr. | EAAE USD const. proxy | EAAE ind. | EAAE/CIU USD % |
+|---:|---:|---:|---:|---:|---:|---:|
+| 2001 | 836.0 | 48.3 | 921.7 | 824.5 | 49.5 | 110.3 |
+| 2002 | 731.0 | 42.2 | NA | NA | NA | NA |
+| 2003 | 707.0 | 40.8 | 683.6 | 847.6 | 50.9 | 96.7 |
+| 2004 | 742.0 | 42.9 | 808.2 | 864.0 | 51.9 | 108.9 |
+| 2005 | 900.0 | 52.0 | 945.8 | 945.8 | 56.8 | 105.1 |
+| 2006 | 1019.0 | 58.9 | 1036.5 | 976.2 | 58.6 | 101.7 |
+| 2007 | 1292.0 | 74.6 | 1471.6 | 1163.1 | 69.8 | 113.9 |
+| 2008 | 1731.0 | 100.0 | 2186.6 | 1666.0 | 100.0 | 126.3 |
+| 2009 | 1928.0 | 111.4 | 2432.7 | 1475.8 | 88.6 | 126.2 |
+| 2010 | 2574.0 | 148.7 | 2527.3 | 1472.7 | 88.4 | 98.2 |
+| 2011 | 3271.0 | 189.0 | NA | NA | NA | NA |
+| 2012 | 2371.5 | 137.0 | 2602.4 | 1253.9 | 75.3 | 109.7 |
+| 2013 | 2579.2 | 149.0 | 2551.7 | 1296.2 | 77.8 | 98.9 |
+| 2014 | 2838.8 | 164.0 | 4167.5 | 2089.8 | 125.4 | 146.8 |
+| 2015 | 2890.8 | 167.0 | 3731.8 | 2136.2 | 128.2 | 129.1 |
+| 2016 | 2994.6 | 173.0 | 3941.4 | 2135.7 | 128.2 | 131.6 |
+| 2017 | 2890.8 | 167.0 | 3829.5 | 2287.5 | 137.3 | 132.5 |
+| 2018 | 2890.8 | 167.0 | 3726.8 | 2196.3 | 131.8 | 128.9 |
+| 2019 | 2873.5 | 166.0 | 3483.6 | 2169.7 | 130.2 | 121.2 |
+| 2020 | 2856.2 | 165.0 | 3164.7 | 2163.7 | 129.9 | 110.8 |
+| 2021 | 2890.8 | 167.0 | 3225.5 | 1906.8 | 114.5 | 111.6 |
+| 2022 | 2786.9 | 161.0 | 3378.5 | 1676.8 | 100.6 | 121.2 |
+| 2023 | 2717.7 | 157.0 | 6282.3 | 3157.0 | 189.5 | 231.2 |
+| 2024 | 2717.7 | 157.0 | 4783.2 | 2621.3 | 157.3 | 176.0 |
+
 ## Reproducción
 
 Desde la raíz del repositorio:

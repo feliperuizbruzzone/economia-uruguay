@@ -164,6 +164,64 @@ comparar cocientes: `tasa_ganancia_pb` de EAAE economía total dividida por
 dividida por `tg_no_agrario_b`. El gráfico conserva sólo años con ambos datos
 disponibles: 2001-2023 para economía total y 2001-2021 para manufactura.
 
+**FUENTE CIU — STOCK DE CAPITAL INDUSTRIAL — Agosto 2026:** se incorpora una
+nueva fuente primaria online de la CIU sobre stock de capital fijo en maquinaria
+y equipos de la industria, preservada como
+`data/input-data/ciu-stock-capital/ciu_stock_capital_1988_2025.xlsx`. La
+descarga debe hacerse desde la exportación completa del Google Sheets, sin
+restringir por `gid`, porque la exportación de una sola hoja omite la hoja
+`Serie Anual`. El libro completo contiene las hojas `Serie Anual`,
+`Serie Trimestral` y `Metodología`.
+
+El procesamiento reproducible queda en
+`command-files/processing-command-files/15_process_ciu_stock_capital_industria.R`
+y exporta
+`data/analysis-data/ciu_stock_capital_industria_1988_2025.csv`. La base final
+contiene una observación anual para 1988-2025. Para 1988-2011 usa la hoja
+`Serie Anual`; para 2012-2025 usa la hoja `Serie Trimestral` filtrando el dato
+de diciembre (`trimestre_referencia = 4`), según la instrucción del equipo. Las
+variables principales son
+`stock_capital_fijo_maquinaria_equipos_indice_dic_2008_100` y
+`stock_capital_fijo_maquinaria_equipos_mill_usd`. La cobertura corresponde a
+industria sin refinería ANCAP ni empresas de zonas francas. La columna
+`fuente_serie` distingue `serie_anual` y `serie_trimestral_diciembre`, para
+dejar trazable el cambio de fuente interna desde 2012. El script valida
+cobertura completa 1988-2025, ausencia de años duplicados y ausencia de
+faltantes en índice y stock.
+
+**FUENTE INE-UY — TIPO DE CAMBIO — Agosto 2026:** se incorpora la fuente
+primaria online del INE Uruguay `Cotización monedas.xlsx`, preservada como
+`data/input-data/INE-UY/20260805_cotizacion_monedas_ine_uy.xlsx`. El
+procesamiento reproducible queda en
+`command-files/processing-command-files/16_process_ine_tipo_cambio.R` y exporta
+`data/analysis-data/20260805_ine_uy_tipo_cambio_dolar_diciembre.csv`. La base
+selecciona, para cada año con datos, el último valor disponible de diciembre de
+`Dólar.USA.Compra` y `Dólar.USA.Venta` en la hoja `Fuente BROU`. Para la
+conversión del stock EAAE a dólares se usa `Dólar.USA.Venta`, por tratarse de
+la cotización relevante para expresar pesos corrientes en dólares.
+
+**COMPARACIÓN STOCK EAAE-CIU — Agosto 2026:** se crea el script reproducible
+`command-files/processing-command-files/17_compare_eaae_ciu_stock_capital.py`
+y la salida
+`data/analysis-data/20260805_comparacion_stock_capital_eaae_ciu.csv`. La
+comparación toma el stock industrial EAAE desde los cuadros originales de
+activos fijos por tipo: C15 a dos dígitos en 2001, C11 en 2003-2005 y C7 en
+2006-2010 y 2012-2024. Para hacer la serie comparable con CIU se extrae
+directamente la columna `maquinaria y equipos` de la industria manufacturera y
+se resta la maquinaria y equipos de `19_refinacion` (Rev.4) o su equivalente
+Rev.3 `23`. No se usa `stock total - construcciones` porque eso mantendría
+`otros` e `intangibles`. En 2002 y 2011 la comparación EAAE queda como NA,
+porque no hay cuadro de activos fijos por tipo y no se imputa la composición
+maquinaria/equipos para este ejercicio. Para 2001 se usa el cuadro C15 a dos
+dígitos para mantener el total industrial y la refinería en el mismo universo;
+esto explica que el total de activos fijos extraído no coincida con el stock
+por letra del panel principal. La serie EAAE corriente en pesos se convierte a
+dólares con la venta INE de diciembre y se deflacta con un proxy BCU construido
+como deflactor implícito del VAB de subramas industriales excluyendo
+refinación, base 2005=1; la serie resultante se expresa también como índice
+2008=100. Esta deflactación es un proxy de precios sectoriales, no un deflactor
+específico de bienes de capital.
+
 ### Granularidad de la base de datos final
 - **Unidad de observación:** sector CIIU homologado × año
 - **Identificadores únicos:** `seccion` (str, código homologado) + `anno` (int)
@@ -1603,6 +1661,9 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Actualización de contexto sobre disponibilidad de VAB/FBCF para manufactura total y depurada; creación de la minuta visual `20260805_resultados_eaae_bcu_tres_niveles.md` y figuras asociadas | ✓ |
 | Aug 2026 | Importación de fuente online Oyanthabal `20260805_tasa_ganancia_uruguay_oyanthabal.xlsx` y creación de `oyanthabal_tasa_ganancia_uruguay.csv` con `anio`, `tg_total_b` y `tg_no_agrario_b` desde 2000 | ✓ |
 | Aug 2026 | Incorporación en la minuta 20260805 de una comparación EAAE/Oyanthabal de tasa de ganancia: economía total EAAE pb sobre total Oyanthabal y manufactura EAAE pb sobre no agrario Oyanthabal, sólo para años con datos disponibles | ✓ |
+| Aug 2026 | Importación de fuente online CIU `ciu_stock_capital_1988_2025.xlsx` y creación de `ciu_stock_capital_industria_1988_2025.csv` con stock industrial anual 1988-2025, usando serie anual hasta 2011 y diciembre de la serie trimestral desde 2012 | ✓ |
+| Aug 2026 | Importación de fuente INE-UY `Cotización monedas.xlsx` y creación de `20260805_ine_uy_tipo_cambio_dolar_diciembre.csv` con último valor disponible de diciembre para `Dólar.USA.Compra` y `Dólar.USA.Venta` | ✓ |
+| Aug 2026 | Creación de `20260805_comparacion_stock_capital_eaae_ciu.csv`: comparación EAAE-CIU de stock industrial de maquinaria/equipos sin refinería, convertido con dólar venta INE, deflactado con proxy BCU e indexado 2008=100 | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
