@@ -14,9 +14,10 @@ suppressPackageStartupMessages({
 
 analysis_dir <- file.path("data", "analysis-data")
 docs_dir <- "docs"
-report_date <- Sys.getenv("EAAE_REPORT_DATE", unset = "20260804")
+report_date <- Sys.getenv("EAAE_REPORT_DATE", unset = "20260805")
 workbook_date <- Sys.getenv("EAAE_WORKBOOK_DATE", unset = "20260727")
 source_caption <- "Fuente: Elaboración propia en base a EAAE. Índices de precios extraídos de BCU."
+oyanthabal_tg_path <- file.path(analysis_dir, "oyanthabal_tasa_ganancia_uruguay.csv")
 
 workbook_path <- file.path(
   analysis_dir,
@@ -210,6 +211,18 @@ scope_palette <- c(
   "Industria depurada" = "#2E7D32"
 )
 
+scope_linetype <- c(
+  "Economía total" = "solid",
+  "Industria manufacturera" = "longdash",
+  "Industria depurada" = "solid"
+)
+
+scope_shape <- c(
+  "Economía total" = 16,
+  "Industria manufacturera" = 1,
+  "Industria depurada" = 16
+)
+
 series_palette <- c(
   "Precios básicos" = "#1B4E89",
   "Precios productor" = "#B23A48",
@@ -221,13 +234,26 @@ series_palette <- c(
   "Inversiones a precios constantes" = "#1B4E89"
 )
 
+series_linetype <- c(
+  "Precios básicos" = "solid",
+  "Precios productor" = "longdash"
+)
+
 if (!file.exists(workbook_path)) {
   stop("No existe el libro de resultados: ", workbook_path)
+}
+
+if (!file.exists(oyanthabal_tg_path)) {
+  stop("No existe la base de tasa de ganancia Oyanthabal: ", oyanthabal_tg_path)
 }
 
 corrientes <- clean_result_sheet("resultados-corrientes")
 constantes <- clean_result_sheet("resultados-constantes")
 indices_2005 <- clean_result_sheet("resultados-ind-2005")
+oyanthabal_tg <- readr::read_csv(
+  oyanthabal_tg_path,
+  show_col_types = FALSE
+)
 
 three_sections <- c(
   "economia_total",
@@ -348,6 +374,55 @@ fig_01b <- ggplot(representatividad_depurada, aes(anno, valor)) +
     subtitle = "Peso de la industria depurada respecto de la manufactura total EAAE",
     y = "Porcentaje",
     caption = source_caption
+  ) +
+  theme_eaae()
+
+comparacion_tg_oyanthabal <- bind_rows(
+  corrientes %>%
+    filter(seccion == "economia_total") %>%
+    select(anno, tasa_ganancia_pb) %>%
+    left_join(oyanthabal_tg, by = c("anno" = "anio")) %>%
+    transmute(
+      anno,
+      indicador = "Economía total EAAE pb / total Oyanthabal",
+      valor = safe_divide(tasa_ganancia_pb, tg_total_b)
+    ),
+  corrientes %>%
+    filter(seccion == "industria-total") %>%
+    select(anno, tasa_ganancia_pb) %>%
+    left_join(oyanthabal_tg, by = c("anno" = "anio")) %>%
+    transmute(
+      anno,
+      indicador = "Manufactura EAAE pb / no agrario Oyanthabal",
+      valor = safe_divide(tasa_ganancia_pb, tg_no_agrario_b)
+    )
+) %>%
+  filter(!is.na(valor)) %>%
+  mutate(
+    indicador = factor(
+      indicador,
+      levels = c(
+        "Economía total EAAE pb / total Oyanthabal",
+        "Manufactura EAAE pb / no agrario Oyanthabal"
+      )
+    )
+  )
+
+fig_01c <- ggplot(comparacion_tg_oyanthabal, aes(anno, valor)) +
+  geom_hline(yintercept = 1, linewidth = 0.3, color = "grey65") +
+  geom_line(color = "#6A4C93", linewidth = 0.95, na.rm = TRUE) +
+  geom_point(color = "#6A4C93", size = 1.6, na.rm = TRUE) +
+  facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
+  scale_y_continuous(labels = label_number(accuracy = 0.1, decimal.mark = ",")) +
+  scale_x_continuous(
+    breaks = pretty_breaks(n = 8),
+    limits = range(comparacion_tg_oyanthabal$anno, na.rm = TRUE)
+  ) +
+  labs(
+    title = "Tasa de ganancia EAAE frente a Oyanthabal",
+    subtitle = "Cociente entre la tasa EAAE a precios básicos y la tasa calculada desde cuentas nacionales",
+    y = "EAAE / Oyanthabal",
+    caption = "Fuente: Elaboración propia en base a EAAE y Oyanthabal. Índices de precios extraídos de BCU."
   ) +
   theme_eaae()
 
@@ -525,18 +600,25 @@ peak_label <- tibble(
   etiqueta = paste0(peak_year, ": ", percent(investment_peak, accuracy = 1))
 )
 
-fig_06 <- ggplot(inversion_plot, aes(anno, valor, color = ambito_label)) +
+fig_06 <- ggplot(
+  inversion_plot,
+  aes(anno, valor, color = ambito_label, linetype = ambito_label, shape = ambito_label)
+) +
   geom_line(linewidth = 0.95, na.rm = TRUE) +
   geom_point(size = 1.6, na.rm = TRUE) +
   geom_label(
     data = peak_label,
-    aes(label = etiqueta),
+    aes(anno, valor, label = etiqueta),
+    inherit.aes = FALSE,
     nudge_y = 3,
     size = 3,
+    color = scope_palette[["Industria manufacturera"]],
     show.legend = FALSE
   ) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
   scale_color_manual(values = scope_palette) +
+  scale_linetype_manual(values = scope_linetype) +
+  scale_shape_manual(values = scope_shape) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Inversión manufacturera",
@@ -706,13 +788,14 @@ referencia_tasa_labels <- label_break_points(
   n_changes = 1
 )
 
-fig_10 <- ggplot(referencia_tasa, aes(anno, valor, color = serie)) +
+fig_10 <- ggplot(referencia_tasa, aes(anno, valor, color = serie, linetype = serie)) +
   geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
   geom_line(linewidth = 0.85, na.rm = TRUE) +
   geom_point(size = 1.3, na.rm = TRUE) +
   geom_text(
     data = referencia_tasa_labels,
-    aes(label = etiqueta),
+    aes(anno, valor, label = etiqueta, color = serie),
+    inherit.aes = FALSE,
     size = 2.45,
     vjust = -0.7,
     show.legend = FALSE,
@@ -720,6 +803,7 @@ fig_10 <- ggplot(referencia_tasa, aes(anno, valor, color = serie)) +
   ) +
   facet_wrap(~ ambito_label, ncol = 1, scales = "free_y") +
   scale_color_manual(values = series_palette) +
+  scale_linetype_manual(values = series_linetype) +
   scale_y_continuous(
     labels = percent_format(accuracy = 1),
     expand = expansion(mult = c(0.08, 0.18))
@@ -736,6 +820,7 @@ fig_10 <- ggplot(referencia_tasa, aes(anno, valor, color = serie)) +
 figure_files <- c(
   "01_representatividad_peso_manufacturero.png",
   "01b_representatividad_manufactura_depurada.png",
+  "01c_comparacion_tasa_ganancia_oyanthabal.png",
   "02_tasa_ganancia_tres_niveles.png",
   "03_descomposicion_vab_total_corrientes.png",
   "04_descomposicion_vab_industria_corrientes.png",
@@ -750,15 +835,16 @@ figure_files <- c(
 figures <- c(
   save_plot(fig_01, figure_files[[1]], width = 10, height = 7),
   save_plot(fig_01b, figure_files[[2]], width = 10, height = 6),
-  save_plot(fig_02, figure_files[[3]], width = 10, height = 7),
-  save_plot(fig_03, figure_files[[4]], width = 10.5, height = 6),
-  save_plot(fig_04, figure_files[[5]], width = 10.5, height = 6),
-  save_plot(fig_05, figure_files[[6]], width = 11, height = 8),
-  save_plot(fig_06, figure_files[[7]], width = 10, height = 7),
-  save_plot(fig_07, figure_files[[8]], width = 10, height = 8),
-  save_plot(fig_08, figure_files[[9]], width = 10, height = 6),
-  save_plot(fig_09, figure_files[[10]], width = 10, height = 7),
-  save_plot(fig_10, figure_files[[11]], width = 12, height = 13)
+  save_plot(fig_01c, figure_files[[3]], width = 10, height = 6),
+  save_plot(fig_02, figure_files[[4]], width = 10, height = 7),
+  save_plot(fig_03, figure_files[[5]], width = 10.5, height = 6),
+  save_plot(fig_04, figure_files[[6]], width = 10.5, height = 6),
+  save_plot(fig_05, figure_files[[7]], width = 11, height = 8),
+  save_plot(fig_06, figure_files[[8]], width = 10, height = 7),
+  save_plot(fig_07, figure_files[[9]], width = 10, height = 8),
+  save_plot(fig_08, figure_files[[10]], width = 10, height = 6),
+  save_plot(fig_09, figure_files[[11]], width = 10, height = 7),
+  save_plot(fig_10, figure_files[[12]], width = 12, height = 13)
 )
 
 report_lines <- c(
@@ -790,49 +876,55 @@ report_lines <- c(
   "",
   fig_md("Representatividad de la manufactura depurada", figure_files[[2]]),
   "",
+  "A continuación se presenta una comparación entre la tasa de ganancia calculada a partir de eaae y aquella calculada a partir de cuentas nacionales por Gabriel Oyanthabal. Esto con el fin de complementar la evaluación de representatividad de los cálculos hechos a partir de eaae.",
+  "",
+  fig_md("Tasa de ganancia EAAE frente a Oyanthabal", figure_files[[3]]),
+  "",
   "### 2. Tasa de ganancia",
   "",
   "La comparación principal incorpora tres niveles: economía total, manufactura total y manufactura depurada. La manufactura depurada permite observar cuánto cambia la trayectoria al retirar los grupos con comportamiento más singular dentro de la rama industrial.",
   "",
-  fig_md("Tasa de ganancia en tres niveles", figure_files[[3]]),
+  fig_md("Tasa de ganancia en tres niveles", figure_files[[4]]),
   "",
   "### 3. Descomposición del VAB: economía total",
   "",
   "La descomposición distribuye el VAB a precios productor entre costo laboral, consumo de capital fijo y ganancia a precios productor. Las etiquetas marcan años extremos, años de referencia y el último punto disponible.",
   "",
-  fig_md("Descomposición del VAB total", figure_files[[4]]),
+  fig_md("Descomposición del VAB total", figure_files[[5]]),
   "",
   "### 4. Descomposición del VAB: industria",
   "",
   "La misma descomposición se replica para la manufactura agregada. Esta figura ayuda a distinguir si los cambios de tasa de ganancia provienen de la ganancia, del costo laboral o del consumo de capital fijo.",
   "",
-  fig_md("Descomposición del VAB industrial", figure_files[[5]]),
+  fig_md("Descomposición del VAB industrial", figure_files[[6]]),
   "",
   "### 5. Capital adelantado, VAB y ganancia",
   "",
   "Este gráfico deja las variables en base 100 en 2004. Se excluye el capital total adelantado para evitar duplicar sus componentes y se agregan VAB y ganancia a precios constantes como referencia de desempeño.",
   "",
-  fig_md("Capital adelantado, VAB y ganancia", figure_files[[6]]),
+  fig_md("Capital adelantado, VAB y ganancia", figure_files[[7]]),
   "",
   "### 6. Inversión manufacturera",
   "",
   "La inversión manufacturera se separa en dos paneles y en cada uno se diferencia entre industria manufacturera total e industria depurada. Esto permite revisar si la depuración cambia la lectura del esfuerzo inversor.",
   "",
+  "En el primer panel la industria depurada está incorporada, pero queda prácticamente superpuesta con la manufactura total porque la FBCF subramal se distribuye proporcionalmente al VAB; por eso el cociente FBCF/VAB es casi idéntico para ambos agregados. Para facilitar la lectura, la manufactura total se muestra con línea punteada y punto hueco.",
+  "",
   investment_note,
   "",
-  fig_md("Inversión manufacturera", figure_files[[7]]),
+  fig_md("Inversión manufacturera", figure_files[[8]]),
   "",
   "### 7. Resultados manufactureros en índices",
   "",
   "La comparación se focaliza en manufactura total y manufactura depurada para VAB, ganancia y capital adelantado. Esto permite evaluar si la depuración cambia sólo niveles o también la dinámica relativa.",
   "",
-  fig_md("Resultados manufactureros en índices", figure_files[[8]]),
+  fig_md("Resultados manufactureros en índices", figure_files[[9]]),
   "",
   "### 8. Productividad del trabajo",
   "",
   "La productividad se calcula como VAB a precios constantes por puesto de trabajo. Se mantienen las tres líneas agregadas para comparar economía total, manufactura total y manufactura depurada.",
   "",
-  fig_md("Productividad del trabajo", figure_files[[9]]),
+  fig_md("Productividad del trabajo", figure_files[[10]]),
   "",
   "## Anexos",
   "",
@@ -840,13 +932,15 @@ report_lines <- c(
   "",
   "Se desplaza esta figura al anexo porque funciona como síntesis de la dinámica real de la ganancia industrial, luego de revisar composición, capital adelantado, inversión y productividad.",
   "",
-  fig_md("Ganancia industrial en índice de volumen", figure_files[[10]]),
+  fig_md("Ganancia industrial en índice de volumen", figure_files[[11]]),
   "",
   "### 10. Tasa de ganancia a diferentes niveles de desagregación: exploración inicial",
   "",
   "Referencia por subrama: se comparan economía total, industria manufacturera total, industria manufacturera depurada y los dos grupos excluidos de la depuración. La figura muestra tasas a precios básicos y a precios productor, con etiquetas en puntos de quiebre relevantes.",
   "",
-  fig_md("Tasa de ganancia a diferentes niveles de desagregación", figure_files[[11]]),
+  "En el panel de papel, impresión y reproducción, la serie a precios básicos también está incluida. Su trayectoria se superpone casi exactamente con la de precios productor, por lo que el gráfico distingue ambas mediante tipo de línea: precios básicos en línea continua y precios productor en línea punteada.",
+  "",
+  fig_md("Tasa de ganancia a diferentes niveles de desagregación", figure_files[[12]]),
   "",
   "## Reproducción",
   "",

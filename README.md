@@ -12,8 +12,8 @@ documentación metodológica en `docs/`.
 
 - [20260727_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv): panel integrado en formato largo para economía total, industria manufacturera agregada, industria depurada de papel/impresión y coque/refinación, y subramas industriales homologadas.
 - [20260727_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx): libro de resultados en formato largo derivado del panel integrado, con hojas de metodología, base EAAE-BCU, controles de calidad y resultados corrientes, constantes, variaciones interanuales e índices 2005=1.
-- [20260804_resultados_eaae_bcu_tres_niveles.md](docs/20260804_resultados_eaae_bcu_tres_niveles.md): minuta visual de resultados centrada en tasa de ganancia para economía total, industria total e industria depurada.
-- [Figuras 20260804](output/figures/eaae_bcu_tres_niveles_20260804/): gráficos respaldados para la última minuta de resultados.
+- [20260805_resultados_eaae_bcu_tres_niveles.md](docs/20260805_resultados_eaae_bcu_tres_niveles.md): minuta visual de resultados centrada en tasa de ganancia para economía total, industria total e industria depurada, con comparación contra la tasa de ganancia de Oyanthabal.
+- [Figuras 20260805](output/figures/eaae_bcu_tres_niveles_20260805/): gráficos respaldados para la última minuta de resultados.
 
 ## Resultados Principales
 
@@ -42,6 +42,7 @@ documentación metodológica en `docs/`.
 ## Fuentes Procesadas No Fechadas
 
 - [oyanthabal_indices_precios.csv](data/analysis-data/oyanthabal_indices_precios.csv): índices de precios y PIB de Oyanthabal/BCU.
+- [oyanthabal_tasa_ganancia_uruguay.csv](data/analysis-data/oyanthabal_tasa_ganancia_uruguay.csv): tasas de ganancia de Uruguay procesadas desde Oyanthabal para total y no agrario desde 2000.
 - [bcu_pib_corriente_industrias_2005_2019.csv](data/analysis-data/bcu_pib_corriente_industrias_2005_2019.csv): PIB corriente por industrias BCU.
 - [eaae_1998_2001_2dig_panel.csv](data/analysis-data/eaae_1998_2001_2dig_panel.csv): panel EAAE/EAE histórico 1998-2001 a dos dígitos.
 - [ciu_encuesta_industrial_ipoi_ivfvi.csv](data/analysis-data/ciu_encuesta_industrial_ipoi_ivfvi.csv): indicadores CIU de personal ocupado e índice de volumen físico de ventas industriales.

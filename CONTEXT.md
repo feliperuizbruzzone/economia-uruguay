@@ -147,6 +147,23 @@ Notas validadas:
   deflactores; se transforman los insumos y variables calculadas presentes en
   la hoja constante correspondiente.
 
+**FUENTE OYANTHABAL — TASA DE GANANCIA URUGUAY — Agosto 2026:** se incorpora
+una nueva fuente primaria online de Oyanthabal desde Google Sheets, preservada
+como `data/input-data/oyanthabal/20260805_tasa_ganancia_uruguay_oyanthabal.xlsx`.
+El procesamiento reproducible queda en
+`command-files/processing-command-files/14_process_oyanthabal_tasa_ganancia.R`.
+Ese script descarga la fuente si no existe localmente y exporta
+`data/analysis-data/oyanthabal_tasa_ganancia_uruguay.csv` desde la hoja
+`Uruguay`, conservando únicamente las columnas `anio`, `tg_total_b` y
+`tg_no_agrario_b` para observaciones desde 2000 en adelante. La base procesada
+contiene 25 filas para 2000-2024; `tg_total_b` queda faltante en 2024 y
+`tg_no_agrario_b` queda faltante en 2022-2024, tal como figura en el XLSX
+descargado. En la minuta visual de tres niveles se usa esta fuente para
+comparar cocientes: `tasa_ganancia_pb` de EAAE economía total dividida por
+`tg_total_b`, y `tasa_ganancia_pb` de EAAE industria manufacturera total
+dividida por `tg_no_agrario_b`. El gráfico conserva sólo años con ambos datos
+disponibles: 2001-2023 para economía total y 2001-2021 para manufactura.
+
 ### Granularidad de la base de datos final
 - **Unidad de observación:** sector CIIU homologado × año
 - **Identificadores únicos:** `seccion` (str, código homologado) + `anno` (int)
@@ -215,11 +232,14 @@ Artefactos:
 | `command-files/processing-command-files/eaae_subrama_capital_direct.py` | Helper de extracción directa de `consumo_capital_fijo`, `impuestos_netos` y `stock_capital` a nivel de subrama industrial desde los RAR EAAE. |
 | `command-files/analysis-command-files/04_build_resultados_eaae_bcu_workbook.R` | Script reproducible para construir el libro XLSX de resultados largos desde el panel integrado. |
 | `command-files/analysis-command-files/05_visualizar_resultados_eaae_bcu_subrama.R` | Script reproducible para construir el informe visual largo EAAE-BCU con sección adicional de subramas industriales. |
+| `command-files/analysis-command-files/06_visualizar_resultados_eaae_bcu_tres_niveles.R` | Script reproducible para construir la minuta visual de tres niveles agregados y sus figuras fuente. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
 | `data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo derivado del panel 20260727; agrega el filtro operativo `industria-sin-papel-coque-refinacion` en todas las hojas. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
+| `docs/20260805_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados y comparación contra Oyanthabal. |
+| `output/figures/eaae_bcu_tres_niveles_20260805/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260805. |
 | `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md` | Informe visual EAAE/Oyanthabal para economía total e industria, con prefijo de fecha de elaboración. |
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
 
@@ -310,6 +330,19 @@ Decisiones del panel integrado:
   mismas siete hojas largas del libro 20260706, pero eleva la cobertura a 312
   filas por hoja de datos al incorporar el nivel
   `industria-sin-papel-coque-refinacion`.
+- **NOTA OPERATIVA 2026-08-05:** en el panel integrado 20260727 y en el libro
+  XLSX derivado existe descomposición explícita para manufactura total y
+  manufactura depurada. En el CSV, los niveles se identifican como
+  `industria_total` e `industria_sin_papel_coque_refinacion`; en el XLSX, la
+  columna `seccion` usa `industria-total` e
+  `industria-sin-papel-coque-refinacion`. Para ambos agregados, `vab_pp` y
+  `vab_pb_estimado` cubren 2001-2024, mientras `vab_pb` directo sólo cubre
+  2017-2024. `fbcf` y `fbkf_maq_eq` están disponibles para ambos agregados,
+  con faltantes en 2002 y 2011 por ausencia de cuadro FBCF en las fuentes. A
+  nivel de subrama existe `participacion_vab_pp_rama_c`; no se exporta una
+  participación explícita de FBCF, pero puede calcularse como
+  `fbcf_subrama / fbcf_industria_total` o contra la manufactura depurada según
+  el denominador analítico.
 - **DECISIÓN 2026-07-06:** el informe
   `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` replica la
   lógica argumental de
@@ -317,6 +350,20 @@ Decisiones del panel integrado:
   el libro largo EAAE-BCU y agrega una sección específica para subramas
   industriales. Las figuras se guardan en
   `output/figures/eaae_bcu_total_industria_subrama/`.
+- **ACTUALIZACIÓN 2026-08-05:** la minuta visual de tres niveles se renombra y
+  actualiza como `docs/20260805_resultados_eaae_bcu_tres_niveles.md`, con
+  figuras en `output/figures/eaae_bcu_tres_niveles_20260805/`. El informe
+  declara que todos los resultados construidos provienen de EAAE y que los
+  índices de precios de BCU se usan para deflactar valores corrientes. Todas
+  las figuras reportan como fuente: "Elaboración propia en base a EAAE.
+  Índices de precios extraídos de BCU.", salvo la comparación con Oyanthabal,
+  que agrega esa fuente explícitamente. La actualización incorpora el gráfico
+  de representatividad de manufactura depurada, la comparación de tasas de
+  ganancia EAAE/Oyanthabal, etiquetas de quiebres en tasas de ganancia,
+  inversión diferenciada entre manufactura total y depurada, y un anexo con
+  ganancia industrial en índice de volumen y tasas a precios básicos y
+  productor para economía total, manufactura total, manufactura depurada,
+  coque/refinación y papel/impresión/reproducción.
 
 ### Entorno de trabajo
 - **Sistema operativo:** Linux (local)
@@ -1553,6 +1600,9 @@ mkdir -p data/input-data/eaae \
 | Jul 2026 | Creación del libro `20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` con resultados largos para economía total, industria total y subramas industriales | ✓ |
 | Jul 2026 | Creación del informe visual `20260706_resultados_eaae_bcu_total_industria_subrama.md` con sección adicional para subramas industriales | ✓ |
 | Jul 2026 | Creación de versiones `20260727` del panel y libro EAAE-BCU con tasa de ganancia para industria manufacturera excluyendo papel/impresión y coque/refinación | ✓ |
+| Aug 2026 | Actualización de contexto sobre disponibilidad de VAB/FBCF para manufactura total y depurada; creación de la minuta visual `20260805_resultados_eaae_bcu_tres_niveles.md` y figuras asociadas | ✓ |
+| Aug 2026 | Importación de fuente online Oyanthabal `20260805_tasa_ganancia_uruguay_oyanthabal.xlsx` y creación de `oyanthabal_tasa_ganancia_uruguay.csv` con `anio`, `tg_total_b` y `tg_no_agrario_b` desde 2000 | ✓ |
+| Aug 2026 | Incorporación en la minuta 20260805 de una comparación EAAE/Oyanthabal de tasa de ganancia: economía total EAAE pb sobre total Oyanthabal y manufactura EAAE pb sobre no agrario Oyanthabal, sólo para años con datos disponibles | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
