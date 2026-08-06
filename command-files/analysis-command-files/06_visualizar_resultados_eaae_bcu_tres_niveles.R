@@ -14,10 +14,14 @@ suppressPackageStartupMessages({
 
 analysis_dir <- file.path("data", "analysis-data")
 docs_dir <- "docs"
-report_date <- Sys.getenv("EAAE_REPORT_DATE", unset = "20260805")
+report_date <- Sys.getenv("EAAE_REPORT_DATE", unset = "20260806")
 workbook_date <- Sys.getenv("EAAE_WORKBOOK_DATE", unset = "20260727")
 source_caption <- "Fuente: Elaboración propia en base a EAAE. Índices de precios extraídos de BCU."
 oyanthabal_tg_path <- file.path(analysis_dir, "oyanthabal_tasa_ganancia_uruguay.csv")
+stock_comparison_path <- file.path(
+  analysis_dir,
+  "20260805_comparacion_stock_capital_eaae_ciu.csv"
+)
 
 workbook_path <- file.path(
   analysis_dir,
@@ -91,6 +95,25 @@ relative_fig <- function(filename) {
 
 fig_md <- function(alt, filename) {
   paste0("![", alt, "](", relative_fig(filename), ")")
+}
+
+format_one_decimal <- function(x) {
+  ifelse(is.na(x), "NA", formatC(round(x, 1), format = "f", digits = 1))
+}
+
+markdown_table <- function(data) {
+  header <- paste0("| ", paste(names(data), collapse = " | "), " |")
+  separator <- paste0(
+    "|",
+    paste(rep("---:", ncol(data)), collapse = "|"),
+    "|"
+  )
+  rows <- apply(
+    data,
+    1,
+    function(row) paste0("| ", paste(row, collapse = " | "), " |")
+  )
+  c(header, separator, rows)
 }
 
 base_index <- function(data, group_cols, value_col, base_year = 2004) {
@@ -247,11 +270,19 @@ if (!file.exists(oyanthabal_tg_path)) {
   stop("No existe la base de tasa de ganancia Oyanthabal: ", oyanthabal_tg_path)
 }
 
+if (!file.exists(stock_comparison_path)) {
+  stop("No existe la base de comparacion de stock EAAE-CIU: ", stock_comparison_path)
+}
+
 corrientes <- clean_result_sheet("resultados-corrientes")
 constantes <- clean_result_sheet("resultados-constantes")
 indices_2005 <- clean_result_sheet("resultados-ind-2005")
 oyanthabal_tg <- readr::read_csv(
   oyanthabal_tg_path,
+  show_col_types = FALSE
+)
+stock_comparison <- readr::read_csv(
+  stock_comparison_path,
   show_col_types = FALSE
 )
 
@@ -382,46 +413,71 @@ comparacion_tg_oyanthabal <- bind_rows(
     filter(seccion == "economia_total") %>%
     select(anno, tasa_ganancia_pb) %>%
     left_join(oyanthabal_tg, by = c("anno" = "anio")) %>%
+    filter(!is.na(tasa_ganancia_pb), !is.na(tg_total_b)) %>%
     transmute(
       anno,
-      indicador = "Economía total EAAE pb / total Oyanthabal",
-      valor = safe_divide(tasa_ganancia_pb, tg_total_b)
+      indicador = "Economía total",
+      `EAAE precios básicos` = tasa_ganancia_pb,
+      `Oyanthabal total` = tg_total_b
+    ) %>%
+    pivot_longer(
+      cols = c(`EAAE precios básicos`, `Oyanthabal total`),
+      names_to = "serie",
+      values_to = "valor"
     ),
   corrientes %>%
     filter(seccion == "industria-total") %>%
     select(anno, tasa_ganancia_pb) %>%
     left_join(oyanthabal_tg, by = c("anno" = "anio")) %>%
+    filter(!is.na(tasa_ganancia_pb), !is.na(tg_no_agrario_b)) %>%
     transmute(
       anno,
-      indicador = "Manufactura EAAE pb / no agrario Oyanthabal",
-      valor = safe_divide(tasa_ganancia_pb, tg_no_agrario_b)
+      indicador = "Manufactura",
+      `EAAE precios básicos` = tasa_ganancia_pb,
+      `Oyanthabal no agrario` = tg_no_agrario_b
+    ) %>%
+    pivot_longer(
+      cols = c(`EAAE precios básicos`, `Oyanthabal no agrario`),
+      names_to = "serie",
+      values_to = "valor"
     )
 ) %>%
   filter(!is.na(valor)) %>%
   mutate(
     indicador = factor(
       indicador,
-      levels = c(
-        "Economía total EAAE pb / total Oyanthabal",
-        "Manufactura EAAE pb / no agrario Oyanthabal"
-      )
+      levels = c("Economía total", "Manufactura")
     )
   )
 
-fig_01c <- ggplot(comparacion_tg_oyanthabal, aes(anno, valor)) +
-  geom_hline(yintercept = 1, linewidth = 0.3, color = "grey65") +
-  geom_line(color = "#6A4C93", linewidth = 0.95, na.rm = TRUE) +
-  geom_point(color = "#6A4C93", size = 1.6, na.rm = TRUE) +
+tg_compare_palette <- c(
+  "EAAE precios básicos" = "#1B4E89",
+  "Oyanthabal total" = "#6A4C93",
+  "Oyanthabal no agrario" = "#6A4C93"
+)
+
+tg_compare_linetype <- c(
+  "EAAE precios básicos" = "solid",
+  "Oyanthabal total" = "longdash",
+  "Oyanthabal no agrario" = "longdash"
+)
+
+fig_01c <- ggplot(comparacion_tg_oyanthabal, aes(anno, valor, color = serie, linetype = serie)) +
+  geom_hline(yintercept = 0, linewidth = 0.3, color = "grey65") +
+  geom_line(linewidth = 0.95, na.rm = TRUE) +
+  geom_point(size = 1.6, na.rm = TRUE) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
-  scale_y_continuous(labels = label_number(accuracy = 0.1, decimal.mark = ",")) +
+  scale_color_manual(values = tg_compare_palette) +
+  scale_linetype_manual(values = tg_compare_linetype) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
   scale_x_continuous(
     breaks = pretty_breaks(n = 8),
     limits = range(comparacion_tg_oyanthabal$anno, na.rm = TRUE)
   ) +
   labs(
     title = "Tasa de ganancia EAAE frente a Oyanthabal",
-    subtitle = "Cociente entre la tasa EAAE a precios básicos y la tasa calculada desde cuentas nacionales",
-    y = "EAAE / Oyanthabal",
+    subtitle = "Tasas en escala porcentual; EAAE usa precios básicos y Oyanthabal cuentas nacionales",
+    y = "Tasa de ganancia",
     caption = "Fuente: Elaboración propia en base a EAAE y Oyanthabal. Índices de precios extraídos de BCU."
   ) +
   theme_eaae()
@@ -453,8 +509,21 @@ tasas_ganancia_labels <- label_break_points(
   n_changes = 1
 )
 
+tasas_ganancia_promedio_industria <- tasas_ganancia %>%
+  filter(ambito_label == "Industria manufacturera") %>%
+  group_by(serie) %>%
+  summarise(promedio = mean(valor, na.rm = TRUE), .groups = "drop")
+
 fig_02 <- ggplot(tasas_ganancia, aes(anno, valor, color = ambito_label)) +
   geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
+  geom_hline(
+    data = tasas_ganancia_promedio_industria,
+    aes(yintercept = promedio),
+    inherit.aes = FALSE,
+    color = scope_palette[["Industria manufacturera"]],
+    linetype = "dotted",
+    linewidth = 0.55
+  ) +
   geom_line(linewidth = 0.95, na.rm = TRUE) +
   geom_point(size = 1.5, na.rm = TRUE) +
   geom_text(
@@ -474,7 +543,7 @@ fig_02 <- ggplot(tasas_ganancia, aes(anno, valor, color = ambito_label)) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Tasa de ganancia en tres niveles",
-    subtitle = "Economía total, industria manufacturera agregada e industria depurada de papel/impresión y coque/refinación",
+    subtitle = "La línea punteada marca el promedio de la industria manufacturera en cada panel",
     y = "Porcentaje",
     caption = source_caption
   ) +
@@ -672,15 +741,35 @@ fig_07 <- ggplot(indices_industria, aes(anno, valor, color = ambito_label)) +
   ) +
   theme_eaae()
 
-productividad <- three_indices %>%
-  select(anno, ambito_label, productividad_trabajo_ind_2005) %>%
+productividad <- three_constantes %>%
+  transmute(
+    anno,
+    ambito_label,
+    `VAB precios básicos estimado` = safe_divide(vab_pb_estimado, puestos_trabajo),
+    `VAB precios productor` = safe_divide(vab_pp, puestos_trabajo)
+  ) %>%
+  pivot_longer(
+    cols = c(`VAB precios básicos estimado`, `VAB precios productor`),
+    names_to = "medida",
+    values_to = "productividad"
+  ) %>%
+  group_by(ambito_label, medida) %>%
+  mutate(
+    base_2005 = productividad[anno == 2005L][1],
+    valor = safe_divide(productividad, base_2005)
+  ) %>%
+  ungroup() %>%
   transmute(
     anno,
     ambito_label = factor(
       ambito_label,
       levels = c("Economía total", "Industria manufacturera", "Industria depurada")
     ),
-    valor = productividad_trabajo_ind_2005
+    medida = factor(
+      medida,
+      levels = c("VAB precios básicos estimado", "VAB precios productor")
+    ),
+    valor
   ) %>%
   filter(!is.na(valor))
 
@@ -688,12 +777,13 @@ fig_08 <- ggplot(productividad, aes(anno, valor, color = ambito_label)) +
   geom_hline(yintercept = 1, linewidth = 0.25, color = "grey75") +
   geom_line(linewidth = 0.95) +
   geom_point(size = 1.5) +
+  facet_wrap(~ medida, ncol = 1) +
   scale_color_manual(values = scope_palette) +
   scale_y_continuous(labels = label_number(accuracy = 0.1, decimal.mark = ",")) +
   scale_x_continuous(breaks = pretty_breaks(n = 8)) +
   labs(
     title = "Productividad del trabajo en índice",
-    subtitle = "VAB a precios constantes por puesto de trabajo; base 2005=1",
+    subtitle = "VAB a precios constantes por puesto de trabajo; comparación entre precios básicos estimados y precios productor",
     y = "Índice 2005=1",
     caption = source_caption
   ) +
@@ -842,10 +932,26 @@ figures <- c(
   save_plot(fig_05, figure_files[[7]], width = 11, height = 8),
   save_plot(fig_06, figure_files[[8]], width = 10, height = 7),
   save_plot(fig_07, figure_files[[9]], width = 10, height = 8),
-  save_plot(fig_08, figure_files[[10]], width = 10, height = 6),
+  save_plot(fig_08, figure_files[[10]], width = 10, height = 7),
   save_plot(fig_09, figure_files[[11]], width = 10, height = 7),
   save_plot(fig_10, figure_files[[12]], width = 12, height = 13)
 )
+
+stock_table <- stock_comparison %>%
+  transmute(
+    `año` = as.character(anno),
+    `CIU USD corr.` = format_one_decimal(stock_ciu_mill_usd_corriente),
+    `CIU ind.` = format_one_decimal(stock_ciu_indice_dic_2008_100),
+    `EAAE USD corr.` =
+      format_one_decimal(stock_eaae_maquinaria_equipos_sin_refinacion_mill_usd_corriente),
+    `EAAE USD const. proxy` =
+      format_one_decimal(stock_eaae_maquinaria_equipos_sin_refinacion_mill_usd_constante_2005_proxy),
+    `EAAE ind.` =
+      format_one_decimal(stock_eaae_maquinaria_equipos_sin_refinacion_indice_2008_100),
+    `EAAE/CIU USD %` =
+      format_one_decimal(ratio_eaae_ciu_stock_usd_corriente_pct)
+  ) %>%
+  markdown_table()
 
 report_lines <- c(
   "# Resultados EAAE-BCU: tasa de ganancia en tres niveles",
@@ -876,13 +982,13 @@ report_lines <- c(
   "",
   fig_md("Representatividad de la manufactura depurada", figure_files[[2]]),
   "",
-  "A continuación se presenta una comparación entre la tasa de ganancia calculada a partir de eaae y aquella calculada a partir de cuentas nacionales por Gabriel Oyanthabal. Esto con el fin de complementar la evaluación de representatividad de los cálculos hechos a partir de eaae.",
+  "A continuación se presenta una comparación entre la tasa de ganancia calculada a partir de EAAE y aquella calculada a partir de cuentas nacionales por Gabriel Oyanthabal. Las tasas se muestran en escala porcentual, sin dividir una serie por la otra, con el fin de complementar la evaluación de representatividad de los cálculos hechos a partir de EAAE.",
   "",
   fig_md("Tasa de ganancia EAAE frente a Oyanthabal", figure_files[[3]]),
   "",
   "### 2. Tasa de ganancia",
   "",
-  "La comparación principal incorpora tres niveles: economía total, manufactura total y manufactura depurada. La manufactura depurada permite observar cuánto cambia la trayectoria al retirar los grupos con comportamiento más singular dentro de la rama industrial.",
+  "La comparación principal incorpora tres niveles: economía total, manufactura total y manufactura depurada. La línea punteada marca, en cada panel, el promedio temporal de la industria manufacturera total. La manufactura depurada permite observar cuánto cambia la trayectoria al retirar los grupos con comportamiento más singular dentro de la rama industrial.",
   "",
   fig_md("Tasa de ganancia en tres niveles", figure_files[[4]]),
   "",
@@ -922,7 +1028,7 @@ report_lines <- c(
   "",
   "### 8. Productividad del trabajo",
   "",
-  "La productividad se calcula como VAB a precios constantes por puesto de trabajo. Se mantienen las tres líneas agregadas para comparar economía total, manufactura total y manufactura depurada.",
+  "La productividad se calcula como VAB a precios constantes por puesto de trabajo. Se muestran dos paneles comparables: uno usa VAB a precios básicos estimado y el otro VAB a precios productor. En ambos casos se mantienen las tres líneas agregadas para comparar economía total, manufactura total y manufactura depurada.",
   "",
   fig_md("Productividad del trabajo", figure_files[[10]]),
   "",
@@ -941,6 +1047,12 @@ report_lines <- c(
   "En el panel de papel, impresión y reproducción, la serie a precios básicos también está incluida. Su trayectoria se superpone casi exactamente con la de precios productor, por lo que el gráfico distingue ambas mediante tipo de línea: precios básicos en línea continua y precios productor en línea punteada.",
   "",
   fig_md("Tasa de ganancia a diferentes niveles de desagregación", figure_files[[12]]),
+  "",
+  "### 11. Comparación del stock de capital industrial EAAE-CIU",
+  "",
+  "La comparación toma como referencia el stock de capital fijo en maquinaria y equipos de la industria publicado por CIU, cuya cobertura excluye refinería ANCAP y empresas de zonas francas. Para aproximar una frontera comparable desde EAAE, se extrae directamente la columna de maquinaria y equipos de los cuadros originales de activos fijos y se resta la maquinaria y equipos de la actividad de refinación (`23` en CIIU Rev.3 y `19_refinacion` en CIIU Rev.4). No se utiliza la operación `stock total - construcciones`, porque esa alternativa conservaría dentro del agregado otros activos e intangibles. La serie EAAE en pesos corrientes se convierte a dólares con el tipo de cambio venta de INE-BROU correspondiente al último valor disponible de diciembre de cada año. Luego se deflacta con un proxy BCU construido como deflactor implícito del VAB de subramas industriales excluyendo refinación, base 2005=1, y se expresa como índice 2008=100. El equipo debe leer esta deflactación como aproximación sectorial, no como deflactor específico de bienes de capital. Los años 2002 y 2011 quedan sin dato EAAE porque no existe cuadro de activos fijos por tipo y no se imputa la composición maquinaria/equipos para este ejercicio.",
+  "",
+  stock_table,
   "",
   "## Reproducción",
   "",

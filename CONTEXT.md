@@ -159,10 +159,11 @@ Ese script descarga la fuente si no existe localmente y exporta
 contiene 25 filas para 2000-2024; `tg_total_b` queda faltante en 2024 y
 `tg_no_agrario_b` queda faltante en 2022-2024, tal como figura en el XLSX
 descargado. En la minuta visual de tres niveles se usa esta fuente para
-comparar cocientes: `tasa_ganancia_pb` de EAAE economía total dividida por
-`tg_total_b`, y `tasa_ganancia_pb` de EAAE industria manufacturera total
-dividida por `tg_no_agrario_b`. El gráfico conserva sólo años con ambos datos
-disponibles: 2001-2023 para economía total y 2001-2021 para manufactura.
+comparar tasas en escala porcentual, no cocientes: `tasa_ganancia_pb` de EAAE
+economía total frente a `tg_total_b`, y `tasa_ganancia_pb` de EAAE industria
+manufacturera total frente a `tg_no_agrario_b`. El gráfico conserva sólo años
+con ambos datos disponibles: 2001-2023 para economía total y 2001-2021 para
+manufactura.
 
 **FUENTE CIU — STOCK DE CAPITAL INDUSTRIAL — Agosto 2026:** se incorpora una
 nueva fuente primaria online de la CIU sobre stock de capital fijo en maquinaria
@@ -296,8 +297,8 @@ Artefactos:
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
 | `data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo derivado del panel 20260727; agrega el filtro operativo `industria-sin-papel-coque-refinacion` en todas las hojas. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
-| `docs/20260805_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados y comparación contra Oyanthabal. |
-| `output/figures/eaae_bcu_tres_niveles_20260805/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260805. |
+| `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
+| `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
 | `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md` | Informe visual EAAE/Oyanthabal para economía total e industria, con prefijo de fecha de elaboración. |
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
 
@@ -408,14 +409,20 @@ Decisiones del panel integrado:
   el libro largo EAAE-BCU y agrega una sección específica para subramas
   industriales. Las figuras se guardan en
   `output/figures/eaae_bcu_total_industria_subrama/`.
-- **ACTUALIZACIÓN 2026-08-05:** la minuta visual de tres niveles se renombra y
-  actualiza como `docs/20260805_resultados_eaae_bcu_tres_niveles.md`, con
-  figuras en `output/figures/eaae_bcu_tres_niveles_20260805/`. El informe
+- **ACTUALIZACIÓN 2026-08-06:** la minuta visual de tres niveles se renombra y
+  actualiza como `docs/20260806_resultados_eaae_bcu_tres_niveles.md`, con
+  figuras en `output/figures/eaae_bcu_tres_niveles_20260806/`. El informe
   declara que todos los resultados construidos provienen de EAAE y que los
   índices de precios de BCU se usan para deflactar valores corrientes. Todas
   las figuras reportan como fuente: "Elaboración propia en base a EAAE.
   Índices de precios extraídos de BCU.", salvo la comparación con Oyanthabal,
-  que agrega esa fuente explícitamente. La actualización incorpora el gráfico
+  que agrega esa fuente explícitamente. La comparación EAAE/Oyanthabal grafica
+  tasas en escala porcentual, sin dividir las series. En el gráfico de tasa de
+  ganancia en tres niveles se agrega una línea punteada con el promedio de la
+  industria manufacturera en cada panel. El gráfico de productividad del
+  trabajo se divide en dos paneles: `vab_pb_estimado / puestos_trabajo` y
+  `vab_pp / puestos_trabajo`, ambos en precios constantes e índice 2005=1. La
+  actualización mantiene el gráfico
   de representatividad de manufactura depurada, la comparación de tasas de
   ganancia EAAE/Oyanthabal, etiquetas de quiebres en tasas de ganancia,
   inversión diferenciada entre manufactura total y depurada, y un anexo con
@@ -1664,6 +1671,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Importación de fuente online CIU `ciu_stock_capital_1988_2025.xlsx` y creación de `ciu_stock_capital_industria_1988_2025.csv` con stock industrial anual 1988-2025, usando serie anual hasta 2011 y diciembre de la serie trimestral desde 2012 | ✓ |
 | Aug 2026 | Importación de fuente INE-UY `Cotización monedas.xlsx` y creación de `20260805_ine_uy_tipo_cambio_dolar_diciembre.csv` con último valor disponible de diciembre para `Dólar.USA.Compra` y `Dólar.USA.Venta` | ✓ |
 | Aug 2026 | Creación de `20260805_comparacion_stock_capital_eaae_ciu.csv`: comparación EAAE-CIU de stock industrial de maquinaria/equipos sin refinería, convertido con dólar venta INE, deflactado con proxy BCU e indexado 2008=100 | ✓ |
+| Aug 2026 | Actualización de minuta visual `20260806_resultados_eaae_bcu_tres_niveles.md`: comparación EAAE/Oyanthabal en tasas porcentuales, promedio manufacturero punteado en tasa de ganancia y productividad con VAB pb estimado y VAB pp | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
