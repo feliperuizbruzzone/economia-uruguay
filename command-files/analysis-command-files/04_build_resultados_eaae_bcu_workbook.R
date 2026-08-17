@@ -102,38 +102,21 @@ build_current_results <- function(eaae) {
     mutate(
       costo_laboral = coalesce(costo_laboral, remuneraciones),
       consumo_intermedio = coalesce(consumo_intermedio, vbp_pp - vab_pp),
-      ganancia_pb = coalesce(
-        ganancia_pb,
-        vab_pb_estimado - consumo_capital_fijo - costo_laboral
-      ),
-      ganancia_pp = coalesce(
-        ganancia_pp,
-        vab_pp - consumo_capital_fijo - costo_laboral
-      ),
-      capital_variable_adelantado = coalesce(
-        capital_variable_adelantado,
-        remuneraciones / rotacion_calibrada_sobre_6_6
-      ),
-      capital_circulante_constante_adelantado = coalesce(
-        capital_circulante_constante_adelantado,
-        consumo_intermedio_estimado / rotacion_calibrada_sobre_6_6
-      ),
-      capital_circulante_adelantado = coalesce(
-        capital_circulante_adelantado,
-        (costo_laboral + consumo_intermedio) / rotacion_calibrada_sobre_6_6
-      ),
-      capital_total_adelantado = coalesce(
-        capital_total_adelantado,
-        stock_capital_imputado + capital_circulante_adelantado
-      ),
-      tasa_ganancia_pb = coalesce(
-        tasa_ganancia_pb,
-        safe_divide(ganancia_pb, capital_total_adelantado)
-      ),
-      tasa_ganancia_pp = coalesce(
-        tasa_ganancia_pp,
-        safe_divide(ganancia_pp, capital_total_adelantado)
-      ),
+      # DECISION: Recompute profit-rate components from the current panel inputs
+      # and the operative rotation. This avoids carrying stale capital-advanced
+      # and profit-rate columns when `rotacion_calibrada_sobre_6_6` changes.
+      ganancia_pb = vab_pb_estimado - consumo_capital_fijo - costo_laboral,
+      ganancia_pp = vab_pp - consumo_capital_fijo - costo_laboral,
+      capital_variable_adelantado =
+        safe_divide(remuneraciones, rotacion_calibrada_sobre_6_6),
+      capital_circulante_constante_adelantado =
+        safe_divide(consumo_intermedio_estimado, rotacion_calibrada_sobre_6_6),
+      capital_circulante_adelantado =
+        safe_divide(costo_laboral + consumo_intermedio, rotacion_calibrada_sobre_6_6),
+      capital_total_adelantado =
+        stock_capital_imputado + capital_circulante_adelantado,
+      tasa_ganancia_pb = safe_divide(ganancia_pb, capital_total_adelantado),
+      tasa_ganancia_pp = safe_divide(ganancia_pp, capital_total_adelantado),
       vab_eaae_bcu_pct = safe_divide(vab_pp, vab_bcu_corriente) * 100,
       vab_pp_participacion_total =
         safe_divide(vab_pp, vab_total_economia),
@@ -192,6 +175,292 @@ build_current_results <- function(eaae) {
       part_salarial
     ) %>%
     arrange(seccion, anno)
+}
+
+first_non_missing <- function(x) {
+  values <- x[!is.na(x)]
+  if (length(values) == 0) {
+    return(NA_real_)
+  }
+  as.numeric(values[[1]])
+}
+
+build_devaluation_effects <- function(eaae, current_results) {
+  industry_base <- current_results %>%
+    filter(seccion == "industria-total") %>%
+    transmute(
+      anno,
+      seccion,
+      nivel_panel,
+      grupo_rev4_homologado,
+      descripcion_nivel,
+      rotacion_calibrada_sobre_6_6,
+      consumo_intermedio,
+      remuneraciones,
+      costo_laboral,
+      stock_capital_imputado,
+      capital_circulante_adelantado,
+      capital_total_adelantado,
+      ganancia_pb,
+      ganancia_pp,
+      tasa_ganancia_pb,
+      tasa_ganancia_pp
+    )
+
+  industry_inputs <- eaae %>%
+    filter(seccion == "industria-total") %>%
+    transmute(
+      anno,
+      exportaciones_manufactura_eaae_95_miles_usd =
+        as.numeric(exportaciones_manufactura_eaae_95_miles_usd),
+      tipo_cambio_comercial_pesos_usd =
+        as.numeric(tipo_cambio_comercial_pesos_usd),
+      tipo_cambio_paridad_pesos_usd =
+        as.numeric(tipo_cambio_paridad_pesos_usd),
+      prop_importado_consumo_intermedio =
+        as.numeric(prop_importado_consumo_intermedio)
+    )
+
+  subrama_inputs <- eaae %>%
+    filter(nivel_panel == "subrama_industrial") %>%
+    group_by(anno) %>%
+    summarise(
+      n_valores_intereses = n_distinct(
+        na.omit(intereses_industria_eaae_ajuste_90_mill_usd)
+      ),
+      intereses_industria_eaae_ajuste_90_mill_usd =
+        first_non_missing(intereses_industria_eaae_ajuste_90_mill_usd),
+      n_valores_prop_consumo_obrero = n_distinct(
+        na.omit(prop_consumo_obrero_importado)
+      ),
+      prop_consumo_obrero_importado =
+        first_non_missing(prop_consumo_obrero_importado),
+      .groups = "drop"
+    )
+
+  industry_base %>%
+    left_join(industry_inputs, by = "anno") %>%
+    left_join(subrama_inputs, by = "anno") %>%
+    mutate(
+      # DECISION: This sheet is a partial-equilibrium accounting scenario in
+      # current pesos. It compares the commercial exchange rate against the
+      # parity exchange rate and translates the differential into industrial
+      # export revenues, imported intermediate inputs, USD-denominated interest
+      # payments, and the imported share of workers' consumption basket.
+      factor_devaluacion =
+        safe_divide(tipo_cambio_paridad_pesos_usd, tipo_cambio_comercial_pesos_usd),
+      exportaciones_tcc_pesos =
+        exportaciones_manufactura_eaae_95_miles_usd *
+          tipo_cambio_comercial_pesos_usd * 1000,
+      exportaciones_tcp_pesos =
+        exportaciones_manufactura_eaae_95_miles_usd *
+          tipo_cambio_paridad_pesos_usd * 1000,
+      efecto_exportaciones_pesos =
+        exportaciones_tcp_pesos - exportaciones_tcc_pesos,
+      efecto_exportaciones_pct =
+        safe_divide(efecto_exportaciones_pesos, exportaciones_tcc_pesos) * 100,
+      consumo_intermedio_importado_pesos =
+        consumo_intermedio * prop_importado_consumo_intermedio,
+      consumo_intermedio_no_importado_pesos =
+        consumo_intermedio - consumo_intermedio_importado_pesos,
+      consumo_intermedio_devaluacion_pesos =
+        consumo_intermedio_no_importado_pesos +
+          consumo_intermedio_importado_pesos * factor_devaluacion,
+      efecto_consumo_intermedio_pesos =
+        consumo_intermedio_devaluacion_pesos - consumo_intermedio,
+      efecto_consumo_intermedio_sobre_total_pct =
+        safe_divide(efecto_consumo_intermedio_pesos, consumo_intermedio) * 100,
+      efecto_consumo_intermedio_importado_pct =
+        safe_divide(
+          efecto_consumo_intermedio_pesos,
+          consumo_intermedio_importado_pesos
+        ) * 100,
+      intereses_tcc_pesos =
+        intereses_industria_eaae_ajuste_90_mill_usd *
+          tipo_cambio_comercial_pesos_usd * 1000000,
+      intereses_tcp_pesos =
+        intereses_industria_eaae_ajuste_90_mill_usd *
+          tipo_cambio_paridad_pesos_usd * 1000000,
+      efecto_intereses_pesos = intereses_tcp_pesos - intereses_tcc_pesos,
+      efecto_intereses_pct =
+        safe_divide(efecto_intereses_pesos, intereses_tcc_pesos) * 100,
+      factor_canasta_obrera =
+        (1 - prop_consumo_obrero_importado) +
+          prop_consumo_obrero_importado * factor_devaluacion,
+      remuneraciones_reales_post_devaluacion =
+        safe_divide(remuneraciones, factor_canasta_obrera),
+      perdida_salarial_real_pesos =
+        remuneraciones - remuneraciones_reales_post_devaluacion,
+      perdida_salarial_real_pct =
+        safe_divide(perdida_salarial_real_pesos, remuneraciones) * 100,
+      remuneraciones_compensadas_devaluacion =
+        remuneraciones * factor_canasta_obrera,
+      efecto_salario_compensado_pesos =
+        remuneraciones_compensadas_devaluacion - remuneraciones,
+      efecto_salario_compensado_pct =
+        safe_divide(efecto_salario_compensado_pesos, remuneraciones) * 100,
+      efecto_neto_operativo_sin_intereses_pesos =
+        efecto_exportaciones_pesos - efecto_consumo_intermedio_pesos,
+      efecto_neto_operativo_salario_compensado_sin_intereses_pesos =
+        efecto_neto_operativo_sin_intereses_pesos -
+          efecto_salario_compensado_pesos,
+      efecto_neto_capital_salario_fijo_pesos =
+        efecto_exportaciones_pesos -
+          efecto_consumo_intermedio_pesos -
+          efecto_intereses_pesos,
+      efecto_neto_capital_salario_compensado_pesos =
+        efecto_neto_capital_salario_fijo_pesos -
+          efecto_salario_compensado_pesos,
+      ganancia_pb_devaluacion_salario_fijo =
+        ganancia_pb + efecto_neto_capital_salario_fijo_pesos,
+      ganancia_pp_devaluacion_salario_fijo =
+        ganancia_pp + efecto_neto_capital_salario_fijo_pesos,
+      ganancia_pb_devaluacion_salario_compensado =
+        ganancia_pb + efecto_neto_capital_salario_compensado_pesos,
+      ganancia_pp_devaluacion_salario_compensado =
+        ganancia_pp + efecto_neto_capital_salario_compensado_pesos,
+      efecto_ganancia_pb_salario_fijo_pesos =
+        ganancia_pb_devaluacion_salario_fijo - ganancia_pb,
+      efecto_ganancia_pp_salario_fijo_pesos =
+        ganancia_pp_devaluacion_salario_fijo - ganancia_pp,
+      efecto_ganancia_pb_salario_compensado_pesos =
+        ganancia_pb_devaluacion_salario_compensado - ganancia_pb,
+      efecto_ganancia_pp_salario_compensado_pesos =
+        ganancia_pp_devaluacion_salario_compensado - ganancia_pp,
+      efecto_ganancia_pb_salario_fijo_pct =
+        safe_divide(efecto_ganancia_pb_salario_fijo_pesos, ganancia_pb) * 100,
+      efecto_ganancia_pp_salario_fijo_pct =
+        safe_divide(efecto_ganancia_pp_salario_fijo_pesos, ganancia_pp) * 100,
+      efecto_ganancia_pb_salario_compensado_pct =
+        safe_divide(efecto_ganancia_pb_salario_compensado_pesos, ganancia_pb) * 100,
+      efecto_ganancia_pp_salario_compensado_pct =
+        safe_divide(efecto_ganancia_pp_salario_compensado_pesos, ganancia_pp) * 100,
+      capital_circulante_devaluacion_salario_fijo =
+        safe_divide(
+          costo_laboral + consumo_intermedio_devaluacion_pesos,
+          rotacion_calibrada_sobre_6_6
+        ),
+      capital_total_devaluacion_salario_fijo =
+        stock_capital_imputado + capital_circulante_devaluacion_salario_fijo,
+      tasa_ganancia_pb_devaluacion_salario_fijo =
+        safe_divide(
+          ganancia_pb_devaluacion_salario_fijo,
+          capital_total_devaluacion_salario_fijo
+        ),
+      tasa_ganancia_pp_devaluacion_salario_fijo =
+        safe_divide(
+          ganancia_pp_devaluacion_salario_fijo,
+          capital_total_devaluacion_salario_fijo
+        ),
+      capital_circulante_devaluacion_salario_compensado =
+        safe_divide(
+          remuneraciones_compensadas_devaluacion +
+            consumo_intermedio_devaluacion_pesos,
+          rotacion_calibrada_sobre_6_6
+        ),
+      capital_total_devaluacion_salario_compensado =
+        stock_capital_imputado +
+          capital_circulante_devaluacion_salario_compensado,
+      tasa_ganancia_pb_devaluacion_salario_compensado =
+        safe_divide(
+          ganancia_pb_devaluacion_salario_compensado,
+          capital_total_devaluacion_salario_compensado
+        ),
+      tasa_ganancia_pp_devaluacion_salario_compensado =
+        safe_divide(
+          ganancia_pp_devaluacion_salario_compensado,
+          capital_total_devaluacion_salario_compensado
+        ),
+      variacion_tasa_ganancia_pb_salario_fijo_pp =
+        (tasa_ganancia_pb_devaluacion_salario_fijo - tasa_ganancia_pb) * 100,
+      variacion_tasa_ganancia_pp_salario_fijo_pp =
+        (tasa_ganancia_pp_devaluacion_salario_fijo - tasa_ganancia_pp) * 100,
+      variacion_tasa_ganancia_pb_salario_compensado_pp =
+        (tasa_ganancia_pb_devaluacion_salario_compensado - tasa_ganancia_pb) * 100,
+      variacion_tasa_ganancia_pp_salario_compensado_pp =
+        (tasa_ganancia_pp_devaluacion_salario_compensado - tasa_ganancia_pp) * 100,
+      calidad_resultado_devaluacion = if_else(
+        is.na(intereses_industria_eaae_ajuste_90_mill_usd),
+        "parcial_sin_intereses_2001_2005",
+        "completo_con_intereses"
+      )
+    ) %>%
+    select(
+      anno,
+      seccion,
+      nivel_panel,
+      grupo_rev4_homologado,
+      descripcion_nivel,
+      calidad_resultado_devaluacion,
+      rotacion_calibrada_sobre_6_6,
+      tipo_cambio_comercial_pesos_usd,
+      tipo_cambio_paridad_pesos_usd,
+      factor_devaluacion,
+      exportaciones_manufactura_eaae_95_miles_usd,
+      exportaciones_tcc_pesos,
+      exportaciones_tcp_pesos,
+      efecto_exportaciones_pesos,
+      efecto_exportaciones_pct,
+      consumo_intermedio,
+      prop_importado_consumo_intermedio,
+      consumo_intermedio_importado_pesos,
+      consumo_intermedio_devaluacion_pesos,
+      efecto_consumo_intermedio_pesos,
+      efecto_consumo_intermedio_sobre_total_pct,
+      efecto_consumo_intermedio_importado_pct,
+      intereses_industria_eaae_ajuste_90_mill_usd,
+      intereses_tcc_pesos,
+      intereses_tcp_pesos,
+      efecto_intereses_pesos,
+      efecto_intereses_pct,
+      remuneraciones,
+      prop_consumo_obrero_importado,
+      factor_canasta_obrera,
+      remuneraciones_reales_post_devaluacion,
+      perdida_salarial_real_pesos,
+      perdida_salarial_real_pct,
+      remuneraciones_compensadas_devaluacion,
+      efecto_salario_compensado_pesos,
+      efecto_salario_compensado_pct,
+      stock_capital_imputado,
+      capital_circulante_adelantado,
+      capital_total_adelantado,
+      ganancia_pb,
+      ganancia_pp,
+      tasa_ganancia_pb,
+      tasa_ganancia_pp,
+      efecto_neto_operativo_sin_intereses_pesos,
+      efecto_neto_operativo_salario_compensado_sin_intereses_pesos,
+      efecto_neto_capital_salario_fijo_pesos,
+      efecto_neto_capital_salario_compensado_pesos,
+      ganancia_pb_devaluacion_salario_fijo,
+      ganancia_pp_devaluacion_salario_fijo,
+      ganancia_pb_devaluacion_salario_compensado,
+      ganancia_pp_devaluacion_salario_compensado,
+      efecto_ganancia_pb_salario_fijo_pesos,
+      efecto_ganancia_pp_salario_fijo_pesos,
+      efecto_ganancia_pb_salario_compensado_pesos,
+      efecto_ganancia_pp_salario_compensado_pesos,
+      efecto_ganancia_pb_salario_fijo_pct,
+      efecto_ganancia_pp_salario_fijo_pct,
+      efecto_ganancia_pb_salario_compensado_pct,
+      efecto_ganancia_pp_salario_compensado_pct,
+      capital_circulante_devaluacion_salario_fijo,
+      capital_total_devaluacion_salario_fijo,
+      tasa_ganancia_pb_devaluacion_salario_fijo,
+      tasa_ganancia_pp_devaluacion_salario_fijo,
+      variacion_tasa_ganancia_pb_salario_fijo_pp,
+      variacion_tasa_ganancia_pp_salario_fijo_pp,
+      capital_circulante_devaluacion_salario_compensado,
+      capital_total_devaluacion_salario_compensado,
+      tasa_ganancia_pb_devaluacion_salario_compensado,
+      tasa_ganancia_pp_devaluacion_salario_compensado,
+      variacion_tasa_ganancia_pb_salario_compensado_pp,
+      variacion_tasa_ganancia_pp_salario_compensado_pp,
+      n_valores_intereses,
+      n_valores_prop_consumo_obrero
+    ) %>%
+    arrange(anno)
 }
 
 deflate_current_results <- function(current_results) {
@@ -388,6 +657,7 @@ build_indices_2005 <- function(variation_results, base_year = 2005) {
 build_methodology_sheet <- function(
     eaae,
     results_cols,
+    devaluation_cols,
     constant_cols,
     var_cols,
     index_cols,
@@ -399,6 +669,7 @@ build_methodology_sheet <- function(
     "estructura_libro", "eaae", "hoja", "Panel base", "Panel integrado EAAE-BCU completo: economía total, industria agregada, industria excluyendo papel/coque/refinación y subramas industriales en formato largo.", paste0("data/analysis-data/", source_panel_name, "."),
     "estructura_libro", "check-calidad", "hoja", "Validación", "Controles tipo libro EAAE 20260605 para cada año y sección operativa.", "vab/vbp, remuneraciones/vab, stock/vab y banderas de consistencia.",
     "estructura_libro", "resultados-corrientes", "hoja", "Resultados", "Insumos y cálculos propios en valores corrientes para todos los niveles.", "Cálculos desde la hoja eaae.",
+    "estructura_libro", "efecto-devaluacion-corrientes", "hoja", "Escenario", "Simulación contable anual para industria total del efecto de pasar del tipo de cambio comercial al tipo de cambio de paridad.", "Exportaciones, intereses, consumo intermedio importado y consumo obrero importado; valores corrientes.",
     "estructura_libro", "resultados-constantes", "hoja", "Resultados", "Resultados corrientes expresados en precios constantes de 2005.", "Deflactación con deflactor BCU empalmado base 2005.",
     "estructura_libro", "resultados-var-pct", "hoja", "Resultados", "Variación porcentual interanual de los resultados constantes.", "(x[t] / x[t-1] - 1) * 100 por seccion.",
     "estructura_libro", "resultados-ind-2005", "hoja", "Resultados", "Índices encadenados con base 2005=1.", "Encadenamiento por seccion desde las variaciones interanuales.",
@@ -408,7 +679,7 @@ build_methodology_sheet <- function(
     "diccionario_variables", "grupo_rev4_homologado", "identificador", "Todas las hojas", "Grupo industrial homologado Rev.4 compatible para subramas.", "Codiguera de homologación EAAE.",
     "diccionario_variables", "descripcion_nivel", "identificador", "Todas las hojas", "Etiqueta legible del nivel o subrama.", "Panel integrado.",
     "diccionario_variables", "seccion_fuente_panel", "trazabilidad", "eaae", "Sección tal como viene en el CSV integrado antes de crear el filtro operativo del libro.", "En subramas conserva C.",
-    "diccionario_variables", "rotacion_calibrada_sobre_6_6", "parámetro", "eaae y resultados", "Rotación operativa usada para capital adelantado y tasas de ganancia.", "Archivo Damodaran/EAAE, hoja Resumen; constante por nivel/subrama.",
+    "diccionario_variables", "rotacion_calibrada_sobre_6_6", "parámetro", "eaae y resultados", "Rotación operativa usada para capital adelantado y tasas de ganancia.", "Promedio recortado desde la revisión Mussi de microdatos EAAE; constante por nivel/subrama en el panel integrado.",
     "diccionario_variables", "deflactor_2005", "deflactor", "eaae y resultados", "Deflactor BCU empalmado base 2005=1.", "Índice implícito de VAB BCU compatible por nivel/subrama.",
     "diccionario_variables", "vbp_pp", "original_transformada", "Resultados", "Valor bruto de producción a precios productor.", "EAAE; en constantes se divide por deflactor_2005.",
     "diccionario_variables", "vab_pp", "original_transformada", "Resultados", "Valor agregado bruto a precios productor.", "EAAE; en constantes se divide por deflactor_2005.",
@@ -434,6 +705,18 @@ build_methodology_sheet <- function(
     "diccionario_variables", "capital_total_adelantado", "calculada_resultados", "Resultados", "Capital total adelantado.", "stock_capital_imputado + capital_circulante_adelantado.",
     "diccionario_variables", "tasa_ganancia_pb", "calculada_resultados", "Resultados", "Tasa de ganancia a precios básicos.", "ganancia_pb / capital_total_adelantado.",
     "diccionario_variables", "tasa_ganancia_pp", "calculada_resultados", "Resultados", "Tasa de ganancia a precios productor.", "ganancia_pp / capital_total_adelantado.",
+    "diccionario_variables", "tipo_cambio_comercial_pesos_usd", "insumo_escenario", "efecto-devaluacion-corrientes", "Tipo de cambio comercial observado en pesos por dólar.", "Fuente Mussi, hoja Eventual devaluación.",
+    "diccionario_variables", "tipo_cambio_paridad_pesos_usd", "insumo_escenario", "efecto-devaluacion-corrientes", "Tipo de cambio de paridad usado como escenario de devaluación.", "Fuente Mussi, hoja Eventual devaluación.",
+    "diccionario_variables", "factor_devaluacion", "calculada_escenario", "efecto-devaluacion-corrientes", "Relación entre tipo de cambio de paridad y comercial.", "tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd.",
+    "diccionario_variables", "efecto_exportaciones_pesos", "calculada_escenario", "efecto-devaluacion-corrientes", "Incremento o disminución de ingresos exportadores industriales por valorar exportaciones al tipo de cambio de paridad.", "exportaciones_tcp_pesos - exportaciones_tcc_pesos.",
+    "diccionario_variables", "efecto_consumo_intermedio_pesos", "calculada_escenario", "efecto-devaluacion-corrientes", "Incremento o disminución del costo del consumo intermedio por su proporción importada.", "consumo_intermedio * prop_importado_consumo_intermedio * (factor_devaluacion - 1).",
+    "diccionario_variables", "efecto_intereses_pesos", "calculada_escenario", "efecto-devaluacion-corrientes", "Incremento o disminución de intereses industriales en pesos por valorar intereses en dólares al tipo de cambio de paridad.", "intereses_tcp_pesos - intereses_tcc_pesos; NA en 2001-2005 por ausencia de dato fuente.",
+    "diccionario_variables", "perdida_salarial_real_pesos", "calculada_escenario", "efecto-devaluacion-corrientes", "Pérdida equivalente de poder de compra salarial si la masa salarial nominal no se ajusta.", "remuneraciones - remuneraciones / factor_canasta_obrera.",
+    "diccionario_variables", "efecto_salario_compensado_pesos", "calculada_escenario", "efecto-devaluacion-corrientes", "Aumento de masa salarial necesario para preservar poder de compra ante encarecimiento de la canasta obrera importada.", "remuneraciones * factor_canasta_obrera - remuneraciones.",
+    "diccionario_variables", "ganancia_pb_devaluacion_salario_fijo", "calculada_escenario", "efecto-devaluacion-corrientes", "Ganancia a precios básicos luego de exportaciones, consumo intermedio e intereses con salario nominal fijo.", "ganancia_pb + efecto_exportaciones_pesos - efecto_consumo_intermedio_pesos - efecto_intereses_pesos.",
+    "diccionario_variables", "ganancia_pb_devaluacion_salario_compensado", "calculada_escenario", "efecto-devaluacion-corrientes", "Ganancia a precios básicos luego de devaluación y recomposición salarial compensatoria.", "ganancia_pb_devaluacion_salario_fijo - efecto_salario_compensado_pesos.",
+    "diccionario_variables", "variacion_tasa_ganancia_pb_salario_fijo_pp", "calculada_escenario", "efecto-devaluacion-corrientes", "Variación en puntos porcentuales de la tasa de ganancia pb bajo salario nominal fijo.", "(tasa_ganancia_pb_devaluacion_salario_fijo - tasa_ganancia_pb) * 100.",
+    "diccionario_variables", "variacion_tasa_ganancia_pb_salario_compensado_pp", "calculada_escenario", "efecto-devaluacion-corrientes", "Variación en puntos porcentuales de la tasa de ganancia pb con salario compensado.", "(tasa_ganancia_pb_devaluacion_salario_compensado - tasa_ganancia_pb) * 100.",
     "diccionario_variables", "productividad_trabajo", "calculada_resultados", "resultados-constantes y derivados", "Productividad del trabajo en precios constantes.", "vab_pp constante / puestos_trabajo.",
     "diccionario_variables", "vab_pp_participacion_total", "calculada_resultados", "Resultados", "Participación del VAB de la sección en la economía total.", "vab_pp / vab_total_economia.",
     "diccionario_variables", "vab_pp_participacion_industria", "calculada_resultados", "Resultados", "Participación del VAB de cada subrama en la industria manufacturera.", "vab_pp / vab_total_industria para subramas.",
@@ -451,7 +734,7 @@ build_methodology_sheet <- function(
   )
   result_columns <- tibble(
     seccion_contenido = "columnas_resultados",
-    nombre = unique(c(results_cols, constant_cols, var_cols, index_cols)),
+    nombre = unique(c(results_cols, devaluation_cols, constant_cols, var_cols, index_cols)),
     tipo = "columna",
     aplica_en = "Hojas resultados",
     definicion = "Columna disponible en las hojas de resultados del libro.",
@@ -732,7 +1015,11 @@ write_xlsx_workbook <- function(path, sheets) {
   utils::zip(zipfile = output_path, files = files, flags = "-r9Xq")
 }
 
-validate_workbook_inputs <- function(eaae, current_results, constant_results) {
+validate_workbook_inputs <- function(
+    eaae,
+    current_results,
+    constant_results,
+    devaluation_effects) {
   if (nrow(eaae) != expected_panel_rows) {
     stop("La hoja eaae debe tener ", expected_panel_rows, " filas.")
   }
@@ -748,11 +1035,62 @@ validate_workbook_inputs <- function(eaae, current_results, constant_results) {
   if (any(is.na(eaae$deflactor_2005))) {
     stop("Hay filas sin deflactor_2005.")
   }
+  deflator_base_errors <- eaae %>%
+    filter(anno == 2005L, abs(deflactor_2005 - 1) > 1e-10)
+  if (nrow(deflator_base_errors) > 0) {
+    stop(
+      "Todos los deflactor_2005 deben valer 1 en 2005 antes de construir resultados. Errores: ",
+      paste(
+        capture.output(
+          print(deflator_base_errors %>%
+            select(anno, seccion, nivel_panel, grupo_rev4_homologado, deflactor_2005))
+        ),
+        collapse = " "
+      )
+    )
+  }
   if (
     nrow(current_results) != expected_panel_rows ||
       nrow(constant_results) != expected_panel_rows
   ) {
     stop("Las hojas de resultados deben tener ", expected_panel_rows, " filas.")
+  }
+  if (nrow(devaluation_effects) != 24L) {
+    stop("La hoja efecto-devaluacion-corrientes debe tener 24 filas.")
+  }
+  if (!identical(as.integer(devaluation_effects$anno), 2001:2024)) {
+    stop("La hoja efecto-devaluacion-corrientes debe cubrir 2001-2024.")
+  }
+  required_devaluation_cols <- c(
+    "tipo_cambio_comercial_pesos_usd",
+    "tipo_cambio_paridad_pesos_usd",
+    "factor_devaluacion",
+    "exportaciones_manufactura_eaae_95_miles_usd",
+    "prop_importado_consumo_intermedio",
+    "prop_consumo_obrero_importado",
+    "efecto_exportaciones_pesos",
+    "efecto_consumo_intermedio_pesos",
+    "perdida_salarial_real_pesos",
+    "efecto_salario_compensado_pesos"
+  )
+  missing_required <- devaluation_effects %>%
+    filter(if_any(all_of(required_devaluation_cols), is.na))
+  if (nrow(missing_required) > 0) {
+    stop("Hay faltantes en insumos o efectos no financieros de devaluacion.")
+  }
+  interest_missing_years <- devaluation_effects %>%
+    filter(is.na(intereses_industria_eaae_ajuste_90_mill_usd)) %>%
+    pull(anno)
+  if (!identical(as.integer(interest_missing_years), 2001:2005)) {
+    stop(
+      "Los intereses deben quedar NA solo en 2001-2005. Observado: ",
+      paste(interest_missing_years, collapse = ", ")
+    )
+  }
+  duplicated_inputs <- devaluation_effects %>%
+    filter(n_valores_intereses > 1 | n_valores_prop_consumo_obrero > 1)
+  if (nrow(duplicated_inputs) > 0) {
+    stop("Hay mas de un valor anual para intereses o prop_consumo_obrero_importado.")
   }
 }
 
@@ -761,25 +1099,34 @@ main <- function() {
   eaae <- prepare_eaae_sheet(source_panel)
   check_calidad <- build_quality_checks(eaae)
   resultados_corrientes <- build_current_results(eaae)
+  efecto_devaluacion_corrientes <-
+    build_devaluation_effects(eaae, resultados_corrientes)
   resultados_constantes <- deflate_current_results(resultados_corrientes)
   resultados_var_pct <- build_yearly_variations(resultados_constantes)
   resultados_ind_2005 <- build_indices_2005(resultados_var_pct)
   metodologia <- build_methodology_sheet(
     eaae,
     names(resultados_corrientes),
+    names(efecto_devaluacion_corrientes),
     names(resultados_constantes),
     names(resultados_var_pct),
     names(resultados_ind_2005),
     input_panel_path
   )
 
-  validate_workbook_inputs(eaae, resultados_corrientes, resultados_constantes)
+  validate_workbook_inputs(
+    eaae,
+    resultados_corrientes,
+    resultados_constantes,
+    efecto_devaluacion_corrientes
+  )
 
   sheets <- list(
     "metodología" = metodologia,
     "eaae" = eaae,
     "check-calidad" = check_calidad,
     "resultados-corrientes" = resultados_corrientes,
+    "efecto-devaluacion-corrientes" = efecto_devaluacion_corrientes,
     "resultados-constantes" = resultados_constantes,
     "resultados-var-pct" = resultados_var_pct,
     "resultados-ind-2005" = resultados_ind_2005

@@ -292,15 +292,38 @@ Artefactos:
 | `command-files/analysis-command-files/04_build_resultados_eaae_bcu_workbook.R` | Script reproducible para construir el libro XLSX de resultados largos desde el panel integrado. |
 | `command-files/analysis-command-files/05_visualizar_resultados_eaae_bcu_subrama.R` | Script reproducible para construir el informe visual largo EAAE-BCU con sección adicional de subramas industriales. |
 | `command-files/analysis-command-files/06_visualizar_resultados_eaae_bcu_tres_niveles.R` | Script reproducible para construir la minuta visual de tres niveles agregados y sus figuras fuente. |
+| `command-files/analysis-command-files/07_generar_minuta_devaluacion_sector_industrial.R` | Script reproducible para construir una minuta explicativa y figuras de audiencia amplia sobre el efecto de devaluación en la industria manufacturera. |
+| `command-files/processing-command-files/18_build_rotacion_microdatos_eaae_mussi.R` | Script reproducible ad hoc que procesa la rotación desde microdatos EAAE revisada por Mussi y genera un XLSX metodológico. |
+| `command-files/processing-command-files/19_update_panel_eaae_bcu_rotacion_mussi.R` | Script reproducible ad hoc que toma el XLSX de rotación Mussi y actualiza una nueva versión fechada del panel integrado EAAE-BCU. |
+| `command-files/processing-command-files/20_process_mussi_exportaciones_manufactura.R` | Script reproducible ad hoc que procesa el escenario de exportaciones manufactureras y devaluación desde Mussi. |
+| `command-files/processing-command-files/21_update_panel_eaae_bcu_exportaciones_mussi.R` | Script reproducible ad hoc que anexa al panel integrado 20260814 los insumos de exportaciones corregidas y tipo de cambio. |
+| `command-files/processing-command-files/22_update_panel_eaae_bcu_intereses_mussi.R` | Script reproducible ad hoc que extrae la columna I de `TG PN` y crea una nueva versión del panel integrado con el insumo de intereses industriales EAAE. |
+| `command-files/processing-command-files/23_process_mussi_importado_consumo_intermedio.R` | Script reproducible ad hoc que procesa la proporción importada del consumo intermedio manufacturero desde COU/MIP/microdatos Mussi. |
+| `command-files/processing-command-files/24_update_panel_eaae_bcu_importado_ci_mussi.R` | Script reproducible ad hoc que anexa la proporción importada del consumo intermedio al panel integrado en niveles industriales. |
+| `command-files/processing-command-files/25_process_mussi_consumo_obrero_importado.R` | Script reproducible ad hoc que procesa la proporción importada en la masa salarial desde el cuadro Mussi. |
+| `command-files/processing-command-files/26_update_panel_eaae_bcu_consumo_obrero_mussi.R` | Script reproducible ad hoc que anexa el promedio de consumo obrero importado a filas de subrama industrial del panel integrado. |
+| `command-files/processing-command-files/27_fix_panel_eaae_bcu_deflactores_base2005.R` | Script reproducible ad hoc que corrige el deflactor BCU del agregado industria depurada, reconstruyéndolo desde componentes subramales normalizados a base 2005=1. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
 | `data/analysis-data/20260727_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo derivado del panel 20260727; agrega el filtro operativo `industria-sin-papel-coque-refinacion` en todas las hojas. |
+| `data/analysis-data/20260812-rotacion-microdatos-eaae-mussi.xlsx` | Libro metodológico de rotación por subrama homologada, con hojas `metodología` y `resultados`. |
+| `data/analysis-data/20260812-exportaciones-manufactura-uruguay.csv` | Base anual 2000-2024 con exportaciones manufactureras, ajuste EAAE 95%, tipos de cambio comercial/paridad y cálculos de escenario de devaluación. |
+| `data/analysis-data/20260814_panel_eeae_bcu_total_industria_subrama.csv` | Nueva versión del panel integrado 20260727 con rotaciones subramales Mussi por promedio recortado y recálculo de capital adelantado/tasas dependientes. |
+| `data/analysis-data/20260817_panel_eeae_bcu_total_industria_subrama.csv` | Nueva versión del panel integrado 20260814 con la columna I de `TG PN`, proporción importada del consumo intermedio y proporción importada de consumo obrero anexadas a los niveles industriales pertinentes. |
+| `data/analysis-data/20260817_prop_importado_consumo_intermedio_manufactura.csv` | Serie anual 2000-2025 de proporción importada del consumo intermedio manufacturero, con valores observados y faltantes imputados por promedio. |
+| `data/analysis-data/20260817_prop_consumo_obrero_importado_mussi.csv` | Valores fuente y promedio simple de la proporción importada en la masa salarial desde COU/MIP. |
+| `data/analysis-data/20260817_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados largos regenerado desde el panel 20260817; recalcula capital adelantado y tasas de ganancia con la rotación Mussi vigente. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
 | `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
+| `docs/20260817_resultados_eaae_bcu_tres_niveles.md` | Minuta visual regenerada desde el libro 20260817, con las tasas recalculadas por la rotación Mussi vigente. |
+| `output/figures/eaae_bcu_tres_niveles_20260817/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260817. |
 | `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md` | Informe visual EAAE/Oyanthabal para economía total e industria, con prefijo de fecha de elaboración. |
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
+| `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` | Minuta metodológica sobre la hoja `efecto-devaluacion-corrientes`, con fórmulas, supuestos y calidad de resultados. |
+| `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` | Minuta de lectura para audiencia amplia sobre consecuencias distributivas de una devaluación industrial bajo escenarios de salario fijo y salario compensado. |
+| `output/figures/devaluacion_sector_industrial_20260817/` | Carpeta de figuras PNG respaldadas para la minuta de resultados de devaluación sector industrial. |
 
 Decisiones del panel integrado:
 
@@ -319,6 +342,34 @@ Decisiones del panel integrado:
   La serie principal usa base 1997 normalizada en 2005 para 2001–2005, base
   2005 para 2005–2016 y base 2016 encadenada por variaciones interanuales para
   2017–2024.
+- **DECISIÓN 2026-08-17:** para agregados derivados desde subramas, como
+  `industria_sin_papel_coque_refinacion`, el deflactor BCU se calcula sumando
+  primero los valores constantes base 2005 de las subramas incluidas
+  (`vab_bcu_corriente / deflactor_2005`) y luego dividiendo el VAB corriente
+  agregado por ese total constante. Esta regla evita sumar razones ya
+  agregadas y garantiza que `deflactor_2005 == 1` en 2005 para todos los
+  niveles.
+- **DECISIÓN 2026-08-17:** el libro
+  `20260817_resultados_eaae_bcu_total_industria_subrama.xlsx` incorpora la hoja
+  `efecto-devaluacion-corrientes`, construida desde valores corrientes de
+  `industria-total`. La hoja compara tipo de cambio comercial y tipo de cambio
+  de paridad para estimar efectos contables sobre exportaciones industriales,
+  consumo intermedio importado, intereses industriales en dólares, pérdida
+  salarial real con salario nominal fijo, salario compensado y tasas de
+  ganancia. Los intereses se toman como valor anual único desde filas de
+  subrama industrial y quedan como `NA` en 2001-2005 por ausencia de dato
+  fuente; por eso los escenarios completos de ganancia/tasa que incorporan
+  intereses también quedan parciales en esos años.
+- **ACTUALIZACIÓN 2026-08-17:** se crea
+  `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` mediante
+  `command-files/analysis-command-files/07_generar_minuta_devaluacion_sector_industrial.R`.
+  La minuta traduce la hoja `efecto-devaluacion-corrientes` a una lectura para
+  audiencia amplia, usando tres figuras: puente contable de ganancia en el
+  último año completo, serie de tasa de ganancia a precios básicos bajo
+  escenario base/salario fijo/salario compensado e impactos porcentuales
+  promedio y del último año completo. El anexo técnico mantiene las fórmulas
+  para tipo de cambio, exportaciones, consumo intermedio, intereses,
+  remuneraciones, ganancia y tasa de ganancia.
 - **DECISIÓN 2026-06-29:** en este artefacto integrado, `deflactor_2005`
   replica `deflactor_vab_bcu_2005` para todos los niveles y
   `fuente_deflactor` queda como `bcu_indice_implicito_vab` en todas las filas.
@@ -345,6 +396,111 @@ Decisiones del panel integrado:
   `capital_circulante_adelantado`, `capital_total_adelantado` y las tasas de
   ganancia del panel integrado. La columna genérica `rotacion` deja de
   exportarse en `YYYYMMDD_panel_eeae_bcu_total_industria_subrama.csv`.
+- **DECISIÓN 2026-08-14:** se incorpora una medición alternativa de rotación
+  desde `data/input-data/mussi/20260812-Revision_Rotacion_Capital_Microdatos_EAAE.xlsx`,
+  hoja `Rotacion por subrama y año`. La fuente publica rotación por clase CIIU
+  Rev.4 a cuatro dígitos, año e indicador (`Cap.P` y `Balance`). El
+  procesamiento reduce cada clase a división Rev.4 de dos dígitos y la
+  homologa contra los grupos industriales compatibles del panel mediante
+  `command-files/config/eaae_industria_subramas_rev4_homologacion.csv`.
+  Para cada subrama homologada se privilegia `Balance` cuando existen más de
+  dos observaciones válidas; si no, se usan todos los indicadores disponibles.
+  La rotación operativa subramal se calcula como promedio recortado al 10% por
+  cola (`mean(rotacion, trim = 0.10)`) para limitar el peso de valores
+  extremos. El libro
+  `data/analysis-data/20260812-rotacion-microdatos-eaae-mussi.xlsx` documenta
+  la metodología y expone los resultados compatibles con el panel.
+- La versión `data/analysis-data/20260814_panel_eeae_bcu_total_industria_subrama.csv`
+  se construye como post-proceso reproducible de
+  `20260727_panel_eeae_bcu_total_industria_subrama.csv` mediante
+  `command-files/processing-command-files/19_update_panel_eaae_bcu_rotacion_mussi.R`.
+  En las subramas industriales, la columna existente
+  `rotacion_calibrada_sobre_6_6` se reemplaza por la rotación Mussi de
+  promedio recortado. La economía total conserva el valor 4,2. Para industria
+  manufacturera total y para industria manufacturera depurada de papel/coque/
+  refinación, la rotación se reporta como rotación implícita agregada,
+  calculada desde el capital circulante adelantado resultante de sumar las
+  subramas incluidas. Luego se recalculan
+  `capital_variable_adelantado`,
+  `capital_circulante_constante_adelantado`,
+  `capital_circulante_adelantado`, `capital_total_adelantado`,
+  `tasa_ganancia_pb` y `tasa_ganancia_pp`, junto con las columnas constantes
+  dependientes presentes en el CSV. El panel 20260727 queda preservado como
+  insumo histórico.
+- **DECISIÓN 2026-08-14:** se procesa la fuente
+  `data/input-data/mussi/20260812-Exportaciones.Uruguay.xlsx`, hoja
+  `Eventual devaluación`, mediante
+  `command-files/processing-command-files/20_process_mussi_exportaciones_manufactura.R`.
+  La salida `data/analysis-data/20260812-exportaciones-manufactura-uruguay.csv`
+  conserva la serie fuente de exportaciones manufactureras en miles de dólares,
+  la serie corregida al 95% para aproximar el universo EAAE, los tipos de
+  cambio comercial y de paridad, y las variables calculadas del escenario:
+  `tipo_cambio_paridad_sobre_comercial`,
+  `exportaciones_manufactura_tcc_miles_pesos`,
+  `exportaciones_manufactura_tcp_miles_pesos`,
+  `incremento_exportador_miles_pesos` e
+  `incremento_exportador_sobre_exportaciones_tcc`.
+- El panel `data/analysis-data/20260814_panel_eeae_bcu_total_industria_subrama.csv`
+  se actualiza en sitio con
+  `command-files/processing-command-files/21_update_panel_eaae_bcu_exportaciones_mussi.R`.
+  Solo se anexan insumos necesarios para modelos posteriores de devaluación:
+  `exportaciones_manufactura_eaae_95_miles_usd`,
+  `tipo_cambio_comercial_pesos_usd` y
+  `tipo_cambio_paridad_pesos_usd`. No se incorpora al panel la serie fuente
+  sin corrección `exportaciones_manufactura_miles_usd`; esa queda disponible
+  únicamente en el CSV específico de exportaciones para auditoría.
+- **DECISIÓN 2026-08-17:** se incorpora la columna I de
+  `data/input-data/mussi/20260812-TG PN. Uruguay.xlsx`, hoja `TG PN`, al panel
+  integrado mediante
+  `command-files/processing-command-files/22_update_panel_eaae_bcu_intereses_mussi.R`.
+  La variable se registra como
+  `intereses_industria_eaae_ajuste_90_mill_usd` y corresponde a
+  "intereses pagos por eaae, ajuste c/ microdatos (90%)". La fuente trae datos
+  para 2006-2025; en el panel 20260817 se anexa sólo para 2006-2024 y queda
+  como NA en 2001-2005. Dado que la columna I es una serie anual agregada de
+  industria y no una medición subramal, se replica únicamente en filas
+  `nivel_panel == "subrama_industrial"` como insumo común no aditivo; las filas
+  de economía total, industria total e industria depurada quedan en NA.
+- **DECISIÓN 2026-08-17:** se procesa
+  `data/input-data/mussi/Comparacion_COU_MIP_Microdatos_Importado_Transable_Combustible_Alimentos.xlsx`,
+  hoja `Importado sobre CI`, mediante
+  `command-files/processing-command-files/23_process_mussi_importado_consumo_intermedio.R`.
+  La salida
+  `data/analysis-data/20260817_prop_importado_consumo_intermedio_manufactura.csv`
+  construye una serie 2000-2025 de
+  `prop_importado_consumo_intermedio` para `Total manufactura`. Los datos
+  observados provienen de 2009, 2010, 2016 y 2017. Cuando la misma fuente/año
+  tiene muestra y expandido, se privilegia el valor expandido. Cuando un mismo
+  año queda cubierto por fuentes distintas, se usa el promedio simple de esas
+  fuentes; esto ocurre en 2016 con COU y MIP. Los años sin dato se imputan con
+  el promedio simple de los valores finales disponibles, igual a 0,23665.
+- El panel `data/analysis-data/20260817_panel_eeae_bcu_total_industria_subrama.csv`
+  se actualiza con
+  `command-files/processing-command-files/24_update_panel_eaae_bcu_importado_ci_mussi.R`.
+  Como el indicador corresponde a `Total manufactura`, se asigna como
+  coeficiente manufacturero común no aditivo a `industria_total`,
+  `industria_sin_papel_coque_refinacion` y `subrama_industrial`. La fila
+  `economia_total` queda en NA.
+- **DECISIÓN 2026-08-17:** se procesa la hoja `cuadro % masa salarial` de
+  `data/input-data/mussi/20260812-Revision_Rotacion_Capital_Microdatos_EAAE.xlsx`
+  mediante
+  `command-files/processing-command-files/25_process_mussi_consumo_obrero_importado.R`.
+  Se extrae el rubro `Importado en la masa salarial` de las fuentes disponibles
+  COU detallado 2016, COU detallado 2017 y MIP detallada 2016, y se registra
+  como `prop_consumo_obrero_importado`. La salida
+  `data/analysis-data/20260817_prop_consumo_obrero_importado_mussi.csv`
+  conserva las tres observaciones fuente con una columna `Observaciones` y
+  agrega una fila `promedio` calculada como promedio simple de los valores
+  disponibles. Los valores fuente son 0,088, 0,089 y 0,093; el promedio usado
+  en el panel es 0,09.
+- El panel `data/analysis-data/20260817_panel_eeae_bcu_total_industria_subrama.csv`
+  se actualiza en sitio mediante
+  `command-files/processing-command-files/26_update_panel_eaae_bcu_consumo_obrero_mussi.R`.
+  Como se trata de un coeficiente manufacturero agregado para escenarios sobre
+  masa salarial y no de una observación subramal, se replica sólo en filas
+  `nivel_panel == "subrama_industrial"` para todos los años. Los niveles
+  `economia_total`, `industria_total` e
+  `industria_sin_papel_coque_refinacion` quedan en NA.
 - Para economía total y rama industrial, `consumo_capital_fijo`,
   `stock_capital` y `stock_capital_imputado` se toman del panel EAAE principal.
 - Para subramas industriales, `consumo_capital_fijo`, `impuestos_netos` y
@@ -530,6 +686,55 @@ Formato de los archivos: .rar (uno por año calendario)
 Contenido de cada RAR: archivos .xls (Excel 97-2003, formato BIFF8)
 Destino local de descarga: data/input-data/eaae/
 ```
+
+### Fuente primaria adicional: EAAE microdatos 1998-2019
+
+**EVALUACIÓN PRELIMINAR — Agosto 2026:** se revisó la carpeta local
+`data/input-data/eaae-microdatos`, con subcarpetas anuales 1998–2019. Esta
+fuente contiene microdatos y formularios de empresa, UCA, productos, insumos,
+FBC/bienes de uso, macrovariables, clases de actividad, ponderadores y
+diccionarios, según el año. No se integra todavía al panel EAAE vigente ni se
+crean bases derivadas desde esta fuente en esta etapa.
+
+La fuente no es homogénea 1998–2019. Se observan regímenes documentales:
+1998–2001 con Excel `FORMEMPRE`/`FORMINSU`/`FORMPROD`; 2002–2005 con bases
+finales `.sav` codificadas y archivos de productos; 2006 con módulos Excel;
+2007–2010 con estructura modular `.sav`; 2011 como año de transición; 2012 con
+capítulos detallados; y 2013–2019 con estructura moderna por capítulos. Por lo
+tanto, cualquier panel longitudinal derivado requiere parsers y diccionarios
+por período, además de una tabla explícita de equivalencias de variables.
+
+Hallazgos metodológicos:
+
+- Exportaciones: disponibilidad alta como ventas al exterior. 1998–2006 usa
+  columnas `TOTAL`, `PLAZA` y `EXTERIOR` en productos; 2007–2010 incorpora
+  `Productos.sav` y `Destino de ventas.sav`; 2012–2019 usa capítulo `L`
+  (`L.1` total, `L.2` plaza, `L.3` exterior, `L.4` misma empresa). El año 2011
+  queda como problemático porque no se observó una fuente equivalente directa
+  de ventas por producto/destino.
+- Insumos importados: deben distinguirse compras fuera de Uruguay, compras en
+  Uruguay de origen extranjero, adquisiciones importadas de bienes de uso/FBCF
+  y servicios adquiridos en el exterior. 2006–2012 contiene campos claros para
+  compras de materias primas e insumos por origen; 1998–2005 parece recuperable
+  con mapeo de variables codificadas; 2013–2019 no muestra un equivalente
+  directo del capítulo `N` de compras de materias primas por origen, por lo que
+  cualquier serie continua requiere decisión metodológica o proxy.
+- Inventarios/rotación: la fuente contiene existencias de materias primas,
+  productos en proceso, productos terminados, mercaderías para revender y otras
+  categorías. En 2006–2010 y 2012–2019 existen valores de año anterior y año de
+  referencia; en 2012–2019 el capítulo `P` usa `P.1.*` para año anterior y
+  `P.2.*` para año de referencia. En 2011 hay inventarios, pero productos
+  terminados y en proceso aparecen agrupados.
+- Ponderación: si se calculan indicadores desde microdatos, los agregados deben
+  construirse como sumas ponderadas y los ratios como ratio de sumas
+  ponderadas, no como promedio de tasas de empresa. Los ponderadores aparecen
+  con nombres variables (`Ponderador`, `peso`, `weight`, `w_mean`, `POND`,
+  `Expansor`). Para 1998–2005 no se detectó una columna obvia de ponderación en
+  el barrido inicial y debe verificarse si los archivos están preexpandidos o
+  requieren fuente auxiliar.
+
+La minuta visualizable en GitHub queda en
+`docs/methodology/20260807_minuta_fuente_eaae_microdatos.md`.
 
 ### Fuente primaria adicional: EAE 1998-2001 a 2 dígitos
 
@@ -1672,6 +1877,16 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Importación de fuente INE-UY `Cotización monedas.xlsx` y creación de `20260805_ine_uy_tipo_cambio_dolar_diciembre.csv` con último valor disponible de diciembre para `Dólar.USA.Compra` y `Dólar.USA.Venta` | ✓ |
 | Aug 2026 | Creación de `20260805_comparacion_stock_capital_eaae_ciu.csv`: comparación EAAE-CIU de stock industrial de maquinaria/equipos sin refinería, convertido con dólar venta INE, deflactado con proxy BCU e indexado 2008=100 | ✓ |
 | Aug 2026 | Actualización de minuta visual `20260806_resultados_eaae_bcu_tres_niveles.md`: comparación EAAE/Oyanthabal en tasas porcentuales, promedio manufacturero punteado en tasa de ganancia y productividad con VAB pb estimado y VAB pp | ✓ |
+| Aug 2026 | Evaluación preliminar de `data/input-data/eaae-microdatos` 1998–2019: estructura de fuente, homogeneidad, exportaciones, insumos importados, inventarios para rotación y ponderadores; documentación en `docs/methodology/20260807_minuta_fuente_eaae_microdatos.md` | ✓ |
+| Aug 2026 | Procesamiento de rotaciones Mussi desde microdatos EAAE: creación de `20260812-rotacion-microdatos-eaae-mussi.xlsx` con promedio recortado por subrama homologada y nueva versión `20260814_panel_eeae_bcu_total_industria_subrama.csv` con capital adelantado y tasas recalculadas | ✓ |
+| Aug 2026 | Procesamiento de `20260812-Exportaciones.Uruguay.xlsx`: creación de `20260812-exportaciones-manufactura-uruguay.csv` y anexo al panel 20260814 de exportaciones manufactureras corregidas al 95%, tipo de cambio comercial y tipo de cambio de paridad | ✓ |
+| Aug 2026 | Extracción de columna I de `20260812-TG PN. Uruguay.xlsx`, hoja `TG PN`, y creación de `20260817_panel_eeae_bcu_total_industria_subrama.csv` con intereses industriales EAAE ajustados al 90% en filas de subrama industrial | ✓ |
+| Aug 2026 | Procesamiento de `Comparacion_COU_MIP_Microdatos_Importado_Transable_Combustible_Alimentos.xlsx`: creación de `20260817_prop_importado_consumo_intermedio_manufactura.csv` y anexo de `prop_importado_consumo_intermedio` al panel industrial 20260817 | ✓ |
+| Aug 2026 | Procesamiento de `cuadro % masa salarial` desde Mussi: creación de `20260817_prop_consumo_obrero_importado_mussi.csv` y anexo del promedio `prop_consumo_obrero_importado = 0,09` a subramas industriales del panel 20260817 | ✓ |
+| Aug 2026 | Regeneración de `20260817_resultados_eaae_bcu_total_industria_subrama.xlsx` desde el panel 20260817 y de `20260817_resultados_eaae_bcu_tres_niveles.md`, recalculando capital adelantado y tasas con la rotación Mussi vigente | ✓ |
+| Aug 2026 | Corrección del deflactor del agregado `industria_sin_papel_coque_refinacion`: se reconstruye desde valores BCU constantes 2005 por subrama antes de sumar, se valida `deflactor_2005 == 1` en 2005 para todos los niveles y se regeneran panel, XLSX, minuta y figuras 20260817 | ✓ |
+| Aug 2026 | Incorporación en el XLSX 20260817 de la hoja `efecto-devaluacion-corrientes` para industria total y creación de `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` con metodología, fórmulas y calidad de resultados | ✓ |
+| Aug 2026 | Creación de `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` y figuras en `output/figures/devaluacion_sector_industrial_20260817/`, con lectura de audiencia amplia y anexo técnico sobre devaluación, salarios, intereses, ganancia y tasa de ganancia industrial | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

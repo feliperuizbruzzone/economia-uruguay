@@ -697,10 +697,20 @@ add_industry_excluding_groups <- function(panel) {
   )
 
   aggregate <- included_subramas %>%
+    mutate(
+      # DECISION: Build the derived aggregate deflator from component-level
+      # constant-2005 BCU values before summarising. In dplyr, later summaries
+      # can otherwise see already-summarised columns; using the original
+      # component values here guarantees `deflactor_2005 == 1` in 2005 for the
+      # aggregate, as required for every panel level.
+      vab_bcu_constante_2005_componente =
+        safe_divide(vab_bcu_corriente, deflactor_2005)
+    ) %>%
     group_by(anno) %>%
     summarise(
       across(all_of(additive_cols), sum_present),
-      bcu_constante_2005_agregado = sum_present(vab_bcu_corriente / deflactor_2005),
+      bcu_constante_2005_agregado =
+        sum_present(vab_bcu_constante_2005_componente),
       epoca = collapse_present(epoca),
       ciiu_version = collapse_present(ciiu_version),
       fuente_base_bcu = collapse_present(fuente_base_bcu),
@@ -799,6 +809,20 @@ validate_output <- function(panel) {
       filter(is.na(deflactor_2005)) %>%
       distinct(anno, nivel_panel, grupo_rev4_homologado)
     stop("Hay filas sin deflactor: ", paste(capture.output(print(missing)), collapse = " "))
+  }
+  deflator_base_errors <- panel %>%
+    filter(anno == 2005L, abs(deflactor_2005 - 1) > 1e-10)
+  if (nrow(deflator_base_errors) > 0) {
+    stop(
+      "Todos los deflactor_2005 deben valer 1 en 2005. Errores: ",
+      paste(
+        capture.output(
+          print(deflator_base_errors %>%
+            select(anno, nivel_panel, grupo_rev4_homologado, deflactor_2005))
+        ),
+        collapse = " "
+      )
+    )
   }
   missing_profit_inputs <- panel %>%
     filter(
