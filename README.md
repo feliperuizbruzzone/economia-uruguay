@@ -10,19 +10,23 @@ documentación metodológica en `docs/`.
 
 ## Resultados EAAE-BCU: Tres Niveles Y Subramas
 
-- [20260817_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260817_panel_eeae_bcu_total_industria_subrama.csv): panel integrado en formato largo para economía total, industria manufacturera agregada, industria depurada de papel/impresión y coque/refinación, y subramas industriales homologadas. Incorpora rotaciones Mussi, proporciones importadas, exportaciones, tipos de cambio e intereses industriales para escenarios de devaluación.
-- [20260817_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260817_resultados_eaae_bcu_total_industria_subrama.xlsx): libro de resultados en formato largo derivado del panel integrado, con hojas de metodología, base EAAE-BCU, controles de calidad, resultados corrientes, constantes, variaciones interanuales, índices 2005=1 y `efecto-devaluacion-corrientes`.
-- [20260817_resultados_eaae_bcu_tres_niveles.md](docs/20260817_resultados_eaae_bcu_tres_niveles.md): minuta visual de resultados centrada en tasa de ganancia para economía total, industria total e industria depurada, con comparación contra la tasa de ganancia de Oyanthabal y anexo de stock EAAE-CIU.
+- [20260819_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv): panel integrado en formato largo para economía total, industria manufacturera agregada, industria depurada de papel/impresión y coque/refinación, y subramas industriales homologadas. Corrige la distribución subramal de FBKF/adquisiciones con extracción directa desde cuadros fuente EAAE e incorpora rotaciones Mussi, proporciones importadas, exportaciones, tipos de cambio e intereses industriales para escenarios de devaluación.
+- [20260819_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx): libro de resultados en formato largo derivado del panel integrado, con hojas de metodología, base EAAE-BCU, controles de calidad, resultados corrientes, constantes, variaciones interanuales, índices 2005=1 y `efecto-devaluacion-corrientes`.
+- [20260819_resultados_eaae_bcu_tres_niveles.md](docs/20260819_resultados_eaae_bcu_tres_niveles.md): minuta visual de resultados centrada en tasa de ganancia para economía total, industria total e industria depurada, con comparación contra la tasa de ganancia de Oyanthabal y anexo de stock EAAE-CIU.
+- [20260819_auditoria_fbkf_directa_subrama_eaae.csv](data/analysis-data/20260819_auditoria_fbkf_directa_subrama_eaae.csv): auditoría fila-fuente de la extracción directa de FBKF, maquinaria/equipos y adquisiciones a nivel de subrama industrial.
 - [20260817_resultados_devaluación_sector_industrial.md](docs/minutes/20260817_resultados_devaluación_sector_industrial.md): minuta de resultados sobre efectos de devaluación en la industria manufacturera, comparando escenario base, devaluación con salario nominal fijo y devaluación con salario compensado.
-- [Figuras EAAE-BCU 20260817](output/figures/eaae_bcu_tres_niveles_20260817/): gráficos respaldados para la minuta de resultados EAAE-BCU.
+- [Figuras EAAE-BCU 20260819](output/figures/eaae_bcu_tres_niveles_20260819/): gráficos respaldados para la minuta de resultados EAAE-BCU.
 - [Figuras devaluación industrial 20260817](output/figures/devaluacion_sector_industrial_20260817/): gráficos respaldados para la minuta de efectos de devaluación.
 
 ## Resultados Principales
 
 ### Panel Integrado EAAE-BCU
 
-- [20260817_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260817_panel_eeae_bcu_total_industria_subrama.csv): última versión del panel integrado para economía total, industria manufacturera, industria depurada y subramas industriales homologadas, con deflactores BCU, rotación Mussi, capital directo subrama e insumos para tasa de ganancia y escenarios de devaluación.
-- [20260817_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260817_resultados_eaae_bcu_total_industria_subrama.xlsx): última versión del libro de resultados del panel integrado.
+- [20260819_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv): última versión del panel integrado para economía total, industria manufacturera, industria depurada y subramas industriales homologadas, con deflactores BCU, rotación Mussi, capital directo subrama, FBKF/adquisiciones directas desde fuente e insumos para tasa de ganancia y escenarios de devaluación.
+- [20260819_resultados_eaae_bcu_total_industria_subrama.xlsx](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx): última versión del libro de resultados del panel integrado.
+- [20260819_resultados_eaae_bcu_tres_niveles.md](docs/20260819_resultados_eaae_bcu_tres_niveles.md): última minuta visual de resultados de tres niveles generada desde el libro 20260819.
+- [Figuras EAAE-BCU 20260819](output/figures/eaae_bcu_tres_niveles_20260819/): figuras respaldadas para la minuta visual 20260819.
+- [20260819_auditoria_fbkf_directa_subrama_eaae.csv](data/analysis-data/20260819_auditoria_fbkf_directa_subrama_eaae.csv): auditoría de trazabilidad de las variables FBKF/adquisiciones subramales.
 - [20260706_minuta_panel_eeae_bcu_total_industria_subrama.md](docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md): minuta metodológica del panel integrado, incluyendo homologación CIIU, empalme de deflactores, rotaciones, imputaciones y validaciones de calidad.
 
 ### Panel EAAE 2001-2024

@@ -1,0 +1,5 @@
+tipo_registro,fuente,anio_fuente,prop_consumo_obrero_importado,Observaciones
+fuente,COU,2016,0.088,COU detallado 2016
+fuente,COU,2017,0.089,COU detallado 2017
+fuente,MIP,2016,0.093,MIP detallada 2016
+promedio,promedio_fuentes_disponibles,,0.09,Promedio simple de valores disponibles: COU detallado 2016 | COU detallado 2017 | MIP detallada 2016

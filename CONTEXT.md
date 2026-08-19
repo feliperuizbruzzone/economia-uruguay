@@ -289,6 +289,7 @@ Artefactos:
 |---|---|
 | `command-files/processing-command-files/13_build_panel_eaae_bcu_total_industria_subrama.R` | Script reproducible específico para construir el panel integrado. |
 | `command-files/processing-command-files/eaae_subrama_capital_direct.py` | Helper de extracción directa de `consumo_capital_fijo`, `impuestos_netos` y `stock_capital` a nivel de subrama industrial desde los RAR EAAE. |
+| `command-files/processing-command-files/eaae_subrama_fbkf_direct.py` | Helper de extracción directa de `fbcf`, `fbkf_maq_eq`, `adquisiciones_importadas` y `adquisiciones_origen_importado` a nivel de subrama industrial desde los cuadros fuente de FBKF/componentes de los RAR EAAE. |
 | `command-files/analysis-command-files/04_build_resultados_eaae_bcu_workbook.R` | Script reproducible para construir el libro XLSX de resultados largos desde el panel integrado. |
 | `command-files/analysis-command-files/05_visualizar_resultados_eaae_bcu_subrama.R` | Script reproducible para construir el informe visual largo EAAE-BCU con sección adicional de subramas industriales. |
 | `command-files/analysis-command-files/06_visualizar_resultados_eaae_bcu_tres_niveles.R` | Script reproducible para construir la minuta visual de tres niveles agregados y sus figuras fuente. |
@@ -314,6 +315,11 @@ Artefactos:
 | `data/analysis-data/20260817_prop_importado_consumo_intermedio_manufactura.csv` | Serie anual 2000-2025 de proporción importada del consumo intermedio manufacturero, con valores observados y faltantes imputados por promedio. |
 | `data/analysis-data/20260817_prop_consumo_obrero_importado_mussi.csv` | Valores fuente y promedio simple de la proporción importada en la masa salarial desde COU/MIP. |
 | `data/analysis-data/20260817_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados largos regenerado desde el panel 20260817; recalcula capital adelantado y tasas de ganancia con la rotación Mussi vigente. |
+| `data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado regenerado con extracción directa subramal de variables de FBKF/adquisiciones desde los cuadros fuente EAAE; mantiene rotación Mussi, exportaciones/tipos de cambio, intereses y coeficientes importados. |
+| `data/analysis-data/20260819_auditoria_fbkf_directa_subrama_eaae.csv` | Auditoría fila-fuente de la extracción directa de variables de FBKF/adquisiciones subramales, con mapeo a grupos Rev.4 compatibles y marca de uso para homologación. |
+| `data/analysis-data/20260819_prop_importado_consumo_intermedio_manufactura.csv` | Versión fechada 20260819 de la serie de proporción importada del consumo intermedio manufacturero usada para regenerar el panel. |
+| `data/analysis-data/20260819_prop_consumo_obrero_importado_mussi.csv` | Versión fechada 20260819 de los valores fuente y promedio de proporción importada en la masa salarial. |
+| `data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados largos regenerado desde el panel 20260819; recalcula hojas de resultados con la distribución directa de FBKF/adquisiciones y la rotación Mussi vigente. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
 | `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
@@ -508,6 +514,22 @@ Decisiones del panel integrado:
   división publicada antes de homologar a grupos Rev.4 compatibles. Las fuentes
   son C2/C2.1 para consumo de capital fijo; C15 a dos dígitos para el stock de
   2001; C11 para 2003-2005; y C7 para 2006-2010 y 2012-2024.
+- **DECISIÓN 2026-08-19:** para subramas industriales, `fbcf`,
+  `fbkf_maq_eq`, `adquisiciones_importadas`,
+  `adquisiciones_origen_importado` e `importaciones_maquinaria` deben extraerse
+  directamente desde las filas de división publicadas en los cuadros fuente de
+  FBKF y componentes de FBKF. Ya no se prorratea el total de rama C por
+  participación en `vab_pp`, porque ese método replica la misma estructura de
+  participaciones para variables distintas y no reproduce los valores
+  publicados por división. Para 2001 se usa el universo de `2 Digitos`, empresas
+  de 5 y más personas ocupadas, compatible con el panel fuente de subramas; la
+  reconciliación contra el total por letra se excluye para 2001 por cambio de
+  universo. Para 2002 y 2011 estas variables quedan como NA a nivel subrama por
+  ausencia de cuadro fuente publicado. La suma subramal directa se valida contra
+  la rama C en los años con fuente, admitiendo una tolerancia material de 0,1%
+  o 1.000 pesos por redondeos/ajustes de publicación en libros antiguos. El
+  nuevo control también falla si reaparece un patrón de participaciones
+  idénticas entre variables de FBKF/adquisiciones.
 - En subramas, `stock_capital` queda vacío sólo en 2002 y 2011 porque no hay
   cuadro de activos fijos publicado. `stock_capital_imputado` se completa con
   la regla histórica por subrama: promedio del ratio
@@ -1887,6 +1909,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Corrección del deflactor del agregado `industria_sin_papel_coque_refinacion`: se reconstruye desde valores BCU constantes 2005 por subrama antes de sumar, se valida `deflactor_2005 == 1` en 2005 para todos los niveles y se regeneran panel, XLSX, minuta y figuras 20260817 | ✓ |
 | Aug 2026 | Incorporación en el XLSX 20260817 de la hoja `efecto-devaluacion-corrientes` para industria total y creación de `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` con metodología, fórmulas y calidad de resultados | ✓ |
 | Aug 2026 | Creación de `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` y figuras en `output/figures/devaluacion_sector_industrial_20260817/`, con lectura de audiencia amplia y anexo técnico sobre devaluación, salarios, intereses, ganancia y tasa de ganancia industrial | ✓ |
+| Aug 2026 | Corrección del flujo integrado EAAE-BCU para extraer directamente por subrama `fbcf`, `fbkf_maq_eq`, `adquisiciones_importadas`, `adquisiciones_origen_importado` e `importaciones_maquinaria` desde los cuadros fuente de FBKF/componentes; creación de `eaae_subrama_fbkf_direct.py`, auditoría `20260819_auditoria_fbkf_directa_subrama_eaae.csv`, panel `20260819_panel_eeae_bcu_total_industria_subrama.csv` y libro `20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

@@ -34,6 +34,15 @@ direct_capital_helper <- file.path(
   "processing-command-files",
   "eaae_subrama_capital_direct.py"
 )
+direct_fbkf_helper <- file.path(
+  "command-files",
+  "processing-command-files",
+  "eaae_subrama_fbkf_direct.py"
+)
+fbkf_audit_output_path <- file.path(
+  analysis_dir,
+  paste0(date_prefix, "_auditoria_fbkf_directa_subrama_eaae.csv")
+)
 rotation_calibration_path <- file.path(
   input_damodaran_dir,
   "20260630_rotacion_damodaran_eaae.xlsx"
@@ -364,6 +373,165 @@ read_direct_subrama_capital <- function() {
     )
 }
 
+read_direct_subrama_fbkf <- function() {
+  temp_output <- tempfile(fileext = ".csv")
+  on.exit(unlink(temp_output), add = TRUE)
+
+  result <- system2(
+    "python3",
+    c(
+      direct_fbkf_helper,
+      "--output", temp_output,
+      "--audit-output", fbkf_audit_output_path
+    ),
+    stdout = TRUE,
+    stderr = TRUE
+  )
+  status <- attr(result, "status")
+  if (!is.null(status) && status != 0) {
+    stop(
+      "Fallo la extraccion directa de FBKF/FBCF subrama:\n",
+      paste(result, collapse = "\n")
+    )
+  }
+  readr::read_csv(temp_output, show_col_types = FALSE) %>%
+    mutate(
+      anno = as.integer(anno),
+      across(
+        any_of(c(
+          "fbcf",
+          "fbkf_maq_eq",
+          "adquisiciones_importadas",
+          "adquisiciones_origen_importado",
+          "importaciones_maquinaria",
+          "n_filas_fbcf_fuente",
+          "n_filas_fbkf_maq_eq_fuente"
+        )),
+        as.numeric
+      )
+    )
+}
+
+validate_fbkf_subrama_reconciliation <- function(subramas, industry_capital) {
+  variables <- c(
+    "fbcf",
+    "fbkf_maq_eq",
+    "adquisiciones_importadas",
+    "adquisiciones_origen_importado",
+    "importaciones_maquinaria"
+  )
+
+  subrama_totals <- subramas %>%
+    group_by(anno) %>%
+    summarise(
+      across(all_of(variables), sum_present),
+      .groups = "drop"
+    )
+
+  industry_totals <- industry_capital %>%
+    transmute(
+      anno,
+      fbcf = fbcf_c,
+      fbkf_maq_eq = fbkf_maq_eq_c,
+      adquisiciones_importadas = adquisiciones_importadas_c,
+      adquisiciones_origen_importado = adquisiciones_origen_importado_c,
+      importaciones_maquinaria = importaciones_maquinaria_c
+    )
+
+  reconciliation <- subrama_totals %>%
+    pivot_longer(
+      cols = all_of(variables),
+      names_to = "variable",
+      values_to = "valor_subramas"
+    ) %>%
+    left_join(
+      industry_totals %>%
+        pivot_longer(
+          cols = all_of(variables),
+          names_to = "variable",
+          values_to = "valor_rama_c"
+        ),
+      by = c("anno", "variable")
+    ) %>%
+    filter(!anno %in% c(2001L, 2002L, 2011L)) %>%
+    filter(!is.na(valor_subramas), !is.na(valor_rama_c)) %>%
+    mutate(
+      diferencia = valor_subramas - valor_rama_c,
+      diferencia_pct = safe_divide(diferencia, valor_rama_c),
+      # DECISION: In old FBCF/component workbooks, source division sums can
+      # differ from the published branch total by small rounding or publication
+      # adjustments. Keep a strict materiality threshold: 0.1% or 1,000 pesos.
+      tolerancia = pmax(1000, abs(valor_rama_c) * 1e-3)
+    )
+
+  reconciliation_errors <- reconciliation %>%
+    filter(abs(diferencia) > tolerancia)
+
+  if (nrow(reconciliation_errors) > 0) {
+    stop(
+      "La suma directa de subramas FBKF/FBCF no reconcilia con rama C: ",
+      paste(
+        capture.output(
+          print(reconciliation_errors %>%
+            select(anno, variable, valor_subramas, valor_rama_c, diferencia_pct))
+        ),
+        collapse = " "
+      )
+    )
+  }
+
+  import_errors <- subramas %>%
+    filter(
+      !is.na(adquisiciones_importadas),
+      !is.na(adquisiciones_origen_importado),
+      !is.na(importaciones_maquinaria)
+    ) %>%
+    mutate(
+      esperado = adquisiciones_importadas + adquisiciones_origen_importado,
+      diferencia = importaciones_maquinaria - esperado
+    ) %>%
+    filter(abs(diferencia) > pmax(1000, abs(esperado) * 1e-10))
+
+  if (nrow(import_errors) > 0) {
+    stop("Hay filas con importaciones_maquinaria inconsistente.")
+  }
+
+  share_signature <- subramas %>%
+    filter(!anno %in% c(2001L, 2002L, 2011L)) %>%
+    select(anno, grupo_rev4_homologado, all_of(variables)) %>%
+    pivot_longer(
+      cols = all_of(variables),
+      names_to = "variable",
+      values_to = "valor"
+    ) %>%
+    group_by(anno, variable) %>%
+    mutate(participacion = safe_divide(valor, sum(valor, na.rm = TRUE))) %>%
+    ungroup() %>%
+    filter(!is.na(participacion)) %>%
+    group_by(anno, grupo_rev4_homologado) %>%
+    summarise(
+      n_participaciones_distintas = n_distinct(round(participacion, 10)),
+      n_variables = n_distinct(variable),
+      .groups = "drop"
+    )
+
+  identical_share_years <- share_signature %>%
+    group_by(anno) %>%
+    summarise(
+      todas_variables_misma_participacion =
+        all(n_participaciones_distintas == 1 & n_variables > 1),
+      .groups = "drop"
+    ) %>%
+    filter(todas_variables_misma_participacion)
+
+  if (nrow(identical_share_years) > 0) {
+    stop(
+      "Patron sospechoso: participaciones identicas en variables FBKF/FBCF para anos ",
+      paste(identical_share_years$anno, collapse = ", ")
+    )
+  }
+}
+
 read_rotation_calibration <- function() {
   readxl::read_excel(rotation_calibration_path, sheet = "Resumen") %>%
     transmute(
@@ -515,7 +683,13 @@ build_eaae_rows <- function() {
       metodo_capital_eaae = "agregacion_secciones_eaae",
       metodo_stock_capital = "stock_original_e_imputado_agregado_desde_panel_eaae",
       metodo_consumo_capital_fijo = "suma_consumo_capital_fijo_original_eaae",
-      calidad_capital_eaae = "directo_agregado"
+      calidad_capital_eaae = "directo_agregado",
+      metodo_fbkf_eaae = "agregacion_secciones_panel_eaae",
+      calidad_fbkf_eaae = "directo_agregado",
+      codigos_fbkf_fuente = NA_character_,
+      archivos_fbkf_fuente = NA_character_,
+      n_filas_fbcf_fuente = NA_real_,
+      n_filas_fbkf_maq_eq_fuente = NA_real_
     )
 
   industria_total <- panel %>%
@@ -533,7 +707,17 @@ build_eaae_rows <- function() {
         "stock_original_rama_c"
       ),
       metodo_consumo_capital_fijo = "consumo_capital_fijo_original_rama_c",
-      calidad_capital_eaae = if_else(anno %in% c(2002L, 2011L), "imputado", "directo")
+      calidad_capital_eaae = if_else(anno %in% c(2002L, 2011L), "imputado", "directo"),
+      metodo_fbkf_eaae = "rama_c_panel_eaae",
+      calidad_fbkf_eaae = if_else(
+        anno %in% c(2002L, 2011L),
+        "sin_dato_fuente_fbkf",
+        "directo_rama_c"
+      ),
+      codigos_fbkf_fuente = NA_character_,
+      archivos_fbkf_fuente = NA_character_,
+      n_filas_fbcf_fuente = NA_real_,
+      n_filas_fbkf_maq_eq_fuente = NA_real_
     )
 
   subramas_raw <- readr::read_csv(subrama_eaae_path, show_col_types = FALSE) %>%
@@ -562,11 +746,15 @@ build_eaae_rows <- function() {
     ungroup()
 
   subrama_capital_direct <- read_direct_subrama_capital()
+  subrama_fbkf_direct <- read_direct_subrama_fbkf()
 
   subramas <- subrama_shares %>%
-    left_join(industry_capital, by = "anno") %>%
     left_join(
       subrama_capital_direct,
+      by = c("anno", "grupo_rev4_homologado")
+    ) %>%
+    left_join(
+      subrama_fbkf_direct,
       by = c("anno", "grupo_rev4_homologado")
     ) %>%
     group_by(grupo_rev4_homologado) %>%
@@ -584,16 +772,17 @@ build_eaae_rows <- function() {
       nivel_panel = "subrama_industrial",
       descripcion_nivel = descripcion_grupo_rev4_homologado,
       consumo_intermedio_estimado = vbp_pp - vab_pb_estimado,
-      fbcf = fbcf_c * participacion_vab_pp_rama_c,
-      fbkf_maq_eq = fbkf_maq_eq_c * participacion_vab_pp_rama_c,
-      adquisiciones_importadas = adquisiciones_importadas_c * participacion_vab_pp_rama_c,
-      adquisiciones_origen_importado =
-        adquisiciones_origen_importado_c * participacion_vab_pp_rama_c,
-      importaciones_maquinaria = importaciones_maquinaria_c * participacion_vab_pp_rama_c,
+      # DECISION: FBCF/FBKF and acquisition variables at sub-branch level must
+      # come from the source division rows in the EAAE FBCF/component tables.
+      # Do not allocate the manufacturing total by VAB shares; that produces
+      # identical branch participation structures across different variables
+      # and does not match the published Cuadro 6/8 division values.
       n_empresas = NA_real_,
       epoca = as.character(epoca),
       ciiu_version = ciiu_version_fuente
     )
+
+  validate_fbkf_subrama_reconciliation(subramas, industry_capital)
 
   bind_rows(
     panel_total,
@@ -719,6 +908,12 @@ add_industry_excluding_groups <- function(panel) {
       dato_preliminar_bcu = any(dato_preliminar_bcu, na.rm = TRUE),
       codigos_capital_fuente = collapse_present(codigos_capital_fuente),
       archivos_capital_fuente = collapse_present(archivos_capital_fuente),
+      metodo_fbkf_eaae = collapse_present(metodo_fbkf_eaae),
+      calidad_fbkf_eaae = collapse_present(calidad_fbkf_eaae),
+      codigos_fbkf_fuente = collapse_present(codigos_fbkf_fuente),
+      archivos_fbkf_fuente = collapse_present(archivos_fbkf_fuente),
+      n_filas_fbcf_fuente = sum_present(n_filas_fbcf_fuente),
+      n_filas_fbkf_maq_eq_fuente = sum_present(n_filas_fbkf_maq_eq_fuente),
       codigos_fuente_incluidos = collapse_present(codigos_fuente_incluidos),
       divisiones_publicadas_incluidas =
         collapse_present(divisiones_publicadas_incluidas),
@@ -758,6 +953,13 @@ add_industry_excluding_groups <- function(panel) {
       calidad_capital_eaae = if_else(
         anno %in% c(2002L, 2011L),
         "agregado_con_stock_imputado",
+        "directo_agregado"
+      ),
+      metodo_fbkf_eaae =
+        "suma_directa_subramas_fbkf_excluye_papel_coque_refinacion",
+      calidad_fbkf_eaae = if_else(
+        anno %in% c(2002L, 2011L),
+        "sin_dato_fuente_fbkf",
         "directo_agregado"
       ),
       rotacion_calibrada_sobre_6_6 =
@@ -914,6 +1116,12 @@ main <- function() {
       calidad_capital_eaae,
       codigos_capital_fuente,
       archivos_capital_fuente,
+      metodo_fbkf_eaae,
+      calidad_fbkf_eaae,
+      codigos_fbkf_fuente,
+      archivos_fbkf_fuente,
+      n_filas_fbcf_fuente,
+      n_filas_fbkf_maq_eq_fuente,
       participacion_vab_pp_rama_c,
       codigos_fuente_incluidos,
       divisiones_publicadas_incluidas,
