@@ -1,0 +1,7 @@
+Variable,Incidencia,Efecto,Formula,Comentario,Fuente
+Consumo intermedio,0.189,Negativo,Variable en pesos +Variable en pesos* incidencia*((tcp/tcc)-1),Importado / consumo intermedio,"Se toma COU porque incluye impuestos y márgenes de comercio y transporte, promedio 2015/2016"
+Masa salarial,0.093,Negativo,Variable en pesos +Variable en pesos* incidencia*((tcp/tcc)-1),Importado / masa salarial manufacturera,"Se toma COU porque incluye impuestos y márgenes de comercio y transporte, promedio 2015/2016"
+Intereses,0.08470000000000001,Negativo,Variable en pesos +Variable en pesos* incidencia*((tcp/tcc)-1),Intereses pagados / VBP,CIU 2006/2024
+VBP,0.33299999999999996,Positivo,Variable en pesos +Variable en pesos* incidencia*((tcp/tcc)-1),Exportaciones / VBP,"Exportaciones CCNN, con factor de microdatos, respecto de VBP EAAE, promedio 2001/2024"
+Consumo de capital fijo,0.017,Negativo,Variable en pesos +Variable en pesos* incidencia*((tcp/tcc)-1),Efecto aumento consumo capital fijo maquinaria importada / consumo de capital fijo,"Efecto de inversión importada, prorrateada por depreciación lineal estimación a 20 años a partir de EAAE"
+Stock capital imputado,0.037,Negativo,Variable en pesos +Variable en pesos* incidencia*((tcp/tcc)-1),Aumento stock respecto del stock de maquinaria,Efecto de inversión importada en stock de capital a partir de EAAE

@@ -294,6 +294,8 @@ Artefactos:
 | `command-files/analysis-command-files/05_visualizar_resultados_eaae_bcu_subrama.R` | Script reproducible para construir el informe visual largo EAAE-BCU con sección adicional de subramas industriales. |
 | `command-files/analysis-command-files/06_visualizar_resultados_eaae_bcu_tres_niveles.R` | Script reproducible para construir la minuta visual de tres niveles agregados y sus figuras fuente. |
 | `command-files/analysis-command-files/07_generar_minuta_devaluacion_sector_industrial.R` | Script reproducible para construir una minuta explicativa y figuras de audiencia amplia sobre el efecto de devaluación en la industria manufacturera. |
+| `command-files/analysis-command-files/10_build_modalamiento_devaluacion.R` | Script reproducible para construir el libro XLSX de modelamiento de devaluación desde el último libro de resultados EAAE-BCU, la serie de tipo de cambio y los coeficientes Mussi. |
+| `command-files/analysis-command-files/xlsx_minimal_writer.R` | Helper mínimo para escribir libros XLSX desde R sin depender de `openxlsx`, `writexl` u otros paquetes no instalados. |
 | `command-files/processing-command-files/18_build_rotacion_microdatos_eaae_mussi.R` | Script reproducible ad hoc que procesa la rotación desde microdatos EAAE revisada por Mussi y genera un XLSX metodológico. |
 | `command-files/processing-command-files/19_update_panel_eaae_bcu_rotacion_mussi.R` | Script reproducible ad hoc que toma el XLSX de rotación Mussi y actualiza una nueva versión fechada del panel integrado EAAE-BCU. |
 | `command-files/processing-command-files/20_process_mussi_exportaciones_manufactura.R` | Script reproducible ad hoc que procesa el escenario de exportaciones manufactureras y devaluación desde Mussi. |
@@ -304,6 +306,7 @@ Artefactos:
 | `command-files/processing-command-files/25_process_mussi_consumo_obrero_importado.R` | Script reproducible ad hoc que procesa la proporción importada en la masa salarial desde el cuadro Mussi. |
 | `command-files/processing-command-files/26_update_panel_eaae_bcu_consumo_obrero_mussi.R` | Script reproducible ad hoc que anexa el promedio de consumo obrero importado a filas de subrama industrial del panel integrado. |
 | `command-files/processing-command-files/27_fix_panel_eaae_bcu_deflactores_base2005.R` | Script reproducible ad hoc que corrige el deflactor BCU del agregado industria depurada, reconstruyéndolo desde componentes subramales normalizados a base 2005=1. |
+| `command-files/processing-command-files/28_process_mussi_coeficientes_devaluacion.R` | Script reproducible ad hoc que regenera `20260819-coeficientes-efecto-devaluacion.csv` desde `Modelo!B6:G13` del archivo Mussi de impacto de devaluación. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
@@ -320,6 +323,7 @@ Artefactos:
 | `data/analysis-data/20260819_prop_importado_consumo_intermedio_manufactura.csv` | Versión fechada 20260819 de la serie de proporción importada del consumo intermedio manufacturero usada para regenerar el panel. |
 | `data/analysis-data/20260819_prop_consumo_obrero_importado_mussi.csv` | Versión fechada 20260819 de los valores fuente y promedio de proporción importada en la masa salarial. |
 | `data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados largos regenerado desde el panel 20260819; recalcula hojas de resultados con la distribución directa de FBKF/adquisiciones y la rotación Mussi vigente. |
+| `data/analysis-data/20260820_modalamiento-devaluacion.xlsx` | Libro de insumos para modelamiento de devaluación de manufactura agregada. Contiene hojas `resultados-corrientes`, `tipo-cambio`, `coeficientes-devaluacion` y `devaluación-1`. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
 | `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
@@ -328,6 +332,7 @@ Artefactos:
 | `docs/20260605_eaae_resultados_eaae_oyanthaabal_total_industria.md` | Informe visual EAAE/Oyanthabal para economía total e industria, con prefijo de fecha de elaboración. |
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
 | `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` | Minuta metodológica sobre la hoja `efecto-devaluacion-corrientes`, con fórmulas, supuestos y calidad de resultados. |
+| `docs/methodology/20260820_minuta_modelamiento_devaluacion_1.md` | Minuta metodológica sobre la hoja `devaluación-1` del libro de modelamiento de devaluación. |
 | `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` | Minuta de lectura para audiencia amplia sobre consecuencias distributivas de una devaluación industrial bajo escenarios de salario fijo y salario compensado. |
 | `output/figures/devaluacion_sector_industrial_20260817/` | Carpeta de figuras PNG respaldadas para la minuta de resultados de devaluación sector industrial. |
 
@@ -366,6 +371,52 @@ Decisiones del panel integrado:
   subrama industrial y quedan como `NA` en 2001-2005 por ausencia de dato
   fuente; por eso los escenarios completos de ganancia/tasa que incorporan
   intereses también quedan parciales en esos años.
+- **ACTUALIZACIÓN 2026-08-20:** se crea
+  `data/analysis-data/20260820_modalamiento-devaluacion.xlsx` mediante
+  `command-files/analysis-command-files/10_build_modalamiento_devaluacion.R`.
+  El libro funciona como insumo compacto para modelar devaluación sobre
+  manufactura agregada, no sobre subramas. La hoja `resultados-corrientes`
+  filtra únicamente `seccion == "industria-total"` y conserva las variables
+  corrientes requeridas desde el último libro de resultados EAAE-BCU: `vbp_pp`,
+  `consumo_intermedio_estimado`, `vab_pp`, `vab_pb_estimado`,
+  `capital_circulante_constante_adelantado`, `remuneraciones`,
+  `capital_variable_adelantado`, `importaciones_maquinaria`, `fbcf`,
+  `consumo_capital_fijo`, `stock_capital`, `stock_capital_imputado`,
+  `capital_total_adelantado`, `ganancia_pb`, `ganancia_pp`,
+  `tasa_ganancia_pb` y `tasa_ganancia_pp`. También incorpora
+  `intereses_industria_eaae_ajuste_90_mill_usd`. Como la serie de intereses
+  está en millones de dólares, el libro crea
+  `intereses_industria_pesos = intereses_industria_eaae_ajuste_90_mill_usd *
+  1.000.000 * tipo_cambio_comercial_pesos_usd`, usando el tipo de cambio
+  comercial anual como insumo interno, sin exportar el tipo de cambio en la
+  hoja de resultados. Desde esa conversión se calculan
+  `ganancia_pb_desp_intereses`, `ganancia_pp_desp_intereses`,
+  `tasa_ganancia_pb_desp_intereses` y `tasa_ganancia_pp_desp_intereses`.
+  Los años 2001-2005 quedan como NA en estas variables por ausencia de
+  intereses fuente. La hoja `tipo-cambio` conserva `anio`,
+  `tipo_cambio_comercial_pesos_usd` y `tipo_cambio_paridad_pesos_usd` desde
+  `20260812-exportaciones-manufactura-uruguay.csv`; la hoja
+  `coeficientes-devaluacion` replica
+  `data/input-data/mussi/20260819-coeficientes-efecto-devaluacion.csv`.
+  Este CSV se regenera con
+  `command-files/processing-command-files/28_process_mussi_coeficientes_devaluacion.R`
+  desde `data/input-data/mussi/20260819-Uruguay. Modelo de impacto de devaluación.xlsx`,
+  hoja `Modelo`, rango `B6:G13`; se elimina la fila vacía del bloque y se
+  replica la fórmula fuente en todas las variables.
+  A pedido del equipo, la hoja `resultados-corrientes` no conserva la columna
+  `exportaciones_manufactura_eaae_95_miles_usd`; la eventual incidencia
+  exportadora queda restringida a la hoja de coeficientes como supuesto de
+  modelamiento sobre `VBP`.
+- **ACTUALIZACIÓN 2026-08-20:** el mismo script incorpora la hoja
+  `devaluación-1` al libro `20260820_modalamiento-devaluacion.xlsx`. La hoja
+  simula el paso del tipo de cambio comercial al tipo de cambio de paridad con
+  `factor_devaluacion = tcp / tcc - 1`, aplica exclusivamente las variables,
+  incidencias, efectos y fórmula de `coeficientes-devaluacion`, y toma la
+  rotación explícita `rotacion_calibrada_sobre_6_6` desde el último panel
+  integrado para `nivel_panel == "industria_total"` y `seccion == "C"`. Los
+  intereses se aplican sólo a las variantes de ganancia y tasa post intereses.
+  La metodología queda documentada en
+  `docs/methodology/20260820_minuta_modelamiento_devaluacion_1.md`.
 - **ACTUALIZACIÓN 2026-08-17:** se crea
   `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` mediante
   `command-files/analysis-command-files/07_generar_minuta_devaluacion_sector_industrial.R`.
