@@ -43,11 +43,11 @@ direct_helper_path <- file.path(
 
 output_panel_path <- file.path(
   analysis_dir,
-  paste0(date_prefix, "_panel_eaae_industria_grupos_mussi.csv")
+  paste0(date_prefix, "_panel_eaae_2020_2024_industria.csv")
 )
 output_workbook_path <- file.path(
   analysis_dir,
-  paste0(date_prefix, "_resultados_corrientes_eaae_industria_grupos_mussi.xlsx")
+  paste0(date_prefix, "_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx")
 )
 
 latest_file <- function(pattern) {
