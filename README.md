@@ -8,6 +8,11 @@ primarios se conservan en `data/input-data/`, los scripts reproducibles en
 `command-files/`, las bases procesadas en `data/analysis-data/` y la
 documentación metodológica en `docs/`.
 
+## Resultados Corrientes Industria 2020-2024 Y Devaluación
+
+- [20260824_resultados_corrientes_eaae_industria_grupos_mussi.xlsx](data/analysis-data/20260824_resultados_corrientes_eaae_industria_grupos_mussi.xlsx): libro de resultados corrientes para industria manufacturera agregada y grupos de subramas industriales definidos por clasificación Mussi (`exportadora` y `mercado interno`). Incluye hoja `metodología` con criterios, coeficientes de devaluación y rotaciones; hoja `escenario-inicial`; hoja `tipo-cambio`; y hoja `devaluación-1`.
+- [20260824_panel_eaae_industria_grupos_mussi.csv](data/analysis-data/20260824_panel_eaae_industria_grupos_mussi.csv): panel 2020-2024 construido desde resultados originales EAAE por división publicada de la industria manufacturera, agregado a industria total, grupo exportador, grupo de mercado interno y combustible. El grupo combustible se conserva para trazabilidad contable y se excluye del libro de resultados.
+
 ## Resultados EAAE-BCU: Tres Niveles Y Subramas
 
 - [20260819_panel_eeae_bcu_total_industria_subrama.csv](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv): panel integrado en formato largo para economía total, industria manufacturera agregada, industria depurada de papel/impresión y coque/refinación, y subramas industriales homologadas. Corrige la distribución subramal de FBKF/adquisiciones con extracción directa desde cuadros fuente EAAE e incorpora rotaciones Mussi, proporciones importadas, exportaciones, tipos de cambio e intereses industriales para escenarios de devaluación.
