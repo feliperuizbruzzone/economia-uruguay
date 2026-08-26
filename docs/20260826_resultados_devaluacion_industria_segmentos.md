@@ -6,7 +6,7 @@ Fuente de trabajo: `data/analysis-data/20260826_panel_eaae_2020_2024_industria_e
 
 El ejercicio dimensiona la apropiación de riqueza asociada a sostener un tipo de cambio comercial por debajo del tipo de cambio de paridad. Para ello compara los resultados corrientes observados de la industria manufacturera con un contrafactual anual en el que las magnitudes sensibles al tipo de cambio se valoran con la paridad. La simulación no modifica cantidades, productividad ni estructura productiva; aplica coeficientes de incidencia sobre componentes monetarios para estimar un impacto contable de corto plazo.
 
-Las fuentes usadas son: EAAE para VBP, VAB, remuneraciones, consumo intermedio estimado, consumo de capital fijo, stock de capital y capital adelantado; Oyanthabal, con base en la metodología de Iñigo Carrera (2007), para los tipos de cambio comercial/paridad y los coeficientes de incidencia del ejercicio; y la clasificación operativa de subramas industriales 2020-2024 usada para separar industria exportadora, mercado interno y combustible.
+Las fuentes usadas son: EAAE para VBP, VAB, remuneraciones, consumo intermedio estimado, consumo de capital fijo, stock de capital y capital adelantado; Oyanthabal, con base en la metodología de Iñigo Carrera (2007), para los tipos de cambio comercial/paridad y los coeficientes de incidencia del ejercicio; microdatos del CIU para distribuir los intereses industriales entre ramas exportadoras y ramas orientadas al mercado interno; y la clasificación operativa de subramas industriales 2020-2024 usada para separar industria exportadora, mercado interno y combustible.
 
 Se trabaja desde 2020 porque en ese tramo la fuente opera con ramas homogéneas. Extender el ejercicio al panel completo exigiría procesar distintas versiones CIIU, lo que vuelve incompatible diferenciar con criterio uniforme el segmento industrial exportador y el segmento orientado al mercado interno. Complementariamente, el período 2020-2024 es razonable para una lectura en valores corrientes porque evita grandes saltos de nivel asociados a cambios clasificatorios.
 
@@ -19,7 +19,7 @@ Con coeficientes diferenciados por sección, el resultado central es una fractur
 - El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.
 - Desde otro punto de vista, el mismo ejercicio permite dimensionar el efecto que tiene sostener un tipo de cambio sobrevaluado sobre la apropiación de riqueza por parte de la industria.
 - El canal positivo se modela sobre `vbp_pp` como `VBP/exportador`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.
-- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según participación en `vbp_pp`.
+- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.
 - El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.
 
 Ramas incluidas en el segmento exportador:
@@ -46,13 +46,13 @@ Ramas incluidas en el segmento mercado interno:
 - 32: Otras industrias manufactureras
 - 33: Reparación e instalación de la maquinaria y equipo
 
-![Brecha cambiaria modelada](../../output/figures/devaluacion_industria_segmentos_20260826/01_factor_devaluacion_2020_2024.png)
+![Brecha cambiaria modelada](../output/figures/devaluacion_industria_segmentos_20260826/01_factor_devaluacion_2020_2024.png)
 
 ## Coeficientes de incidencia
 
 Los coeficientes indican qué proporción de cada variable queda expuesta al cierre de la brecha cambiaria. Desde el punto de vista del contrafactual de paridad, `VBP/exportador` tiene signo positivo para la ganancia, porque eleva la valorización de ventas asociadas al tipo de cambio. En cambio, consumo intermedio, masa salarial, consumo de capital fijo e intereses pagados operan como gastos o costos; el stock imputado afecta negativamente la tasa porque eleva el capital adelantado.
 
-![Coeficientes de incidencia por segmento](../../output/figures/devaluacion_industria_segmentos_20260826/02_coeficientes_incidencia_segmentos.png)
+![Coeficientes de incidencia por segmento](../output/figures/devaluacion_industria_segmentos_20260826/02_coeficientes_incidencia_segmentos.png)
 
 | Sección | Variable afectada | Incidencia | Efecto contable ante paridad |
 | --- | --- | --- | --- |
@@ -79,9 +79,9 @@ Los coeficientes indican qué proporción de cada variable queda expuesta al cie
 
 La tasa de ganancia a precios básicos de la industria total aumenta en promedio +10,6 pp entre 2020 y 2024. En el segmento exportador el aumento promedio es +15,5 pp. En cambio, el segmento mercado interno muestra una variación promedio de -4,8 pp, lo que indica que el encarecimiento de costos supera el impulso positivo sobre el VBP/exportador.
 
-![Tasa de ganancia a precios básicos](../../output/figures/devaluacion_industria_segmentos_20260826/03_tasa_ganancia_base_devaluacion.png)
+![Tasa de ganancia a precios básicos](../output/figures/devaluacion_industria_segmentos_20260826/03_tasa_ganancia_base_devaluacion.png)
 
-![Cambio en tasa de ganancia](../../output/figures/devaluacion_industria_segmentos_20260826/04_variacion_tasa_ganancia_pp.png)
+![Cambio en tasa de ganancia](../output/figures/devaluacion_industria_segmentos_20260826/04_variacion_tasa_ganancia_pp.png)
 
 | Sección | TG base prom. | TG paridad prom. | Cambio prom. | TG base 2024 | TG paridad 2024 | Cambio 2024 | Var. ganancia 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -93,21 +93,21 @@ La tasa de ganancia a precios básicos de la industria total aumenta en promedio
 
 En 2024, el aumento de `vbp_pp` es el principal canal positivo. El gráfico y el cuadro expresan los deltas en miles de millones de pesos corrientes. Para la industria total equivale a 153,5 miles de millones de pesos corrientes. Ese impulso se compensa parcialmente por el aumento de consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados. La asimetría por segmento es clara: el segmento exportador capta la mayor parte del impulso por VBP/exportador, mientras que en mercado interno el aumento de costos queda por encima del impulso de ventas.
 
-![Descomposición del efecto en 2024](../../output/figures/devaluacion_industria_segmentos_20260826/05_descomposicion_efecto_2024.png)
+![Descomposición del efecto en 2024](../output/figures/devaluacion_industria_segmentos_20260826/05_descomposicion_efecto_2024.png)
 
 | Sección | Delta VBP/exportador | Delta CI | Delta remuneraciones | Delta CCF | Delta stock | Delta intereses pagados |
 | --- | --- | --- | --- | --- | --- | --- |
 | Industria total | 153,5 | 64,9 | 5,6 | 0,25 | 8,7 | 0,26 |
-| Segmento exportador | 132,8 | 41,8 | 3,6 | 0,09 | 1,6 | 0,18 |
-| Mercado interno | 10,5 | 14,9 | 1,8 | 0,03 | 0,6 | 0,06 |
+| Segmento exportador | 132,8 | 41,8 | 3,6 | 0,09 | 1,6 | 0,17 |
+| Mercado interno | 10,5 | 14,9 | 1,8 | 0,03 | 0,6 | 0,09 |
 
 ## Contribución relativa de los segmentos
 
 La lectura por participaciones muestra que, en 2024, el segmento exportador explica 86,5% del delta de VBP/exportador de la industria total, frente a 6,9% del segmento mercado interno. Esta concentración explica por qué la mejora agregada de la industria total no debe leerse como un efecto homogéneo para toda la manufactura.
 
-En magnitudes de 2024, el VBP/exportador de la industria total aumenta 153,5 miles de millones de pesos corrientes, mientras los gastos modelados aumentan 71,1 y el stock imputado aumenta 8,7. En el segmento exportador, el aumento de VBP/exportador es 132,8 frente a gastos por 45,6 y stock por 1,6. En mercado interno, el VBP/exportador aumenta 10,5, pero los gastos aumentan 16,7 y el stock 0,6.
+En magnitudes de 2024, el VBP/exportador de la industria total aumenta 153,5 miles de millones de pesos corrientes, mientras los gastos modelados aumentan 71,1 y el stock imputado aumenta 8,7. En el segmento exportador, el aumento de VBP/exportador es 132,8 frente a gastos por 45,6 y stock por 1,6. En mercado interno, el VBP/exportador aumenta 10,5, pero los gastos aumentan 16,8 y el stock 0,6.
 
-![Participación de segmentos en los deltas 2024](../../output/figures/devaluacion_industria_segmentos_20260826/06_participacion_segmentos_deltas_2024.png)
+![Participación de segmentos en los deltas 2024](../output/figures/devaluacion_industria_segmentos_20260826/06_participacion_segmentos_deltas_2024.png)
 
 | Componente | Exportador / industria total | Mercado interno / industria total |
 | --- | --- | --- |
@@ -116,7 +116,7 @@ En magnitudes de 2024, el VBP/exportador de la industria total aumenta 153,5 mil
 | Remuneraciones | 63,2% | 31,8% |
 | Consumo capital fijo | 35,1% | 11,4% |
 | Stock imputado | 19,0% | 6,7% |
-| Intereses pagados | 68,6% | 21,3% |
+| Intereses pagados | 65,6% | 34,4% |
 
 ## Interpretación
 

@@ -329,6 +329,8 @@ Artefactos:
 | `data/input-data/mussi/20260824_subramas_industriales_fuente_eaae_2020_2024.csv` | Clasificación Mussi de divisiones fuente manufactureras EAAE 2020-2024 en `Exportadora`, `Mercado interno` y `Combustible`. |
 | `data/analysis-data/20260824_panel_eaae_2020_2024_industria.csv` | Panel específico 2020-2024 para industria manufacturera agregada y grupos de subramas industriales Mussi, construido desde divisiones fuente EAAE. |
 | `data/analysis-data/20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` | Libro específico de resultados corrientes y escenario de devaluación para industria 2020-2024; contiene hojas `metodología`, `escenario-inicial`, `tipo-cambio` y `devaluación-1`. |
+| `data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv` | Versión del panel específico 2020-2024 con distribución de intereses por segmentos según microdatos CIU: 65,6% exportadoras y 34,4% mercado interno. |
+| `data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` | Libro específico de resultados corrientes y escenario de cierre de brecha cambiaria para industria 2020-2024, regenerado desde el panel 20260826 y coeficientes diferenciados por sección. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
 | `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
@@ -482,10 +484,14 @@ Decisiones del panel integrado:
   maquinaria` se normaliza como `Stock capital imputado`, preservando también
   la columna `variable_fuente`.
 - **ACTUALIZACIÓN 2026-08-26:** para modelar el efecto devaluatorio
-  diferenciado por segmentos, no se recalcula el panel CSV
-  `20260824_panel_eaae_2020_2024_industria.csv`, porque los coeficientes de
-  incidencia son parámetros de escenario y no modifican las variables base
-  EAAE. Se crea el script reproducible
+  diferenciado por segmentos, se crea una nueva versión del panel CSV
+  `20260826_panel_eaae_2020_2024_industria.csv`. La versión conserva las
+  variables base EAAE del panel 20260824, pero actualiza la distribución de
+  intereses industriales por segmento según microdatos del CIU: 65,6% para
+  ramas exportadoras y 34,4% para ramas orientadas al mercado interno. La
+  industria total conserva el 100% de la serie agregada; combustible queda con
+  asignación analítica de intereses igual a 0 porque la apertura CIU agota el
+  total entre los dos segmentos presentados. Se actualiza el script reproducible
   `command-files/analysis-command-files/12_update_eaae_industria_devaluacion_segmentos.R`,
   que toma ese panel validado, el tipo de cambio de
   `20260812-exportaciones-manufactura-uruguay.csv` y la tabla combinada
@@ -503,15 +509,16 @@ Decisiones del panel integrado:
   y aplicar incidencias por `seccion` cuando se ejecute una reconstrucción
   completa desde fuentes.
 - **ACTUALIZACIÓN 2026-08-26:** se crea la minuta reproducible
-  `docs/minutes/20260826_resultados_devaluacion_industria_segmentos.md`
+  `docs/20260826_resultados_devaluacion_industria_segmentos.md`
   mediante
   `command-files/analysis-command-files/13_generar_minuta_devaluacion_segmentos.R`.
   La minuta toma como insumo
   `data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`
-  y presenta una lectura simple de supuestos, escenarios modelados,
-  coeficientes diferenciados, resultados de tasa de ganancia y mecanismo de
-  transmisión para industria total, segmento exportador y segmento mercado
-  interno. Las figuras respaldadas quedan en
+  y presenta una lectura simple de apropiación de riqueza por sobrevaluación
+  cambiaria, fuentes, supuestos, escenarios modelados, coeficientes
+  diferenciados, distribución de intereses con microdatos CIU, resultados de
+  tasa de ganancia y mecanismo de transmisión para industria total, segmento
+  exportador y segmento mercado interno. Las figuras respaldadas quedan en
   `output/figures/devaluacion_industria_segmentos_20260826/`.
 - **ACTUALIZACIÓN 2026-08-17:** se crea
   `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` mediante

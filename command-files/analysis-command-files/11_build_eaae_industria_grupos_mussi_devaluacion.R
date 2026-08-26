@@ -64,6 +64,16 @@ safe_divide <- function(numerator, denominator) {
   result
 }
 
+interes_share_ciu <- function(seccion) {
+  case_when(
+    seccion == "industria-total" ~ 1,
+    seccion == "exportadora" ~ 0.656,
+    seccion == "mercado-interno" ~ 0.344,
+    seccion == "combustible" ~ 0,
+    TRUE ~ NA_real_
+  )
+}
+
 sum_present <- function(x) {
   x <- x[!is.na(x)]
   if (length(x) == 0) {
@@ -550,18 +560,23 @@ panel <- panel %>%
   ) %>%
   mutate(
     participacion_vbp_pp_industria = safe_divide(.data$vbp_pp, .data$vbp_pp_industria_total),
-    # DECISION: the interest source is an annual manufacturing aggregate. For
-    # classification groups, allocate it by each group's VBP share in total
-    # manufacturing, so the allocation is additive and stays in current pesos.
-    intereses_industria_pesos = if_else(
-      .data$seccion == "industria-total",
-      .data$intereses_industria_pesos_total,
-      .data$intereses_industria_pesos_total * .data$participacion_vbp_pp_industria
-    ),
-    metodo_intereses = if_else(
-      .data$seccion == "industria-total",
-      "intereses_industria_total_convertidos_a_pesos_con_tcc",
-      "asignacion_intereses_industria_por_participacion_vbp_pp"
+    participacion_intereses_industria = interes_share_ciu(.data$seccion),
+    # DECISION: the interest source is an annual manufacturing aggregate. The
+    # team's latest instruction replaces the previous VBP-share allocation with
+    # fixed shares from CIU microdata: exportadora 65.6%, mercado-interno 34.4%.
+    # Combustible is retained for accounting traceability but receives zero
+    # analytical allocation because the CIU split exhausts the total in the two
+    # reported segments.
+    intereses_industria_pesos =
+      .data$intereses_industria_pesos_total * .data$participacion_intereses_industria,
+    metodo_intereses = case_when(
+      .data$seccion == "industria-total" ~
+        "intereses_industria_total_convertidos_a_pesos_con_tcc",
+      .data$seccion %in% c("exportadora", "mercado-interno") ~
+        "asignacion_intereses_industria_microdatos_ciu_65_6_exportadora_34_4_mercado_interno",
+      .data$seccion == "combustible" ~
+        "sin_asignacion_analitica_intereses_ciu_segmentos_2020_2024",
+      TRUE ~ NA_character_
     ),
     ganancia_pb_desp_intereses = .data$ganancia_pb - .data$intereses_industria_pesos,
     ganancia_pp_desp_intereses = .data$ganancia_pp - .data$intereses_industria_pesos,
@@ -603,6 +618,7 @@ escenario_inicial <- panel %>%
     tasa_ganancia_pb,
     tasa_ganancia_pp,
     intereses_industria_eaae_ajuste_90_mill_usd,
+    participacion_intereses_industria,
     intereses_industria_pesos,
     metodo_intereses,
     ganancia_pb_desp_intereses,
@@ -833,32 +849,34 @@ metodologia <- tibble::tribble(
   "fuentes", "intereses industriales",
   paste(
     "La serie de intereses disponible es anual y corresponde a la industria",
-    "manufacturera agregada. No existe en la fuente disponible una apertura",
-    "directa por subrama ni por los grupos exportadora y mercado interno."
+    "manufacturera agregada. La apertura entre grupos exportadora y mercado",
+    "interno se toma de microdatos del CIU."
   ),
   "decision", "criterio de asignación de intereses",
   paste(
     "Para los grupos de subramas, los intereses industriales se asignan",
-    "proporcionalmente por participación en el valor bruto de producción a",
-    "precios productor de cada grupo dentro del total industrial del mismo año."
+    "según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para",
+    "ramas orientadas al mercado interno. La industria total conserva el 100%",
+    "de la serie agregada y combustible recibe 0 en la asignación analítica."
   ),
   "formula", "intereses por grupo",
   paste(
-    "intereses_grupo = intereses_industria_total *",
-    "(vbp_pp_grupo / vbp_pp_industria_total)"
+    "intereses_grupo = intereses_industria_total * participacion_CIU;",
+    "participacion_CIU exportadora = 0,656;",
+    "participacion_CIU mercado-interno = 0,344."
   ),
   "justificacion", "criterio económico",
   paste(
-    "El vbp_pp se usa como proxy de escala económica del grupo dentro de la",
-    "manufactura. La asignación es aditiva: la suma de intereses asignados a",
-    "exportadora, mercado interno y combustible reproduce el total industrial."
+    "La distribución fija reemplaza la imputación proporcional por VBP porque",
+    "incorpora evidencia específica de microdatos CIU sobre la distribución",
+    "de intereses entre segmentos industriales. La asignación es aditiva:",
+    "exportadora más mercado interno reproduce el total industrial."
   ),
   "interpretacion", "advertencia",
   paste(
-    "La asignación proporcional es una imputación contable, no evidencia directa",
-    "de endeudamiento, pasivos o pago efectivo de intereses por grupo. Para",
-    "mejorarla sería necesaria una fuente con intereses o deuda por subrama",
-    "industrial."
+    "La asignación por microdatos CIU mejora la trazabilidad del criterio",
+    "segmentado, pero sigue siendo una imputación para el panel EAAE porque la",
+    "serie anual de intereses disponible entra como agregado manufacturero."
   ),
   "devaluacion", "uso en devaluación-1",
   paste(

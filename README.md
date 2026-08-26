@@ -8,11 +8,11 @@ primarios se conservan en `data/input-data/`, los scripts reproducibles en
 `command-files/`, las bases procesadas en `data/analysis-data/`, la
 documentación en `docs/` y las figuras en `output/figures/`.
 
-## Resultados Devaluación Industria 2020-2024
+## Resultados Brecha Cambiaria Industria 2020-2024
 
-- [20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx): último libro de modelamiento de devaluación para industria total, segmento exportador y segmento mercado interno, con coeficientes diferenciados por sección.
-- [20260824_panel_eaae_2020_2024_industria.csv](data/analysis-data/20260824_panel_eaae_2020_2024_industria.csv): panel base 2020-2024 de industria total y grupos de subramas industriales. El panel no se recalculó el 20260826 porque los cambios corresponden a parámetros de escenario, no a variables base EAAE.
-- [20260826_resultados_devaluacion_industria_segmentos.md](docs/minutes/20260826_resultados_devaluacion_industria_segmentos.md): minuta de resultados para explicar supuestos, escenarios y resultados principales del efecto devaluatorio diferenciado.
+- [20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx): último libro de modelamiento del cierre de brecha cambiaria para industria total, segmento exportador y segmento mercado interno, con coeficientes diferenciados por sección.
+- [20260826_panel_eaae_2020_2024_industria.csv](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv): panel base 2020-2024 de industria total y grupos de subramas industriales, actualizado con distribución de intereses por microdatos CIU.
+- [20260826_resultados_devaluacion_industria_segmentos.md](docs/20260826_resultados_devaluacion_industria_segmentos.md): minuta de resultados para explicar supuestos, escenarios y resultados principales sobre apropiación de riqueza por sobrevaluación cambiaria.
 - [Figuras devaluación industria segmentos 20260826](output/figures/devaluacion_industria_segmentos_20260826/): figuras respaldadas para la minuta anterior.
 - [20260826-coeficientes-efecto-devaluacion.csv](data/input-data/mussi/20260826-coeficientes-efecto-devaluacion.csv): tabla consolidada de coeficientes de incidencia para industria total, segmento exportador y segmento mercado interno.
 

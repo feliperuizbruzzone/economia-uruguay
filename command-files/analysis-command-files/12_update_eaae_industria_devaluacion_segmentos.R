@@ -191,6 +191,7 @@ panel_required <- c(
   "tasa_ganancia_pb",
   "tasa_ganancia_pp",
   "intereses_industria_eaae_ajuste_90_mill_usd",
+  "participacion_intereses_industria",
   "intereses_industria_pesos",
   "metodo_intereses",
   "ganancia_pb_desp_intereses",
@@ -214,6 +215,21 @@ escenario_inicial <- panel %>%
 
 if (!setequal(unique(escenario_inicial$seccion), coeficientes_secciones_requeridas)) {
   stop("Las secciones del escenario inicial no coinciden con las secciones de coeficientes requeridas.")
+}
+
+expected_interest_shares <- tibble(
+  seccion = c("industria-total", "exportadora", "mercado-interno"),
+  participacion_intereses_industria_esperada = c(1, 0.656, 0.344)
+)
+interest_share_check <- escenario_inicial %>%
+  distinct(.data$seccion, .data$participacion_intereses_industria) %>%
+  left_join(expected_interest_shares, by = "seccion") %>%
+  mutate(
+    diff = abs(.data$participacion_intereses_industria -
+      .data$participacion_intereses_industria_esperada)
+  )
+if (any(is.na(interest_share_check$diff) | interest_share_check$diff > 1e-12)) {
+  stop("El panel no contiene la distribución de intereses CIU esperada.")
 }
 
 rotaciones <- escenario_inicial %>%
@@ -446,19 +462,21 @@ metodologia <- tibble::tribble(
   "fuentes", "intereses industriales",
   paste(
     "La serie de intereses disponible es anual y corresponde a la industria",
-    "manufacturera agregada. No existe en la fuente disponible una apertura",
-    "directa por subrama ni por los grupos exportadora y mercado interno."
+    "manufacturera agregada. La apertura entre grupos exportadora y mercado",
+    "interno se toma de microdatos del CIU."
   ),
   "decision", "criterio de asignación de intereses",
   paste(
     "Para los grupos de subramas, los intereses industriales se asignan",
-    "proporcionalmente por participación en el valor bruto de producción a",
-    "precios productor de cada grupo dentro del total industrial del mismo año."
+    "según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para",
+    "ramas orientadas al mercado interno. La industria total conserva el 100%",
+    "de la serie agregada."
   ),
   "formula", "intereses por grupo",
   paste(
-    "intereses_grupo = intereses_industria_total *",
-    "(vbp_pp_grupo / vbp_pp_industria_total)"
+    "intereses_grupo = intereses_industria_total * participacion_CIU;",
+    "participacion_CIU exportadora = 0,656;",
+    "participacion_CIU mercado-interno = 0,344."
   ),
   "devaluacion", "factor de devaluación",
   paste(

@@ -14,7 +14,7 @@ date_prefix <- Sys.getenv("EAAE_OUTPUT_DATE", unset = format(Sys.Date(), "%Y%m%d
 
 analysis_dir <- file.path("data", "analysis-data")
 figures_dir <- file.path("output", "figures", paste0("devaluacion_industria_segmentos_", date_prefix))
-minutes_dir <- file.path("docs", "minutes")
+docs_dir <- "docs"
 
 input_xlsx <- file.path(
   analysis_dir,
@@ -29,7 +29,7 @@ clasificacion_path <- file.path(
 )
 
 output_md <- file.path(
-  minutes_dir,
+  docs_dir,
   paste0(date_prefix, "_resultados_devaluacion_industria_segmentos.md")
 )
 
@@ -38,7 +38,7 @@ if (!file.exists(input_xlsx)) {
 }
 
 dir.create(figures_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(minutes_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(docs_dir, recursive = TRUE, showWarnings = FALSE)
 
 safe_divide <- function(numerator, denominator) {
   result <- numerator / denominator
@@ -104,7 +104,7 @@ component_labels <- c(
 )
 
 caption_fuente <- paste(
-  "Fuente: elaboración propia en base a EAAE y Oyanthabal,",
+  "Fuente: elaboración propia en base a EAAE, microdatos CIU y Oyanthabal,",
   "con base en metodología de Iñigo Carrera (2007)."
 )
 
@@ -458,7 +458,7 @@ value_for <- function(data, seccion, variable) {
 }
 
 fig_rel <- function(path) {
-  paste0("../../", path)
+  paste0("../", path)
 }
 
 delta_industria_2024 <- devaluacion %>%
@@ -513,9 +513,10 @@ md <- c(
     "intermedio estimado, consumo de capital fijo, stock de capital y capital",
     "adelantado; Oyanthabal, con base en la metodología de Iñigo Carrera (2007),",
     "para los tipos de cambio comercial/paridad y los coeficientes de incidencia",
-    "del ejercicio; y la clasificación operativa de subramas industriales",
-    "2020-2024 usada para separar industria exportadora, mercado interno y",
-    "combustible."
+    "del ejercicio; microdatos del CIU para distribuir los intereses industriales",
+    "entre ramas exportadoras y ramas orientadas al mercado interno; y la",
+    "clasificación operativa de subramas industriales 2020-2024 usada para",
+    "separar industria exportadora, mercado interno y combustible."
   ),
   "",
   paste(
@@ -551,7 +552,7 @@ md <- c(
   "- El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.",
   "- Desde otro punto de vista, el mismo ejercicio permite dimensionar el efecto que tiene sostener un tipo de cambio sobrevaluado sobre la apropiación de riqueza por parte de la industria.",
   "- El canal positivo se modela sobre `vbp_pp` como `VBP/exportador`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.",
-  "- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según participación en `vbp_pp`.",
+  "- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.",
   "- El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.",
   "",
   "Ramas incluidas en el segmento exportador:",
