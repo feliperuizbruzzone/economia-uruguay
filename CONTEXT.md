@@ -307,6 +307,8 @@ Artefactos:
 | `command-files/processing-command-files/26_update_panel_eaae_bcu_consumo_obrero_mussi.R` | Script reproducible ad hoc que anexa el promedio de consumo obrero importado a filas de subrama industrial del panel integrado. |
 | `command-files/processing-command-files/27_fix_panel_eaae_bcu_deflactores_base2005.R` | Script reproducible ad hoc que corrige el deflactor BCU del agregado industria depurada, reconstruyéndolo desde componentes subramales normalizados a base 2005=1. |
 | `command-files/processing-command-files/28_process_mussi_coeficientes_devaluacion.R` | Script reproducible ad hoc que regenera `20260819-coeficientes-efecto-devaluacion.csv` desde `Modelo!B6:G13` del archivo Mussi de impacto de devaluación. |
+| `command-files/processing-command-files/29_extract_eaae_industria_source_direct_2020_2024.py` | Helper específico para extraer variables directas EAAE por división fuente manufacturera 2020-2024, preservando la división publicada para clasificar subramas según Mussi. |
+| `command-files/analysis-command-files/11_build_eaae_industria_grupos_mussi_devaluacion.R` | Script reproducible específico para construir el panel industrial 2020-2024 por grupos Mussi y el XLSX de escenario de devaluación en valores corrientes. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
@@ -324,6 +326,9 @@ Artefactos:
 | `data/analysis-data/20260819_prop_consumo_obrero_importado_mussi.csv` | Versión fechada 20260819 de los valores fuente y promedio de proporción importada en la masa salarial. |
 | `data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados largos regenerado desde el panel 20260819; recalcula hojas de resultados con la distribución directa de FBKF/adquisiciones y la rotación Mussi vigente. |
 | `data/analysis-data/20260820_modalamiento-devaluacion.xlsx` | Libro de insumos para modelamiento de devaluación de manufactura agregada. Contiene hojas `resultados-corrientes`, `tipo-cambio`, `coeficientes-devaluacion` y `devaluación-1`. |
+| `data/input-data/mussi/20260824_subramas_industriales_fuente_eaae_2020_2024.csv` | Clasificación Mussi de divisiones fuente manufactureras EAAE 2020-2024 en `Exportadora`, `Mercado interno` y `Combustible`. |
+| `data/analysis-data/20260824_panel_eaae_2020_2024_industria.csv` | Panel específico 2020-2024 para industria manufacturera agregada y grupos de subramas industriales Mussi, construido desde divisiones fuente EAAE. |
+| `data/analysis-data/20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` | Libro específico de resultados corrientes y escenario de devaluación para industria 2020-2024; contiene hojas `metodología`, `escenario-inicial`, `tipo-cambio` y `devaluación-1`. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
 | `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
@@ -417,6 +422,97 @@ Decisiones del panel integrado:
   intereses se aplican sólo a las variantes de ganancia y tasa post intereses.
   La metodología queda documentada en
   `docs/methodology/20260820_minuta_modelamiento_devaluacion_1.md`.
+- **ACTUALIZACIÓN 2026-08-24:** se crea un procesamiento específico para
+  modelar un escenario de devaluación sobre el sector industrial uruguayo en el
+  período 2020-2024, separando la industria manufacturera agregada y grupos de
+  subramas industriales definidos por Mussi. El insumo de clasificación es
+  `data/input-data/mussi/20260824_subramas_industriales_fuente_eaae_2020_2024.csv`,
+  que asigna cada división publicada a `Exportadora`, `Mercado interno` o
+  `Combustible`. Para evitar mezclar divisiones con clasificaciones distintas
+  dentro de los grupos Rev.4 homologados, el flujo parte de las divisiones
+  fuente publicadas en `20260617_panel_eaae_industria_subramas_fuente.csv` para
+  `anno >= 2020`, y vuelve a extraer desde los RAR EAAE originales las
+  variables directas de capital y FBKF/adquisiciones por división publicada
+  mediante
+  `command-files/processing-command-files/29_extract_eaae_industria_source_direct_2020_2024.py`.
+  El script principal es
+  `command-files/analysis-command-files/11_build_eaae_industria_grupos_mussi_devaluacion.R`.
+  Exporta `data/analysis-data/20260824_panel_eaae_2020_2024_industria.csv`,
+  con filas por año para `industria-total`, `exportadora`,
+  `mercado-interno` y `combustible`. El total industrial reconstruido desde
+  divisiones fuente fue validado contra el panel integrado 20260819 con
+  diferencias relativas sólo de redondeo numérico.
+- En el panel 2020-2024, `combustible` se conserva para trazabilidad contable,
+  pero se excluye del XLSX de resultados. El libro
+  `data/analysis-data/20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`
+  contiene sólo industria total, exportadoras y mercado interno, con hojas
+  `metodología`, `escenario-inicial`, `tipo-cambio` y `devaluación-1`. La hoja
+  `metodología` concentra los criterios, los coeficientes de devaluación y las
+  rotaciones; por decisión de presentación, ya no existen hojas separadas
+  `coeficientes-devaluacion` ni `rotaciones`. Las rotaciones usadas son: para
+  industria total, la rotación implícita vigente del panel integrado EAAE-BCU
+  con rotación Mussi; para el grupo exportador, `5,05`; para el grupo mercado
+  interno, `2,76`. El grupo combustible conserva en el CSV la rotación de la
+  subrama refinación para trazabilidad, pero no entra al XLSX.
+- Dado que la serie de intereses industriales disponible es anual y agregada
+  para la industria manufacturera, no existe una apertura directa por subrama o
+  grupo Mussi. En el libro 20260824 se asignan intereses a los grupos
+  exportador, mercado interno y combustible proporcionalmente a la
+  participación de cada grupo en el VBP industrial del año:
+  `intereses_grupo = intereses_industria_total * (vbp_pp_grupo /
+  vbp_pp_industria_total)`. Esta asignación es aditiva y permite que la suma de
+  intereses por grupos reproduzca el total industrial, pero debe leerse como
+  imputación contable y no como evidencia directa de endeudamiento, pasivos o
+  pago de intereses por grupo. La hoja `devaluación-1` aplica el mismo esquema
+  de `factor_devaluacion = tcp / tcc - 1` y coeficientes Mussi de
+  `20260819-coeficientes-efecto-devaluacion.csv`, recalculando VBP, consumo
+  intermedio, remuneraciones, consumo de capital fijo, stock imputado, capital
+  adelantado, ganancia y tasa de ganancia, incluyendo variantes post intereses.
+- **ACTUALIZACIÓN 2026-08-26:** se complementa la tabla de coeficientes de
+  incidencia de devaluación mediante
+  `command-files/processing-command-files/30_process_mussi_coeficientes_devaluacion_segmentos.R`.
+  El script conserva los coeficientes ya disponibles para `industria-total`
+  desde `data/input-data/mussi/20260819-coeficientes-efecto-devaluacion.csv` y
+  agrega coeficientes diferenciados para `exportadora` y `mercado-interno`
+  desde `data/input-data/mussi/20260825-Uruguay. Modelo de impacto de devaluación-segmentos.xlsx`,
+  hoja `Expo - Mercado Interno`. La salida es
+  `data/input-data/mussi/20260826-coeficientes-efecto-devaluacion.csv`, con
+  18 filas: seis variables para cada sección. Para mantener compatibilidad con
+  el modelo de devaluación previo, la etiqueta fuente `Capital fijo de
+  maquinaria` se normaliza como `Stock capital imputado`, preservando también
+  la columna `variable_fuente`.
+- **ACTUALIZACIÓN 2026-08-26:** para modelar el efecto devaluatorio
+  diferenciado por segmentos, no se recalcula el panel CSV
+  `20260824_panel_eaae_2020_2024_industria.csv`, porque los coeficientes de
+  incidencia son parámetros de escenario y no modifican las variables base
+  EAAE. Se crea el script reproducible
+  `command-files/analysis-command-files/12_update_eaae_industria_devaluacion_segmentos.R`,
+  que toma ese panel validado, el tipo de cambio de
+  `20260812-exportaciones-manufactura-uruguay.csv` y la tabla combinada
+  `20260826-coeficientes-efecto-devaluacion.csv` para generar
+  `data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`.
+  El libro mantiene las hojas `metodología`, `escenario-inicial`,
+  `tipo-cambio` y `devaluación-1`. La hoja `metodología` lista ahora los
+  coeficientes por `seccion`; la hoja `devaluación-1` aplica los coeficientes
+  específicos de `industria-total`, `exportadora` y `mercado-interno` al
+  recalcular VBP, consumo intermedio, remuneraciones, consumo de capital fijo,
+  stock imputado, intereses, ganancia, capital adelantado y tasa de ganancia.
+  El script general
+  `command-files/analysis-command-files/11_build_eaae_industria_grupos_mussi_devaluacion.R`
+  queda actualizado para leer la tabla combinada más reciente de coeficientes
+  y aplicar incidencias por `seccion` cuando se ejecute una reconstrucción
+  completa desde fuentes.
+- **ACTUALIZACIÓN 2026-08-26:** se crea la minuta reproducible
+  `docs/minutes/20260826_resultados_devaluacion_industria_segmentos.md`
+  mediante
+  `command-files/analysis-command-files/13_generar_minuta_devaluacion_segmentos.R`.
+  La minuta toma como insumo
+  `data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`
+  y presenta una lectura simple de supuestos, escenarios modelados,
+  coeficientes diferenciados, resultados de tasa de ganancia y mecanismo de
+  transmisión para industria total, segmento exportador y segmento mercado
+  interno. Las figuras respaldadas quedan en
+  `output/figures/devaluacion_industria_segmentos_20260826/`.
 - **ACTUALIZACIÓN 2026-08-17:** se crea
   `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` mediante
   `command-files/analysis-command-files/07_generar_minuta_devaluacion_sector_industrial.R`.
@@ -1961,6 +2057,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Incorporación en el XLSX 20260817 de la hoja `efecto-devaluacion-corrientes` para industria total y creación de `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` con metodología, fórmulas y calidad de resultados | ✓ |
 | Aug 2026 | Creación de `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` y figuras en `output/figures/devaluacion_sector_industrial_20260817/`, con lectura de audiencia amplia y anexo técnico sobre devaluación, salarios, intereses, ganancia y tasa de ganancia industrial | ✓ |
 | Aug 2026 | Corrección del flujo integrado EAAE-BCU para extraer directamente por subrama `fbcf`, `fbkf_maq_eq`, `adquisiciones_importadas`, `adquisiciones_origen_importado` e `importaciones_maquinaria` desde los cuadros fuente de FBKF/componentes; creación de `eaae_subrama_fbkf_direct.py`, auditoría `20260819_auditoria_fbkf_directa_subrama_eaae.csv`, panel `20260819_panel_eeae_bcu_total_industria_subrama.csv` y libro `20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | ✓ |
+| Aug 2026 | Creación del procesamiento específico `20260824_panel_eaae_2020_2024_industria.csv` y `20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` para modelar devaluación en industria total, ramas exportadoras y ramas de mercado interno según clasificación Mussi | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

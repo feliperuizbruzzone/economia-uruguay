@@ -31,9 +31,9 @@ tipo_cambio_path <- file.path(
   analysis_dir,
   "20260812-exportaciones-manufactura-uruguay.csv"
 )
-coeficientes_path <- file.path(
+coeficientes_pattern <- file.path(
   input_mussi_dir,
-  "20260819-coeficientes-efecto-devaluacion.csv"
+  "*-coeficientes-efecto-devaluacion.csv"
 )
 direct_helper_path <- file.path(
   "command-files",
@@ -186,15 +186,20 @@ add_results_calculations <- function(data) {
     )
 }
 
-coeficiente_de <- function(coeficientes, variable) {
-  value <- coeficientes %>%
-    filter(.data$Variable == variable) %>%
-    pull(.data$incidencia_devaluacion)
-  if (length(value) != 1 || is.na(value)) {
-    stop("No se encontró coeficiente único para: ", variable)
-  }
-  value
+coeficiente_variable_col <- function(variable) {
+  recode(
+    variable,
+    "VBP" = "incidencia_vbp_pp",
+    "Consumo intermedio" = "incidencia_consumo_intermedio_estimado",
+    "Masa salarial" = "incidencia_remuneraciones",
+    "Consumo de capital fijo" = "incidencia_consumo_capital_fijo",
+    "Stock capital imputado" = "incidencia_stock_capital_imputado",
+    "Intereses" = "incidencia_intereses_industria_pesos",
+    .default = NA_character_
+  )
 }
+
+coeficientes_path <- latest_file(coeficientes_pattern)
 
 for (path in c(
   source_panel_path,
@@ -239,28 +244,64 @@ assert_columns(
   "coeficientes-devaluacion"
 )
 coeficientes_modelo <- coeficientes_devaluacion %>%
+  mutate(
+    seccion = if ("seccion" %in% names(coeficientes_devaluacion)) {
+      as.character(.data$seccion)
+    } else {
+      "industria-total"
+    }
+  ) %>%
   transmute(
+    seccion = .data$seccion,
     Variable = as.character(.data$Variable),
     incidencia_devaluacion = suppressWarnings(as.numeric(.data[[incidencia_col]])),
     Efecto = as.character(.data$Efecto),
     Formula = as.character(.data$Formula)
   )
 
+assert_unique_key(
+  coeficientes_modelo,
+  c("seccion", "Variable"),
+  "coeficientes-devaluacion"
+)
+
+coeficientes_secciones_requeridas <- c(
+  "industria-total",
+  "exportadora",
+  "mercado-interno"
+)
+
+coeficientes_variables_requeridas <- c(
+  "Consumo intermedio",
+  "Masa salarial",
+  "Intereses",
+  "VBP",
+  "Consumo de capital fijo",
+  "Stock capital imputado"
+)
+
 coeficientes_requeridos <- tibble(
-  Variable = c(
-    "Consumo intermedio",
-    "Masa salarial",
-    "Intereses",
-    "VBP",
-    "Consumo de capital fijo",
-    "Stock capital imputado"
-  )
+  seccion = rep(coeficientes_secciones_requeridas, each = length(coeficientes_variables_requeridas)),
+  Variable = rep(coeficientes_variables_requeridas, times = length(coeficientes_secciones_requeridas))
 ) %>%
-  left_join(coeficientes_modelo, by = "Variable")
+  left_join(coeficientes_modelo, by = c("seccion", "Variable"))
 
 if (any(is.na(coeficientes_requeridos$incidencia_devaluacion))) {
-  stop("Faltan coeficientes requeridos para devaluación-1.")
+  missing_coeficientes <- coeficientes_requeridos %>%
+    filter(is.na(.data$incidencia_devaluacion)) %>%
+    transmute(key = paste(.data$seccion, .data$Variable, sep = " / ")) %>%
+    pull(.data$key)
+  stop("Faltan coeficientes requeridos para devaluación-1: ", paste(missing_coeficientes, collapse = "; "))
 }
+
+coeficientes_incidencias <- coeficientes_modelo %>%
+  mutate(variable_col = coeficiente_variable_col(.data$Variable)) %>%
+  filter(!is.na(.data$variable_col)) %>%
+  select("seccion", "variable_col", "incidencia_devaluacion") %>%
+  tidyr::pivot_wider(
+    names_from = "variable_col",
+    values_from = "incidencia_devaluacion"
+  )
 
 assert_columns(
   source_panel,
@@ -594,19 +635,10 @@ rotaciones <- escenario_inicial %>%
 
 devaluacion_1 <- escenario_inicial %>%
   left_join(tipo_cambio, by = c("anno" = "anio")) %>%
+  left_join(coeficientes_incidencias, by = "seccion") %>%
   mutate(
     factor_devaluacion =
       safe_divide(.data$tipo_cambio_paridad_pesos_usd, .data$tipo_cambio_comercial_pesos_usd) - 1,
-    incidencia_vbp_pp = coeficiente_de(coeficientes_modelo, "VBP"),
-    incidencia_consumo_intermedio_estimado =
-      coeficiente_de(coeficientes_modelo, "Consumo intermedio"),
-    incidencia_remuneraciones = coeficiente_de(coeficientes_modelo, "Masa salarial"),
-    incidencia_consumo_capital_fijo =
-      coeficiente_de(coeficientes_modelo, "Consumo de capital fijo"),
-    incidencia_stock_capital_imputado =
-      coeficiente_de(coeficientes_modelo, "Stock capital imputado"),
-    incidencia_intereses_industria_pesos =
-      coeficiente_de(coeficientes_modelo, "Intereses"),
     delta_vbp_pp =
       .data$vbp_pp * .data$incidencia_vbp_pp * .data$factor_devaluacion,
     delta_consumo_intermedio_estimado =
@@ -831,15 +863,33 @@ metodologia <- tibble::tribble(
   "devaluacion", "uso en devaluación-1",
   paste(
     "En la hoja devaluación-1, los intereses asignados se actualizan con el",
-    "coeficiente definido en coeficientes-devaluación y con el factor de",
-    "devaluación calculado como tipo_cambio_paridad_pesos_usd /",
+    "coeficiente correspondiente a cada seccion y con el factor de devaluación",
+    "calculado como tipo_cambio_paridad_pesos_usd /",
     "tipo_cambio_comercial_pesos_usd - 1."
+  ),
+  "devaluacion", "coeficientes diferenciados",
+  paste(
+    "Industria total usa los coeficientes previos del archivo",
+    basename(coeficientes_path),
+    "cuando seccion == industria-total. Exportadora y mercado-interno usan",
+    "coeficientes diferenciados extraidos de la hoja Expo - Mercado Interno",
+    "del modelo Mussi de segmentos."
   )
 )
 
 coeficientes_metodologia <- coeficientes_devaluacion %>%
   mutate(
+    seccion_coeficiente = if ("seccion" %in% names(coeficientes_devaluacion)) {
+      as.character(.data$seccion)
+    } else {
+      "industria-total"
+    },
     Variable = as.character(.data$Variable),
+    variable_fuente = if ("variable_fuente" %in% names(coeficientes_devaluacion)) {
+      as.character(.data$variable_fuente)
+    } else {
+      .data$Variable
+    },
     Incidencia = suppressWarnings(as.numeric(.data[[incidencia_col]])),
     Efecto = as.character(.data$Efecto),
     Formula = as.character(.data$Formula),
@@ -847,9 +897,10 @@ coeficientes_metodologia <- coeficientes_devaluacion %>%
     Fuente = if ("Fuente" %in% names(.)) as.character(.data$Fuente) else NA_character_
   ) %>%
   transmute(
-    seccion = "coeficientes-devaluacion",
+    seccion = paste("coeficientes-devaluacion", .data$seccion_coeficiente, sep = " - "),
     item = .data$Variable,
     detalle = paste(
+      "Variable fuente:", .data$variable_fuente,
       "Incidencia:", .data$Incidencia,
       "| Efecto:", .data$Efecto,
       "| Formula:", .data$Formula,
