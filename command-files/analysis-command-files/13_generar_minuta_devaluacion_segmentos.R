@@ -3,6 +3,7 @@
 suppressPackageStartupMessages({
   library(dplyr)
   library(ggplot2)
+  library(readr)
   library(readxl)
   library(scales)
   library(stringr)
@@ -18,6 +19,13 @@ minutes_dir <- file.path("docs", "minutes")
 input_xlsx <- file.path(
   analysis_dir,
   paste0(date_prefix, "_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx")
+)
+
+clasificacion_path <- file.path(
+  "data",
+  "input-data",
+  "mussi",
+  "20260824_subramas_industriales_fuente_eaae_2020_2024.csv"
 )
 
 output_md <- file.path(
@@ -87,12 +95,17 @@ section_labels <- c(
 )
 
 component_labels <- c(
-  delta_vbp_pp = "VBP",
+  delta_vbp_pp = "VBP/exportador",
   delta_consumo_intermedio_estimado = "Consumo intermedio",
   delta_remuneraciones = "Remuneraciones",
   delta_consumo_capital_fijo = "Consumo capital fijo",
   delta_stock_capital_imputado = "Stock imputado",
-  delta_intereses_industria_pesos = "Intereses"
+  delta_intereses_industria_pesos = "Intereses pagados"
+)
+
+caption_fuente <- paste(
+  "Fuente: elaboración propia en base a EAAE y Oyanthabal,",
+  "con base en metodología de Iñigo Carrera (2007)."
 )
 
 devaluacion <- read_excel(input_xlsx, sheet = "devaluación-1") %>%
@@ -114,6 +127,31 @@ tipo_cambio <- read_excel(input_xlsx, sheet = "tipo-cambio") %>%
     factor_devaluacion =
       safe_divide(.data$tipo_cambio_paridad_pesos_usd, .data$tipo_cambio_comercial_pesos_usd) - 1
   )
+
+clasificacion_segmentos <- read_delim(
+  clasificacion_path,
+  delim = ";",
+  show_col_types = FALSE,
+  locale = locale(encoding = "UTF-8")
+)
+names(clasificacion_segmentos)[10] <- "clasificacion"
+clasificacion_segmentos <- clasificacion_segmentos %>%
+  transmute(
+    division_publicada = as.character(.data$division_publicada),
+    descripcion_fuente = str_squish(str_remove(as.character(.data$descripcion_fuente), "\\.$")),
+    clasificacion = str_squish(as.character(.data$clasificacion))
+  )
+
+segmento_items <- function(clasificacion) {
+  clasificacion_segmentos %>%
+    filter(.data$clasificacion == !!clasificacion) %>%
+    arrange(.data$division_publicada) %>%
+    transmute(item = paste0(.data$division_publicada, ": ", .data$descripcion_fuente)) %>%
+    pull(.data$item)
+}
+
+ramas_exportadoras <- segmento_items("Exportadora")
+ramas_mercado_interno <- segmento_items("Mercado interno")
 
 required_sections <- names(section_labels)
 if (!setequal(unique(devaluacion$seccion), required_sections)) {
@@ -139,22 +177,22 @@ coeficientes <- devaluacion %>%
   mutate(
     variable = recode(
       .data$variable,
-      incidencia_vbp_pp = "VBP",
+      incidencia_vbp_pp = "VBP/exportador",
       incidencia_consumo_intermedio_estimado = "Consumo intermedio",
       incidencia_remuneraciones = "Masa salarial",
       incidencia_consumo_capital_fijo = "Consumo capital fijo",
       incidencia_stock_capital_imputado = "Stock imputado",
-      incidencia_intereses_industria_pesos = "Intereses"
+      incidencia_intereses_industria_pesos = "Intereses pagados"
     ),
     variable = factor(
       .data$variable,
       levels = c(
-        "VBP",
+        "VBP/exportador",
         "Consumo intermedio",
         "Masa salarial",
         "Consumo capital fijo",
         "Stock imputado",
-        "Intereses"
+        "Intereses pagados"
       )
     )
   )
@@ -185,10 +223,10 @@ descomposicion_2024 <- devaluacion %>%
   mutate(
     componente = recode(.data$componente, !!!component_labels),
     componente = factor(.data$componente, levels = unname(component_labels)),
-    # DECISION: VBP is the positive channel of devaluation. The other deltas
-    # are displayed as additional costs or capital requirements to clarify
-    # the economic direction of the effect.
-    signo_grafico = if_else(.data$componente == "VBP", .data$valor, -.data$valor),
+    # DECISION: VBP/exportador is the positive channel when closing the
+    # exchange-rate gap. The other deltas are displayed as additional costs or
+    # capital requirements to clarify the economic direction of the effect.
+    signo_grafico = if_else(.data$componente == "VBP/exportador", .data$valor, -.data$valor),
     valor_miles_mill = .data$valor / 1e9
   )
 
@@ -226,10 +264,10 @@ ggplot(tipo_cambio, aes(x = .data$anio, y = .data$factor_devaluacion)) +
   scale_x_continuous(breaks = sort(unique(tipo_cambio$anio))) +
   scale_y_continuous(labels = percent_format(accuracy = 1, decimal.mark = ",")) +
   labs(
-    title = "Factor de devaluación modelado",
+    title = "Brecha cambiaria modelada",
     x = NULL,
     y = "TCP / TCC - 1",
-    caption = "Fuente: elaboración propia en base a EAAE y supuestos Mussi de tipo de cambio."
+    caption = caption_fuente
   ) +
   theme_report
 ggsave(fig1_path, width = 8, height = 4.6, dpi = 160)
@@ -239,11 +277,11 @@ ggplot(coeficientes, aes(x = .data$variable, y = .data$seccion_label, fill = .da
   geom_text(aes(label = percent(.data$incidencia, accuracy = 0.1, decimal.mark = ",")), size = 3) +
   scale_fill_gradient(low = "#F1FAEE", high = "#1D3557", labels = percent_format(decimal.mark = ",")) +
   labs(
-    title = "Coeficientes de incidencia de la devaluación",
+    title = "Coeficientes de incidencia del cierre de brecha cambiaria",
     x = NULL,
     y = NULL,
     fill = "Incidencia",
-    caption = "Fuente: elaboración propia en base a EAAE y coeficientes Mussi."
+    caption = caption_fuente
   ) +
   theme_report +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
@@ -265,7 +303,7 @@ tg_long <- devaluacion %>%
     escenario = recode(
       .data$escenario,
       tasa_base = "Escenario inicial",
-      tasa_devaluacion = "Devaluación"
+      tasa_devaluacion = "Paridad cambiaria"
     )
   )
 
@@ -275,13 +313,13 @@ ggplot(tg_long, aes(x = .data$anno, y = .data$tasa, color = .data$escenario)) +
   facet_wrap(vars(.data$seccion_label), nrow = 1) +
   scale_x_continuous(breaks = sort(unique(tg_long$anno))) +
   scale_y_continuous(labels = percent_format(accuracy = 1, decimal.mark = ",")) +
-  scale_color_manual(values = c("Escenario inicial" = "#457B9D", "Devaluación" = "#E63946")) +
+  scale_color_manual(values = c("Escenario inicial" = "#457B9D", "Paridad cambiaria" = "#E63946")) +
   labs(
     title = "Tasa de ganancia a precios básicos",
     x = NULL,
     y = NULL,
     color = NULL,
-    caption = "Fuente: elaboración propia en base a EAAE y coeficientes Mussi."
+    caption = caption_fuente
   ) +
   theme_report
 ggsave(fig3_path, width = 10.5, height = 4.8, dpi = 160)
@@ -295,11 +333,11 @@ ggplot(devaluacion, aes(x = factor(.data$anno), y = .data$variacion_tasa_gananci
     "Mercado interno" = "#E76F51"
   )) +
   labs(
-    title = "Cambio en la tasa de ganancia ante la devaluación",
+    title = "Cambio en la tasa de ganancia al cerrar la brecha cambiaria",
     x = NULL,
     y = "Puntos porcentuales",
     fill = NULL,
-    caption = "Fuente: elaboración propia en base a EAAE y coeficientes Mussi."
+    caption = caption_fuente
   ) +
   theme_report
 ggsave(fig4_path, width = 9, height = 5, dpi = 160)
@@ -313,12 +351,12 @@ ggplot(descomposicion_2024, aes(x = .data$componente, y = .data$signo_grafico / 
     "Mercado interno" = "#E76F51"
   )) +
   labs(
-    title = "Canales monetarios del efecto devaluación en 2024",
-    subtitle = "VBP se muestra como impulso positivo; costos, stock e intereses como cargas adicionales",
+    title = "Canales monetarios del cierre de brecha cambiaria en 2024",
+    subtitle = "VBP/exportador se muestra como impulso positivo; costos, stock e intereses pagados como cargas adicionales",
     x = NULL,
     y = "Miles de millones de pesos corrientes",
     fill = NULL,
-    caption = "Fuente: elaboración propia en base a EAAE y coeficientes Mussi."
+    caption = caption_fuente
   ) +
   theme_report +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
@@ -347,7 +385,7 @@ ggplot(participacion_long, aes(x = .data$componente, y = .data$participacion, fi
     x = NULL,
     y = "Porcentaje del delta industrial total",
     fill = NULL,
-    caption = "Fuente: elaboración propia en base a EAAE y coeficientes Mussi."
+    caption = caption_fuente
   ) +
   theme_report +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
@@ -357,12 +395,18 @@ coef_table <- coeficientes %>%
   mutate(
     incidencia = fmt_pct(.data$incidencia * 100),
     seccion_label = as.character(.data$seccion_label),
-    variable = as.character(.data$variable)
+    variable = as.character(.data$variable),
+    efecto_contable = case_when(
+      .data$variable == "VBP/exportador" ~ "Positivo para la ganancia",
+      .data$variable == "Stock imputado" ~ "Negativo: eleva capital adelantado",
+      TRUE ~ "Negativo: eleva costos o gastos"
+    )
   ) %>%
   select(
     `Sección` = seccion_label,
     `Variable afectada` = variable,
-    `Incidencia` = incidencia
+    `Incidencia` = incidencia,
+    `Efecto contable ante paridad` = efecto_contable
   ) %>%
   arrange(.data$`Sección`, .data$`Variable afectada`)
 
@@ -370,10 +414,10 @@ resumen_table <- resumen %>%
   transmute(
     `Sección` = as.character(.data$seccion_label),
     `TG base prom.` = fmt_pct(.data$tg_base_prom_pct),
-    `TG devaluada prom.` = fmt_pct(.data$tg_dev_prom_pct),
+    `TG paridad prom.` = fmt_pct(.data$tg_dev_prom_pct),
     `Cambio prom.` = fmt_pp(.data$cambio_pp_prom),
     `TG base 2024` = fmt_pct(.data$tg_base_2024_pct),
-    `TG devaluada 2024` = fmt_pct(.data$tg_dev_2024_pct),
+    `TG paridad 2024` = fmt_pct(.data$tg_dev_2024_pct),
     `Cambio 2024` = fmt_pp(.data$cambio_pp_2024),
     `Var. ganancia 2024` = fmt_pct(.data$var_ganancia_2024_pct)
   )
@@ -382,12 +426,12 @@ descomp_table <- devaluacion %>%
   filter(.data$anno == 2024) %>%
   transmute(
     `Sección` = as.character(.data$seccion_label),
-    `Delta VBP` = fmt_num(.data$delta_vbp_pp / 1e9),
+    `Delta VBP/exportador` = fmt_num(.data$delta_vbp_pp / 1e9),
     `Delta CI` = fmt_num(.data$delta_consumo_intermedio_estimado / 1e9),
     `Delta remuneraciones` = fmt_num(.data$delta_remuneraciones / 1e9),
     `Delta CCF` = fmt_num(.data$delta_consumo_capital_fijo / 1e9, 2),
     `Delta stock` = fmt_num(.data$delta_stock_capital_imputado / 1e9),
-    `Delta intereses` = fmt_num(.data$delta_intereses_industria_pesos / 1e9, 2)
+    `Delta intereses pagados` = fmt_num(.data$delta_intereses_industria_pesos / 1e9, 2)
   )
 
 participacion_table <- participacion_deltas_2024 %>%
@@ -422,8 +466,28 @@ delta_industria_2024 <- devaluacion %>%
   pull(.data$delta_vbp_pp) %>%
   `/`(1e9)
 
+deltas_2024_resumen <- devaluacion %>%
+  filter(.data$anno == 2024) %>%
+  transmute(
+    seccion,
+    vbp_miles_mill = .data$delta_vbp_pp / 1e9,
+    gastos_miles_mill = (
+      .data$delta_consumo_intermedio_estimado +
+        .data$delta_remuneraciones +
+        .data$delta_consumo_capital_fijo +
+        .data$delta_intereses_industria_pesos
+    ) / 1e9,
+    stock_miles_mill = .data$delta_stock_capital_imputado / 1e9
+  )
+
+delta_value <- function(seccion, variable) {
+  deltas_2024_resumen %>%
+    filter(.data$seccion == !!seccion) %>%
+    pull({{ variable }})
+}
+
 md <- c(
-  "# Efectos diferenciados de una devaluación sobre la industria manufacturera uruguaya, 2020-2024",
+  "# Apropiación de riqueza por sobrevaluación cambiaria en la industria manufacturera uruguaya, 2020-2024",
   "",
   paste0(
     "Fuente de trabajo: `",
@@ -434,19 +498,42 @@ md <- c(
   "## Síntesis",
   "",
   paste(
-    "El ejercicio compara los resultados corrientes observados de la industria",
-    "manufacturera con un escenario en el que el tipo de cambio pasa desde el",
-    "nivel comercial al nivel de paridad. La simulación no modifica cantidades,",
-    "productividad ni estructura productiva; aplica coeficientes de incidencia",
-    "sobre componentes monetarios para estimar un impacto contable de corto",
-    "plazo."
+    "El ejercicio dimensiona la apropiación de riqueza asociada a sostener un",
+    "tipo de cambio comercial por debajo del tipo de cambio de paridad. Para",
+    "ello compara los resultados corrientes observados de la industria",
+    "manufacturera con un contrafactual anual en el que las magnitudes sensibles",
+    "al tipo de cambio se valoran con la paridad. La simulación no modifica",
+    "cantidades, productividad ni estructura productiva; aplica coeficientes de",
+    "incidencia sobre componentes monetarios para estimar un impacto contable",
+    "de corto plazo."
+  ),
+  "",
+  paste(
+    "Las fuentes usadas son: EAAE para VBP, VAB, remuneraciones, consumo",
+    "intermedio estimado, consumo de capital fijo, stock de capital y capital",
+    "adelantado; Oyanthabal, con base en la metodología de Iñigo Carrera (2007),",
+    "para los tipos de cambio comercial/paridad y los coeficientes de incidencia",
+    "del ejercicio; y la clasificación operativa de subramas industriales",
+    "2020-2024 usada para separar industria exportadora, mercado interno y",
+    "combustible."
+  ),
+  "",
+  paste(
+    "Se trabaja desde 2020 porque en ese tramo la fuente opera con ramas",
+    "homogéneas. Extender el ejercicio al panel completo exigiría procesar",
+    "distintas versiones CIIU, lo que vuelve incompatible diferenciar con",
+    "criterio uniforme el segmento industrial exportador y el segmento orientado",
+    "al mercado interno. Complementariamente, el período 2020-2024 es razonable",
+    "para una lectura en valores corrientes porque evita grandes saltos de nivel",
+    "asociados a cambios clasificatorios."
   ),
   "",
   paste0(
     "Con coeficientes diferenciados por sección, el resultado central es una",
-    " fractura interna dentro de la manufactura. La industria total aumenta su",
-    " tasa de ganancia a precios básicos, pero ese resultado es arrastrado por",
-    " el segmento exportador. En 2024, el segmento exportador pasa de ",
+    " fractura interna dentro de la manufactura. Bajo el contrafactual de",
+    " paridad, la industria total aumenta su tasa de ganancia a precios básicos,",
+    " pero ese resultado es arrastrado por el segmento exportador. En 2024, el",
+    " segmento exportador pasa de ",
     fmt_pct(value_for(summary_2024, "exportadora", tg_base_2024_pct)),
     " a ",
     fmt_pct(value_for(summary_2024, "exportadora", tg_dev_2024_pct)),
@@ -460,22 +547,31 @@ md <- c(
   "## Supuestos y escenarios",
   "",
   "- `escenario-inicial` contiene los valores corrientes observados para industria total, segmento exportador y segmento mercado interno.",
-  "- `devaluación-1` recalcula los componentes mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`.",
-  "- El canal positivo se modela sobre `vbp_pp`; los canales de costo o requerimiento adicional se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses.",
+  "- `devaluación-1` mantiene el nombre técnico de la hoja, pero analíticamente se interpreta como cierre anual de la brecha entre tipo de cambio comercial y tipo de cambio de paridad.",
+  "- El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.",
+  "- Desde otro punto de vista, el mismo ejercicio permite dimensionar el efecto que tiene sostener un tipo de cambio sobrevaluado sobre la apropiación de riqueza por parte de la industria.",
+  "- El canal positivo se modela sobre `vbp_pp` como `VBP/exportador`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.",
   "- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según participación en `vbp_pp`.",
-  "- El grupo `combustible` queda fuera del libro de resultados y de esta minuta; se conserva sólo en el panel CSV para trazabilidad contable.",
+  "- El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.",
   "",
-  paste0("![Factor de devaluación modelado](", fig_rel(fig1_path), ")"),
+  "Ramas incluidas en el segmento exportador:",
+  paste0("- ", ramas_exportadoras),
+  "",
+  "Ramas incluidas en el segmento mercado interno:",
+  paste0("- ", ramas_mercado_interno),
+  "",
+  paste0("![Brecha cambiaria modelada](", fig_rel(fig1_path), ")"),
   "",
   "## Coeficientes de incidencia",
   "",
   paste(
-    "La diferencia principal frente a ejercicios anteriores es que los",
-    "coeficientes ya no son únicos para toda la manufactura. La industria total",
-    "conserva los coeficientes previos, mientras que los segmentos exportador y",
-    "mercado interno toman coeficientes específicos. Esto permite que el mismo",
-    "shock cambiario tenga efectos distintos según orientación comercial y",
-    "estructura de costos."
+    "Los coeficientes indican qué proporción de cada variable queda expuesta al",
+    "cierre de la brecha cambiaria. Desde el punto de vista del contrafactual de",
+    "paridad, `VBP/exportador` tiene signo positivo para la ganancia, porque",
+    "eleva la valorización de ventas asociadas al tipo de cambio. En cambio,",
+    "consumo intermedio, masa salarial, consumo de capital fijo e intereses",
+    "pagados operan como gastos o costos; el stock imputado afecta negativamente",
+    "la tasa porque eleva el capital adelantado."
   ),
   "",
   paste0("![Coeficientes de incidencia por segmento](", fig_rel(fig2_path), ")"),
@@ -493,7 +589,7 @@ md <- c(
     ". En cambio, el segmento mercado interno muestra una variación promedio de ",
     fmt_pp(value_for(resumen, "mercado-interno", cambio_pp_prom)),
     ", lo que indica que el encarecimiento de costos supera el impulso positivo ",
-    "sobre el VBP."
+    "sobre el VBP/exportador."
   ),
   "",
   paste0("![Tasa de ganancia a precios básicos](", fig_rel(fig3_path), ")"),
@@ -505,13 +601,15 @@ md <- c(
   "## Mecanismo de transmisión en 2024",
   "",
   paste0(
-    "En 2024, el aumento de `vbp_pp` es el principal canal positivo. Para la",
+    "En 2024, el aumento de `vbp_pp` es el principal canal positivo. El gráfico",
+    " y el cuadro expresan los deltas en miles de millones de pesos corrientes.",
+    " Para la",
     " industria total equivale a ",
     fmt_num(delta_industria_2024),
     " miles de millones de pesos corrientes. Ese impulso se compensa parcialmente ",
     "por el aumento de consumo intermedio, remuneraciones, consumo de capital ",
-    "fijo, stock imputado e intereses. La asimetría por segmento es clara: el ",
-    "segmento exportador capta la mayor parte del impulso por VBP, mientras que ",
+    "fijo, stock imputado e intereses pagados. La asimetría por segmento es clara: el ",
+    "segmento exportador capta la mayor parte del impulso por VBP/exportador, mientras que ",
     "en mercado interno el aumento de costos queda por encima del impulso de ",
     "ventas."
   ),
@@ -525,12 +623,35 @@ md <- c(
   paste0(
     "La lectura por participaciones muestra que, en 2024, el segmento exportador",
     " explica ",
-    fmt_pct(participacion_deltas_2024$exportadora_pct[participacion_deltas_2024$componente == "VBP"]),
-    " del delta de VBP de la industria total, frente a ",
-    fmt_pct(participacion_deltas_2024$mercado_interno_pct[participacion_deltas_2024$componente == "VBP"]),
+    fmt_pct(participacion_deltas_2024$exportadora_pct[participacion_deltas_2024$componente == "VBP/exportador"]),
+    " del delta de VBP/exportador de la industria total, frente a ",
+    fmt_pct(participacion_deltas_2024$mercado_interno_pct[participacion_deltas_2024$componente == "VBP/exportador"]),
     " del segmento mercado interno. Esta concentración explica por qué la mejora",
     " agregada de la industria total no debe leerse como un efecto homogéneo para",
     " toda la manufactura."
+  ),
+  "",
+  paste0(
+    "En magnitudes de 2024, el VBP/exportador de la industria total aumenta ",
+    fmt_num(delta_value("industria-total", vbp_miles_mill)),
+    " miles de millones de pesos corrientes, mientras los gastos modelados",
+    " aumentan ",
+    fmt_num(delta_value("industria-total", gastos_miles_mill)),
+    " y el stock imputado aumenta ",
+    fmt_num(delta_value("industria-total", stock_miles_mill)),
+    ". En el segmento exportador, el aumento de VBP/exportador es ",
+    fmt_num(delta_value("exportadora", vbp_miles_mill)),
+    " frente a gastos por ",
+    fmt_num(delta_value("exportadora", gastos_miles_mill)),
+    " y stock por ",
+    fmt_num(delta_value("exportadora", stock_miles_mill)),
+    ". En mercado interno, el VBP/exportador aumenta ",
+    fmt_num(delta_value("mercado-interno", vbp_miles_mill)),
+    ", pero los gastos aumentan ",
+    fmt_num(delta_value("mercado-interno", gastos_miles_mill)),
+    " y el stock ",
+    fmt_num(delta_value("mercado-interno", stock_miles_mill)),
+    "."
   ),
   "",
   paste0("![Participación de segmentos en los deltas 2024](", fig_rel(fig6_path), ")"),
@@ -540,21 +661,23 @@ md <- c(
   "## Interpretación",
   "",
   paste(
-    "La simulación sugiere que una devaluación de esta magnitud redistribuye",
+    "La simulación sugiere que la sobrevaluación cambiaria redistribuye",
     "condiciones de rentabilidad dentro de la industria. Para el segmento",
-    "exportador, el aumento del VBP en pesos domina el encarecimiento de costos",
-    "y eleva con fuerza la tasa de ganancia. Para el segmento mercado interno,",
-    "la menor incidencia del canal VBP y la mayor presión relativa de costos",
-    "producen una caída de la rentabilidad."
+    "exportador, cerrar la brecha con la paridad elevaría el VBP en pesos por",
+    "encima del encarecimiento de costos y aumentaría con fuerza la tasa de",
+    "ganancia. Desde la lectura inversa, sostener el tipo de cambio comercial",
+    "sobrevaluado reduce esa apropiación potencial. Para el segmento mercado",
+    "interno, la menor incidencia del canal VBP y la mayor presión relativa de",
+    "costos implican que el cierre de la brecha deteriora la rentabilidad."
   ),
   "",
   paste(
     "Por lo tanto, el resultado agregado de la industria total debe interpretarse",
-    "con cautela: expresa una mejora promedio, pero esa mejora proviene de una",
-    "composición sectorial desigual. La devaluación no opera como estímulo",
-    "general equivalente para toda la manufactura, sino como un shock que",
-    "beneficia principalmente a los grupos con mayor capacidad de valorización",
-    "en moneda extranjera."
+    "con cautela: expresa una mejora promedio bajo paridad, pero esa mejora",
+    "proviene de una composición sectorial desigual. La sobrevaluación no afecta",
+    "de manera equivalente a toda la manufactura: limita especialmente la",
+    "valorización del segmento exportador y, al mismo tiempo, contiene costos",
+    "para actividades más orientadas al mercado interno."
   ),
   "",
   "## Anexo técnico",
@@ -567,7 +690,7 @@ md <- c(
   "factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1",
   "```",
   "",
-  "La ganancia a precios básicos bajo devaluación se calcula como:",
+  "La ganancia a precios básicos bajo cierre de brecha/paridad se calcula como:",
   "",
   "```text",
   "ganancia_pb_devaluacion =",
@@ -575,7 +698,7 @@ md <- c(
   "  delta_remuneraciones - delta_consumo_capital_fijo",
   "```",
   "",
-  "El capital total adelantado bajo devaluación incorpora el cambio en stock imputado y en capital circulante:",
+  "El capital total adelantado bajo cierre de brecha/paridad incorpora el cambio en stock imputado y en capital circulante:",
   "",
   "```text",
   "capital_total_adelantado_devaluacion =",
@@ -583,7 +706,7 @@ md <- c(
   "  (delta_remuneraciones + delta_consumo_intermedio_estimado) / rotacion_calibrada_sobre_6_6",
   "```",
   "",
-  "La tasa de ganancia a precios básicos bajo devaluación se calcula como:",
+  "La tasa de ganancia a precios básicos bajo cierre de brecha/paridad se calcula como:",
   "",
   "```text",
   "tasa_ganancia_pb_devaluacion =",
