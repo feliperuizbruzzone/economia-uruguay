@@ -209,13 +209,10 @@ coeficiente_variable_col <- function(variable) {
   )
 }
 
-coeficientes_path <- latest_file(coeficientes_pattern)
-
 for (path in c(
   source_panel_path,
   classification_path,
   tipo_cambio_path,
-  coeficientes_path,
   direct_helper_path
 )) {
   if (!file.exists(path)) {
@@ -241,77 +238,6 @@ tipo_cambio <- read_csv(tipo_cambio_path, show_col_types = FALSE) %>%
   ) %>%
   filter(.data$anio >= 2020, .data$anio <= 2024) %>%
   arrange(.data$anio)
-
-coeficientes_devaluacion <- read_csv(coeficientes_path, show_col_types = FALSE)
-incidencia_col <- if ("Incidencia devaluación" %in% names(coeficientes_devaluacion)) {
-  "Incidencia devaluación"
-} else {
-  "Incidencia"
-}
-assert_columns(
-  coeficientes_devaluacion,
-  c("Variable", incidencia_col, "Efecto", "Formula"),
-  "coeficientes-devaluacion"
-)
-coeficientes_modelo <- coeficientes_devaluacion %>%
-  mutate(
-    seccion = if ("seccion" %in% names(coeficientes_devaluacion)) {
-      as.character(.data$seccion)
-    } else {
-      "industria-total"
-    }
-  ) %>%
-  transmute(
-    seccion = .data$seccion,
-    Variable = as.character(.data$Variable),
-    incidencia_devaluacion = suppressWarnings(as.numeric(.data[[incidencia_col]])),
-    Efecto = as.character(.data$Efecto),
-    Formula = as.character(.data$Formula)
-  )
-
-assert_unique_key(
-  coeficientes_modelo,
-  c("seccion", "Variable"),
-  "coeficientes-devaluacion"
-)
-
-coeficientes_secciones_requeridas <- c(
-  "industria-total",
-  "exportadora",
-  "mercado-interno"
-)
-
-coeficientes_variables_requeridas <- c(
-  "Consumo intermedio",
-  "Masa salarial",
-  "Intereses",
-  "VBP",
-  "Consumo de capital fijo",
-  "Stock capital imputado"
-)
-
-coeficientes_requeridos <- tibble(
-  seccion = rep(coeficientes_secciones_requeridas, each = length(coeficientes_variables_requeridas)),
-  Variable = rep(coeficientes_variables_requeridas, times = length(coeficientes_secciones_requeridas))
-) %>%
-  left_join(coeficientes_modelo, by = c("seccion", "Variable"))
-
-if (any(is.na(coeficientes_requeridos$incidencia_devaluacion))) {
-  missing_coeficientes <- coeficientes_requeridos %>%
-    filter(is.na(.data$incidencia_devaluacion)) %>%
-    transmute(key = paste(.data$seccion, .data$Variable, sep = " / ")) %>%
-    pull(.data$key)
-  stop("Faltan coeficientes requeridos para devaluación-1: ", paste(missing_coeficientes, collapse = "; "))
-}
-
-coeficientes_incidencias <- coeficientes_modelo %>%
-  mutate(variable_col = coeficiente_variable_col(.data$Variable)) %>%
-  filter(!is.na(.data$variable_col)) %>%
-  select("seccion", "variable_col", "incidencia_devaluacion") %>%
-  tidyr::pivot_wider(
-    names_from = "variable_col",
-    values_from = "incidencia_devaluacion"
-  )
 
 assert_columns(
   source_panel,
@@ -588,6 +514,22 @@ panel <- panel %>%
   select(-vbp_pp_industria_total, -intereses_industria_pesos_total)
 
 write_csv(panel, output_panel_path, na = "")
+
+cat("Panel creado: ", output_panel_path, "\n", sep = "")
+cat("Actualizando XLSX de escenarios con el script dedicado.\n")
+
+# DECISION: scenario modelling is centralised in script 12 so the complete
+# panel builder and the XLSX updater cannot diverge when coefficient workbooks
+# add new scenarios.
+status <- system2(
+  "Rscript",
+  file.path("command-files", "analysis-command-files", "12_update_eaae_industria_devaluacion_segmentos.R")
+)
+if (!identical(status, 0L)) {
+  stop("Falló la actualización del XLSX de escenarios con estado: ", status)
+}
+
+quit(save = "no", status = 0)
 
 escenario_inicial <- panel %>%
   filter(.data$seccion != "combustible") %>%

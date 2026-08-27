@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(readr)
   library(stringr)
   library(tibble)
+  library(tidyr)
 })
 
 source(file.path(
@@ -61,6 +62,239 @@ coeficiente_variable_col <- function(variable) {
   )
 }
 
+normalise_incidence <- function(x) {
+  x <- suppressWarnings(as.numeric(x))
+  # DECISION: coefficient workbooks may store incidences either as proportions
+  # or as percentages. Values greater than one are interpreted as percentages.
+  if_else(!is.na(x) & abs(x) > 1, x / 100, x)
+}
+
+build_scenario_sheet <- function(
+  scenario_name,
+  escenario_inicial,
+  tipo_cambio,
+  coeficientes_modelo,
+  coeficientes_variables_requeridas,
+  section_order
+) {
+  coeficientes_scenario <- coeficientes_modelo %>%
+    filter(.data$escenario_nombre == !!scenario_name)
+
+  coeficientes_requeridos <- expand_grid(
+    seccion = section_order,
+    Variable = coeficientes_variables_requeridas
+  ) %>%
+    left_join(coeficientes_scenario, by = c("seccion", "Variable"))
+
+  if (any(is.na(coeficientes_requeridos$incidencia_devaluacion))) {
+    missing_coeficientes <- coeficientes_requeridos %>%
+      filter(is.na(.data$incidencia_devaluacion)) %>%
+      transmute(key = paste(.data$seccion, .data$Variable, sep = " / ")) %>%
+      pull(.data$key)
+    stop("Faltan coeficientes requeridos para ", scenario_name, ": ",
+         paste(missing_coeficientes, collapse = "; "))
+  }
+
+  coeficientes_incidencias <- coeficientes_scenario %>%
+    mutate(variable_col = coeficiente_variable_col(.data$Variable)) %>%
+    filter(!is.na(.data$variable_col)) %>%
+    select("seccion", "variable_col", "incidencia_devaluacion") %>%
+    pivot_wider(
+      names_from = "variable_col",
+      values_from = "incidencia_devaluacion"
+    )
+
+  devaluacion <- escenario_inicial %>%
+    left_join(tipo_cambio, by = c("anno" = "anio")) %>%
+    left_join(coeficientes_incidencias, by = "seccion") %>%
+    mutate(
+      escenario = scenario_name,
+      factor_devaluacion =
+        safe_divide(.data$tipo_cambio_paridad_pesos_usd, .data$tipo_cambio_comercial_pesos_usd) - 1,
+      delta_vbp_pp =
+        .data$vbp_pp * .data$incidencia_vbp_pp * .data$factor_devaluacion,
+      delta_consumo_intermedio_estimado =
+        .data$consumo_intermedio_estimado *
+        .data$incidencia_consumo_intermedio_estimado *
+        .data$factor_devaluacion,
+      delta_remuneraciones =
+        .data$remuneraciones *
+        .data$incidencia_remuneraciones *
+        .data$factor_devaluacion,
+      delta_consumo_capital_fijo =
+        .data$consumo_capital_fijo *
+        .data$incidencia_consumo_capital_fijo *
+        .data$factor_devaluacion,
+      delta_stock_capital_imputado =
+        .data$stock_capital_imputado *
+        .data$incidencia_stock_capital_imputado *
+        .data$factor_devaluacion,
+      delta_intereses_industria_pesos =
+        .data$intereses_industria_pesos *
+        .data$incidencia_intereses_industria_pesos *
+        .data$factor_devaluacion,
+      vbp_pp_devaluacion =
+        .data$vbp_pp + .data$delta_vbp_pp,
+      consumo_intermedio_estimado_devaluacion =
+        .data$consumo_intermedio_estimado + .data$delta_consumo_intermedio_estimado,
+      vab_pp_devaluacion =
+        .data$vab_pp + .data$delta_vbp_pp - .data$delta_consumo_intermedio_estimado,
+      vab_pb_estimado_devaluacion =
+        .data$vab_pb_estimado + .data$delta_vbp_pp - .data$delta_consumo_intermedio_estimado,
+      remuneraciones_devaluacion =
+        .data$remuneraciones + .data$delta_remuneraciones,
+      consumo_capital_fijo_devaluacion =
+        .data$consumo_capital_fijo + .data$delta_consumo_capital_fijo,
+      stock_capital_imputado_devaluacion =
+        .data$stock_capital_imputado + .data$delta_stock_capital_imputado,
+      intereses_industria_pesos_devaluacion =
+        .data$intereses_industria_pesos + .data$delta_intereses_industria_pesos,
+      capital_variable_adelantado_devaluacion =
+        .data$capital_variable_adelantado +
+        safe_divide(.data$delta_remuneraciones, .data$rotacion_calibrada_sobre_6_6),
+      capital_circulante_constante_adelantado_devaluacion =
+        .data$capital_circulante_constante_adelantado +
+        safe_divide(.data$delta_consumo_intermedio_estimado, .data$rotacion_calibrada_sobre_6_6),
+      capital_total_adelantado_devaluacion =
+        .data$capital_total_adelantado +
+        .data$delta_stock_capital_imputado +
+        safe_divide(
+          .data$delta_remuneraciones + .data$delta_consumo_intermedio_estimado,
+          .data$rotacion_calibrada_sobre_6_6
+        ),
+      ganancia_pb_devaluacion =
+        .data$ganancia_pb +
+        .data$delta_vbp_pp -
+        .data$delta_consumo_intermedio_estimado -
+        .data$delta_remuneraciones -
+        .data$delta_consumo_capital_fijo,
+      ganancia_pp_devaluacion =
+        .data$ganancia_pp +
+        .data$delta_vbp_pp -
+        .data$delta_consumo_intermedio_estimado -
+        .data$delta_remuneraciones -
+        .data$delta_consumo_capital_fijo,
+      ganancia_pb_desp_intereses_devaluacion =
+        .data$ganancia_pb_devaluacion - .data$intereses_industria_pesos_devaluacion,
+      ganancia_pp_desp_intereses_devaluacion =
+        .data$ganancia_pp_devaluacion - .data$intereses_industria_pesos_devaluacion,
+      tasa_ganancia_pb_devaluacion =
+        safe_divide(.data$ganancia_pb_devaluacion, .data$capital_total_adelantado_devaluacion),
+      tasa_ganancia_pp_devaluacion =
+        safe_divide(.data$ganancia_pp_devaluacion, .data$capital_total_adelantado_devaluacion),
+      tasa_ganancia_pb_desp_intereses_devaluacion =
+        safe_divide(.data$ganancia_pb_desp_intereses_devaluacion, .data$capital_total_adelantado_devaluacion),
+      tasa_ganancia_pp_desp_intereses_devaluacion =
+        safe_divide(.data$ganancia_pp_desp_intereses_devaluacion, .data$capital_total_adelantado_devaluacion),
+      variacion_ganancia_pb_pct =
+        (safe_divide(.data$ganancia_pb_devaluacion, .data$ganancia_pb) - 1) * 100,
+      variacion_ganancia_pp_pct =
+        (safe_divide(.data$ganancia_pp_devaluacion, .data$ganancia_pp) - 1) * 100,
+      variacion_tasa_ganancia_pb_pp =
+        (.data$tasa_ganancia_pb_devaluacion - .data$tasa_ganancia_pb) * 100,
+      variacion_tasa_ganancia_pp_pp =
+        (.data$tasa_ganancia_pp_devaluacion - .data$tasa_ganancia_pp) * 100,
+      variacion_ganancia_pb_desp_intereses_pct =
+        (safe_divide(
+          .data$ganancia_pb_desp_intereses_devaluacion,
+          .data$ganancia_pb_desp_intereses
+        ) - 1) * 100,
+      variacion_ganancia_pp_desp_intereses_pct =
+        (safe_divide(
+          .data$ganancia_pp_desp_intereses_devaluacion,
+          .data$ganancia_pp_desp_intereses
+        ) - 1) * 100,
+      variacion_tasa_ganancia_pb_desp_intereses_pp =
+        (.data$tasa_ganancia_pb_desp_intereses_devaluacion -
+          .data$tasa_ganancia_pb_desp_intereses) * 100,
+      variacion_tasa_ganancia_pp_desp_intereses_pp =
+        (.data$tasa_ganancia_pp_desp_intereses_devaluacion -
+          .data$tasa_ganancia_pp_desp_intereses) * 100
+    ) %>%
+    select(
+      "escenario",
+      "anno",
+      "nivel_panel",
+      "seccion",
+      "grupo_clasificacion",
+      "descripcion_nivel",
+      "tipo_cambio_comercial_pesos_usd",
+      "tipo_cambio_paridad_pesos_usd",
+      "factor_devaluacion",
+      "rotacion_calibrada_sobre_6_6",
+      starts_with("incidencia_"),
+      "vbp_pp",
+      "vbp_pp_devaluacion",
+      "delta_vbp_pp",
+      "consumo_intermedio_estimado",
+      "consumo_intermedio_estimado_devaluacion",
+      "delta_consumo_intermedio_estimado",
+      "vab_pp",
+      "vab_pp_devaluacion",
+      "vab_pb_estimado",
+      "vab_pb_estimado_devaluacion",
+      "remuneraciones",
+      "remuneraciones_devaluacion",
+      "delta_remuneraciones",
+      "consumo_capital_fijo",
+      "consumo_capital_fijo_devaluacion",
+      "delta_consumo_capital_fijo",
+      "stock_capital_imputado",
+      "stock_capital_imputado_devaluacion",
+      "delta_stock_capital_imputado",
+      "capital_variable_adelantado",
+      "capital_variable_adelantado_devaluacion",
+      "capital_circulante_constante_adelantado",
+      "capital_circulante_constante_adelantado_devaluacion",
+      "capital_total_adelantado",
+      "capital_total_adelantado_devaluacion",
+      "ganancia_pb",
+      "ganancia_pb_devaluacion",
+      "variacion_ganancia_pb_pct",
+      "ganancia_pp",
+      "ganancia_pp_devaluacion",
+      "variacion_ganancia_pp_pct",
+      "tasa_ganancia_pb",
+      "tasa_ganancia_pb_devaluacion",
+      "variacion_tasa_ganancia_pb_pp",
+      "tasa_ganancia_pp",
+      "tasa_ganancia_pp_devaluacion",
+      "variacion_tasa_ganancia_pp_pp",
+      "intereses_industria_pesos",
+      "intereses_industria_pesos_devaluacion",
+      "delta_intereses_industria_pesos",
+      "ganancia_pb_desp_intereses",
+      "ganancia_pb_desp_intereses_devaluacion",
+      "variacion_ganancia_pb_desp_intereses_pct",
+      "ganancia_pp_desp_intereses",
+      "ganancia_pp_desp_intereses_devaluacion",
+      "variacion_ganancia_pp_desp_intereses_pct",
+      "tasa_ganancia_pb_desp_intereses",
+      "tasa_ganancia_pb_desp_intereses_devaluacion",
+      "variacion_tasa_ganancia_pb_desp_intereses_pp",
+      "tasa_ganancia_pp_desp_intereses",
+      "tasa_ganancia_pp_desp_intereses_devaluacion",
+      "variacion_tasa_ganancia_pp_desp_intereses_pp"
+    ) %>%
+    arrange(.data$anno, factor(.data$seccion, levels = section_order))
+
+  required_devaluation_cols <- c(
+    "factor_devaluacion",
+    "incidencia_vbp_pp",
+    "incidencia_consumo_intermedio_estimado",
+    "incidencia_remuneraciones",
+    "incidencia_consumo_capital_fijo",
+    "incidencia_stock_capital_imputado",
+    "incidencia_intereses_industria_pesos"
+  )
+
+  if (any(devaluacion %>% select(all_of(required_devaluation_cols)) %>% is.na())) {
+    stop("Hay faltantes en factores o incidencias para ", scenario_name, ".")
+  }
+
+  devaluacion
+}
+
 panel_path <- latest_file(file.path(analysis_dir, "*_panel_eaae_2020_2024_industria.csv"))
 tipo_cambio_path <- file.path(analysis_dir, "20260812-exportaciones-manufactura-uruguay.csv")
 coeficientes_path <- latest_file(file.path(input_mussi_dir, "*-coeficientes-efecto-devaluacion.csv"))
@@ -85,6 +319,7 @@ tipo_cambio <- read_csv(tipo_cambio_path, show_col_types = FALSE) %>%
     "tipo_cambio_paridad_pesos_usd"
   ) %>%
   filter(.data$anio >= 2020, .data$anio <= 2024) %>%
+  distinct(.data$anio, .keep_all = TRUE) %>%
   arrange(.data$anio)
 
 coeficientes_devaluacion <- read_csv(coeficientes_path, show_col_types = FALSE)
@@ -101,15 +336,30 @@ assert_columns(
 )
 
 coeficientes_modelo <- coeficientes_devaluacion %>%
-  transmute(
+  mutate(
+    escenario = if ("escenario" %in% names(coeficientes_devaluacion)) {
+      as.character(.data$escenario)
+    } else {
+      "escenario_1_comercio_exterior"
+    },
+    escenario_nombre = if ("escenario_nombre" %in% names(coeficientes_devaluacion)) {
+      as.character(.data$escenario_nombre)
+    } else {
+      "Escenario 1 - Comercio Exterior"
+    },
+    descripcion_escenario = if ("descripcion_escenario" %in% names(coeficientes_devaluacion)) {
+      as.character(.data$descripcion_escenario)
+    } else {
+      NA_character_
+    },
     seccion = as.character(.data$seccion),
     Variable = as.character(.data$Variable),
     variable_fuente = if ("variable_fuente" %in% names(coeficientes_devaluacion)) {
       as.character(.data$variable_fuente)
     } else {
-      as.character(.data$Variable)
+      .data$Variable
     },
-    incidencia_devaluacion = suppressWarnings(as.numeric(.data[[incidencia_col]])),
+    incidencia_devaluacion = normalise_incidence(.data[[incidencia_col]]),
     Efecto = as.character(.data$Efecto),
     Formula = as.character(.data$Formula),
     Comentario = if ("Comentario" %in% names(coeficientes_devaluacion)) {
@@ -122,9 +372,35 @@ coeficientes_modelo <- coeficientes_devaluacion %>%
     } else {
       NA_character_
     }
+  ) %>%
+  select(
+    "escenario",
+    "escenario_nombre",
+    "descripcion_escenario",
+    "seccion",
+    "Variable",
+    "variable_fuente",
+    "incidencia_devaluacion",
+    "Efecto",
+    "Formula",
+    "Comentario",
+    "Fuente"
   )
 
-assert_unique_key(coeficientes_modelo, c("seccion", "Variable"), "coeficientes-devaluacion")
+assert_unique_key(
+  coeficientes_modelo,
+  c("escenario", "seccion", "Variable"),
+  "coeficientes-devaluacion"
+)
+
+scenario_names <- c(
+  "Escenario 1 - Comercio Exterior",
+  "Escenario 2 - Bienes Transables"
+)
+missing_scenarios <- setdiff(scenario_names, unique(coeficientes_modelo$escenario_nombre))
+if (length(missing_scenarios) > 0) {
+  stop("Faltan escenarios en coeficientes: ", paste(missing_scenarios, collapse = ", "))
+}
 
 coeficientes_secciones_requeridas <- c(
   "industria-total",
@@ -140,29 +416,6 @@ coeficientes_variables_requeridas <- c(
   "Consumo de capital fijo",
   "Stock capital imputado"
 )
-
-coeficientes_requeridos <- tibble(
-  seccion = rep(coeficientes_secciones_requeridas, each = length(coeficientes_variables_requeridas)),
-  Variable = rep(coeficientes_variables_requeridas, times = length(coeficientes_secciones_requeridas))
-) %>%
-  left_join(coeficientes_modelo, by = c("seccion", "Variable"))
-
-if (any(is.na(coeficientes_requeridos$incidencia_devaluacion))) {
-  missing_coeficientes <- coeficientes_requeridos %>%
-    filter(is.na(.data$incidencia_devaluacion)) %>%
-    transmute(key = paste(.data$seccion, .data$Variable, sep = " / ")) %>%
-    pull(.data$key)
-  stop("Faltan coeficientes requeridos para devaluación-1: ", paste(missing_coeficientes, collapse = "; "))
-}
-
-coeficientes_incidencias <- coeficientes_modelo %>%
-  mutate(variable_col = coeficiente_variable_col(.data$Variable)) %>%
-  filter(!is.na(.data$variable_col)) %>%
-  select("seccion", "variable_col", "incidencia_devaluacion") %>%
-  tidyr::pivot_wider(
-    names_from = "variable_col",
-    values_from = "incidencia_devaluacion"
-  )
 
 panel_required <- c(
   "anno",
@@ -207,11 +460,7 @@ assert_unique_key(tipo_cambio, "anio", "tipo-cambio")
 escenario_inicial <- panel %>%
   filter(.data$seccion != "combustible") %>%
   select(all_of(panel_required)) %>%
-  arrange(.data$anno, factor(.data$seccion, levels = c(
-    "industria-total",
-    "exportadora",
-    "mercado-interno"
-  )))
+  arrange(.data$anno, factor(.data$seccion, levels = coeficientes_secciones_requeridas))
 
 if (!setequal(unique(escenario_inicial$seccion), coeficientes_secciones_requeridas)) {
   stop("Las secciones del escenario inicial no coinciden con las secciones de coeficientes requeridas.")
@@ -249,191 +498,16 @@ rotaciones <- escenario_inicial %>%
     )
   )
 
-devaluacion_1 <- escenario_inicial %>%
-  left_join(tipo_cambio, by = c("anno" = "anio")) %>%
-  left_join(coeficientes_incidencias, by = "seccion") %>%
-  mutate(
-    factor_devaluacion =
-      safe_divide(.data$tipo_cambio_paridad_pesos_usd, .data$tipo_cambio_comercial_pesos_usd) - 1,
-    delta_vbp_pp =
-      .data$vbp_pp * .data$incidencia_vbp_pp * .data$factor_devaluacion,
-    delta_consumo_intermedio_estimado =
-      .data$consumo_intermedio_estimado *
-      .data$incidencia_consumo_intermedio_estimado *
-      .data$factor_devaluacion,
-    delta_remuneraciones =
-      .data$remuneraciones *
-      .data$incidencia_remuneraciones *
-      .data$factor_devaluacion,
-    delta_consumo_capital_fijo =
-      .data$consumo_capital_fijo *
-      .data$incidencia_consumo_capital_fijo *
-      .data$factor_devaluacion,
-    delta_stock_capital_imputado =
-      .data$stock_capital_imputado *
-      .data$incidencia_stock_capital_imputado *
-      .data$factor_devaluacion,
-    delta_intereses_industria_pesos =
-      .data$intereses_industria_pesos *
-      .data$incidencia_intereses_industria_pesos *
-      .data$factor_devaluacion,
-    vbp_pp_devaluacion =
-      .data$vbp_pp + .data$delta_vbp_pp,
-    consumo_intermedio_estimado_devaluacion =
-      .data$consumo_intermedio_estimado + .data$delta_consumo_intermedio_estimado,
-    vab_pp_devaluacion =
-      .data$vab_pp + .data$delta_vbp_pp - .data$delta_consumo_intermedio_estimado,
-    vab_pb_estimado_devaluacion =
-      .data$vab_pb_estimado + .data$delta_vbp_pp - .data$delta_consumo_intermedio_estimado,
-    remuneraciones_devaluacion =
-      .data$remuneraciones + .data$delta_remuneraciones,
-    consumo_capital_fijo_devaluacion =
-      .data$consumo_capital_fijo + .data$delta_consumo_capital_fijo,
-    stock_capital_imputado_devaluacion =
-      .data$stock_capital_imputado + .data$delta_stock_capital_imputado,
-    intereses_industria_pesos_devaluacion =
-      .data$intereses_industria_pesos + .data$delta_intereses_industria_pesos,
-    capital_variable_adelantado_devaluacion =
-      .data$capital_variable_adelantado +
-      safe_divide(.data$delta_remuneraciones, .data$rotacion_calibrada_sobre_6_6),
-    capital_circulante_constante_adelantado_devaluacion =
-      .data$capital_circulante_constante_adelantado +
-      safe_divide(.data$delta_consumo_intermedio_estimado, .data$rotacion_calibrada_sobre_6_6),
-    capital_total_adelantado_devaluacion =
-      .data$capital_total_adelantado +
-      .data$delta_stock_capital_imputado +
-      safe_divide(
-        .data$delta_remuneraciones + .data$delta_consumo_intermedio_estimado,
-        .data$rotacion_calibrada_sobre_6_6
-      ),
-    ganancia_pb_devaluacion =
-      .data$ganancia_pb +
-      .data$delta_vbp_pp -
-      .data$delta_consumo_intermedio_estimado -
-      .data$delta_remuneraciones -
-      .data$delta_consumo_capital_fijo,
-    ganancia_pp_devaluacion =
-      .data$ganancia_pp +
-      .data$delta_vbp_pp -
-      .data$delta_consumo_intermedio_estimado -
-      .data$delta_remuneraciones -
-      .data$delta_consumo_capital_fijo,
-    ganancia_pb_desp_intereses_devaluacion =
-      .data$ganancia_pb_devaluacion - .data$intereses_industria_pesos_devaluacion,
-    ganancia_pp_desp_intereses_devaluacion =
-      .data$ganancia_pp_devaluacion - .data$intereses_industria_pesos_devaluacion,
-    tasa_ganancia_pb_devaluacion =
-      safe_divide(.data$ganancia_pb_devaluacion, .data$capital_total_adelantado_devaluacion),
-    tasa_ganancia_pp_devaluacion =
-      safe_divide(.data$ganancia_pp_devaluacion, .data$capital_total_adelantado_devaluacion),
-    tasa_ganancia_pb_desp_intereses_devaluacion =
-      safe_divide(.data$ganancia_pb_desp_intereses_devaluacion, .data$capital_total_adelantado_devaluacion),
-    tasa_ganancia_pp_desp_intereses_devaluacion =
-      safe_divide(.data$ganancia_pp_desp_intereses_devaluacion, .data$capital_total_adelantado_devaluacion),
-    variacion_ganancia_pb_pct =
-      (safe_divide(.data$ganancia_pb_devaluacion, .data$ganancia_pb) - 1) * 100,
-    variacion_ganancia_pp_pct =
-      (safe_divide(.data$ganancia_pp_devaluacion, .data$ganancia_pp) - 1) * 100,
-    variacion_tasa_ganancia_pb_pp =
-      (.data$tasa_ganancia_pb_devaluacion - .data$tasa_ganancia_pb) * 100,
-    variacion_tasa_ganancia_pp_pp =
-      (.data$tasa_ganancia_pp_devaluacion - .data$tasa_ganancia_pp) * 100,
-    variacion_ganancia_pb_desp_intereses_pct =
-      (safe_divide(
-        .data$ganancia_pb_desp_intereses_devaluacion,
-        .data$ganancia_pb_desp_intereses
-      ) - 1) * 100,
-    variacion_ganancia_pp_desp_intereses_pct =
-      (safe_divide(
-        .data$ganancia_pp_desp_intereses_devaluacion,
-        .data$ganancia_pp_desp_intereses
-      ) - 1) * 100,
-    variacion_tasa_ganancia_pb_desp_intereses_pp =
-      (.data$tasa_ganancia_pb_desp_intereses_devaluacion -
-        .data$tasa_ganancia_pb_desp_intereses) * 100,
-    variacion_tasa_ganancia_pp_desp_intereses_pp =
-      (.data$tasa_ganancia_pp_desp_intereses_devaluacion -
-        .data$tasa_ganancia_pp_desp_intereses) * 100
-  ) %>%
-  select(
-    "anno",
-    "nivel_panel",
-    "seccion",
-    "grupo_clasificacion",
-    "descripcion_nivel",
-    "tipo_cambio_comercial_pesos_usd",
-    "tipo_cambio_paridad_pesos_usd",
-    "factor_devaluacion",
-    "rotacion_calibrada_sobre_6_6",
-    starts_with("incidencia_"),
-    "vbp_pp",
-    "vbp_pp_devaluacion",
-    "delta_vbp_pp",
-    "consumo_intermedio_estimado",
-    "consumo_intermedio_estimado_devaluacion",
-    "delta_consumo_intermedio_estimado",
-    "vab_pp",
-    "vab_pp_devaluacion",
-    "vab_pb_estimado",
-    "vab_pb_estimado_devaluacion",
-    "remuneraciones",
-    "remuneraciones_devaluacion",
-    "delta_remuneraciones",
-    "consumo_capital_fijo",
-    "consumo_capital_fijo_devaluacion",
-    "delta_consumo_capital_fijo",
-    "stock_capital_imputado",
-    "stock_capital_imputado_devaluacion",
-    "delta_stock_capital_imputado",
-    "capital_variable_adelantado",
-    "capital_variable_adelantado_devaluacion",
-    "capital_circulante_constante_adelantado",
-    "capital_circulante_constante_adelantado_devaluacion",
-    "capital_total_adelantado",
-    "capital_total_adelantado_devaluacion",
-    "ganancia_pb",
-    "ganancia_pb_devaluacion",
-    "variacion_ganancia_pb_pct",
-    "ganancia_pp",
-    "ganancia_pp_devaluacion",
-    "variacion_ganancia_pp_pct",
-    "tasa_ganancia_pb",
-    "tasa_ganancia_pb_devaluacion",
-    "variacion_tasa_ganancia_pb_pp",
-    "tasa_ganancia_pp",
-    "tasa_ganancia_pp_devaluacion",
-    "variacion_tasa_ganancia_pp_pp",
-    "intereses_industria_pesos",
-    "intereses_industria_pesos_devaluacion",
-    "delta_intereses_industria_pesos",
-    "ganancia_pb_desp_intereses",
-    "ganancia_pb_desp_intereses_devaluacion",
-    "variacion_ganancia_pb_desp_intereses_pct",
-    "ganancia_pp_desp_intereses",
-    "ganancia_pp_desp_intereses_devaluacion",
-    "variacion_ganancia_pp_desp_intereses_pct",
-    "tasa_ganancia_pb_desp_intereses",
-    "tasa_ganancia_pb_desp_intereses_devaluacion",
-    "variacion_tasa_ganancia_pb_desp_intereses_pp",
-    "tasa_ganancia_pp_desp_intereses",
-    "tasa_ganancia_pp_desp_intereses_devaluacion",
-    "variacion_tasa_ganancia_pp_desp_intereses_pp"
-  ) %>%
-  arrange(.data$anno, factor(.data$seccion, levels = coeficientes_secciones_requeridas))
-
-required_devaluation_cols <- c(
-  "factor_devaluacion",
-  "incidencia_vbp_pp",
-  "incidencia_consumo_intermedio_estimado",
-  "incidencia_remuneraciones",
-  "incidencia_consumo_capital_fijo",
-  "incidencia_stock_capital_imputado",
-  "incidencia_intereses_industria_pesos"
+scenario_sheets <- lapply(
+  scenario_names,
+  build_scenario_sheet,
+  escenario_inicial = escenario_inicial,
+  tipo_cambio = tipo_cambio,
+  coeficientes_modelo = coeficientes_modelo,
+  coeficientes_variables_requeridas = coeficientes_variables_requeridas,
+  section_order = coeficientes_secciones_requeridas
 )
-
-if (any(devaluacion_1 %>% select(all_of(required_devaluation_cols)) %>% is.na())) {
-  stop("Hay faltantes en factores o incidencias de devaluación.")
-}
+names(scenario_sheets) <- scenario_names
 
 metodologia <- tibble::tribble(
   ~seccion, ~item, ~detalle,
@@ -456,8 +530,10 @@ metodologia <- tibble::tribble(
   paste(
     "Los coeficientes se toman desde",
     basename(coeficientes_path),
-    ". Industria total conserva los coeficientes originales y los segmentos",
-    "exportadora y mercado-interno usan coeficientes diferenciados por sección."
+    ". La hoja Modelo del archivo fuente entrega los coeficientes para",
+    "industria total en dos escenarios; las hojas Impo_Expo - Mercado Interno",
+    "y Transable_Expo - MI entregan coeficientes específicos para exportadora",
+    "y mercado-interno."
   ),
   "fuentes", "intereses industriales",
   paste(
@@ -483,17 +559,26 @@ metodologia <- tibble::tribble(
     "factor_devaluacion = tipo_cambio_paridad_pesos_usd /",
     "tipo_cambio_comercial_pesos_usd - 1."
   ),
-  "devaluacion", "aplicación por sección",
+  "devaluacion", "Escenario 1 - Comercio Exterior",
   paste(
-    "La hoja devaluación-1 recalcula VBP, consumo intermedio, remuneraciones,",
-    "consumo de capital fijo, stock imputado e intereses con el coeficiente",
-    "especifico de la sección correspondiente."
+    "La apropiación de riqueza vía sobrevaluación se aplica a los componentes",
+    "importados de costos y capital y a la parte exportada de la producción.",
+    "El escenario recoge sólo la incidencia directa de importaciones y",
+    "exportaciones sobre la tasa de ganancia."
+  ),
+  "devaluacion", "Escenario 2 - Bienes Transables",
+  paste(
+    "La apropiación de riqueza vía sobrevaluación alcanza mercancías cuyos",
+    "precios internos se rigen por precios internacionales, aunque sean",
+    "producidas localmente y vendidas en el mercado interno. Incorpora la",
+    "revaluación de esa producción local y su incidencia sobre la tasa de",
+    "ganancia."
   )
 )
 
 coeficientes_metodologia <- coeficientes_modelo %>%
   transmute(
-    seccion = paste("coeficientes-devaluacion", .data$seccion, sep = " - "),
+    seccion = paste("coeficientes-devaluacion", .data$escenario_nombre, .data$seccion, sep = " - "),
     item = .data$Variable,
     detalle = paste(
       "Variable fuente:", .data$variable_fuente,
@@ -519,17 +604,27 @@ rotaciones_metodologia <- rotaciones %>%
 
 metodologia <- bind_rows(
   metodologia,
+  tibble(
+    seccion = "estructura",
+    item = "hojas integradas en metodologia",
+    detalle = paste(
+      "Las hojas coeficientes-devaluacion y rotaciones se integran en esta",
+      "hoja para concentrar los supuestos del modelo en un unico lugar."
+    )
+  ),
   coeficientes_metodologia,
   rotaciones_metodologia
 )
 
 write_xlsx_workbook(
   output_workbook_path,
-  list(
-    `metodología` = metodologia,
-    `escenario-inicial` = escenario_inicial,
-    `tipo-cambio` = tipo_cambio,
-    `devaluación-1` = devaluacion_1
+  c(
+    list(
+      `metodología` = metodologia,
+      `escenario-inicial` = escenario_inicial,
+      `tipo-cambio` = tipo_cambio
+    ),
+    scenario_sheets
   ),
   title = "Resultados corrientes grupos industria Mussi"
 )
@@ -538,4 +633,6 @@ cat("Panel CSV usado: ", panel_path, "\n", sep = "")
 cat("Coeficientes usados: ", coeficientes_path, "\n", sep = "")
 cat("XLSX creado: ", output_workbook_path, "\n", sep = "")
 cat("Escenario inicial filas: ", nrow(escenario_inicial), "\n", sep = "")
-cat("Devaluación-1 filas: ", nrow(devaluacion_1), "\n", sep = "")
+for (sheet_name in names(scenario_sheets)) {
+  cat(sheet_name, " filas: ", nrow(scenario_sheets[[sheet_name]]), "\n", sep = "")
+}
