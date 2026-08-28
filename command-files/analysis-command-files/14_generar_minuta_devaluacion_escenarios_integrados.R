@@ -273,12 +273,12 @@ read_scenario <- function(sheet_name) {
         .data$ganancia_pb - .data$ganancia_pb_devaluacion,
       saldo_sobrevaluacion_ganancia_pb_desp_intereses =
         .data$ganancia_pb_desp_intereses - .data$ganancia_pb_desp_intereses_devaluacion,
-      # DECISION: the relative chart normalizes the overvaluation balance by
+      # DECISION: the relative chart normalizes the moment-2 profit change by
       # the initial profit mass, not by the counterfactual moment-2 profit.
-      # This reads the balance as a share of observed profit and avoids
-      # unstable ratios if the counterfactual profit gets close to zero.
-      saldo_sobrevaluacion_ganancia_pb_pct = safe_pct_ratio(
-        .data$ganancia_pb - .data$ganancia_pb_devaluacion,
+      # Positive values mean higher profit under the parity counterfactual;
+      # negative values mean lower profit under the parity counterfactual.
+      delta_ganancia_momento2_pct = safe_pct_ratio(
+        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
         .data$ganancia_pb
       ),
       delta_ganancia_pb_escenario =
@@ -654,7 +654,7 @@ saldo_pct_integrated <- escenarios %>%
     anno = .data$anno,
     escenario_label = .data$escenario_label,
     seccion_label = .data$seccion_label,
-    saldo_pct = .data$saldo_sobrevaluacion_ganancia_pb_pct
+    saldo_pct = .data$delta_ganancia_momento2_pct
   )
 
 saldo_pct_integrated_last <- saldo_pct_integrated %>%
@@ -685,10 +685,10 @@ ggplot(saldo_pct_integrated, aes(
   scale_y_continuous(labels = label_percent(scale = 1)) +
   scale_color_manual(values = scenario_colors) +
   labs(
-    title = "Saldo de sobrevaluación como proporción de la ganancia inicial",
-    subtitle = "Saldo relativo = (ganancia inicial - ganancia momento 2) / ganancia inicial",
+    title = "Delta de ganancia del momento 2 como proporción de la ganancia inicial",
+    subtitle = "Delta relativo = (ganancia momento 2 - ganancia inicial) / ganancia inicial",
     x = NULL,
-    y = "Porcentaje de la ganancia inicial",
+    y = "Cambio respecto a la ganancia inicial",
     color = NULL,
     caption = caption_fuente
   ) +
@@ -778,7 +778,7 @@ scenario_section <- function(scenario_id) {
     transmute(
       anno = .data$anno,
       seccion_label = .data$seccion_label,
-      saldo_pct = .data$saldo_sobrevaluacion_ganancia_pb_pct
+      saldo_pct = .data$delta_ganancia_momento2_pct
     )
 
   saldo_pct_last <- saldo_pct %>%
@@ -808,10 +808,10 @@ scenario_section <- function(scenario_id) {
     scale_y_continuous(labels = label_percent(scale = 1)) +
     scale_color_manual(values = section_colors) +
     labs(
-      title = paste(spec$titulo, "- saldo relativo sobre la ganancia inicial"),
-      subtitle = "Saldo relativo = (ganancia inicial - ganancia momento 2) / ganancia inicial",
+      title = paste(spec$titulo, "- delta relativo de ganancia del momento 2"),
+      subtitle = "Delta relativo = (ganancia momento 2 - ganancia inicial) / ganancia inicial",
       x = NULL,
-      y = "Porcentaje de la ganancia inicial",
+      y = "Cambio respecto a la ganancia inicial",
       color = NULL,
       caption = caption_fuente
     ) +
@@ -1073,7 +1073,7 @@ md <- c(
   "- El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.",
   "- El canal positivo se modela sobre `vbp_pp`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.",
   "- La medida principal de esta minuta es `ganancia_pb`; como complemento se reporta `ganancia_pb_desp_intereses`.",
-  "- La medida relativa complementaria normaliza el saldo de sobrevaluación como `saldo_sobrevaluacion_ganancia_pb / ganancia_pb_inicial * 100`; debe leerse como saldo neto sobre la masa de ganancia inicial, no como tasa de ganancia.",
+  "- La medida relativa complementaria normaliza el cambio de la ganancia del momento 2 como `(ganancia_pb_momento_2 - ganancia_pb_inicial) / ganancia_pb_inicial * 100`; debe leerse como variación relativa de la masa de ganancia contrafactual, no como tasa de ganancia.",
   "- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.",
   "- El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.",
   "",
@@ -1149,13 +1149,13 @@ md <- c(
   paste0("![Industria total: saldo de ganancia asociado a la sobrevaluación](", fig_rel(fig1_path), ")"),
   "",
   paste(
-    "La figura siguiente expresa el saldo de sobrevaluación como proporción de",
-    "la ganancia inicial. Esta medida no reemplaza el saldo monetario: permite",
-    "leer cuánto pesa la apropiación o cesión neta sobre la masa de ganancia",
-    "observada en cada sección."
+    "La figura siguiente expresa el cambio de la ganancia del momento 2 como",
+    "proporción de la ganancia inicial. Esta medida no reemplaza el saldo",
+    "monetario: permite leer cuánto cambia la masa de ganancia contrafactual",
+    "respecto de la ganancia observada en cada sección."
   ),
   "",
-  paste0("![Saldo de sobrevaluación como proporción de la ganancia inicial por sección](", fig_rel(fig1_pct_path), ")"),
+  paste0("![Delta de ganancia del momento 2 como proporción de la ganancia inicial por sección](", fig_rel(fig1_pct_path), ")"),
   "",
   md_table(industry_table),
   "",
@@ -1175,14 +1175,14 @@ md <- c(
   paste0("![Escenario 1: saldo de ganancia por segmento](", fig_rel(scenario_sections$comercio_exterior$figures[["saldo"]]), ")"),
   "",
   paste(
-    "Para dimensionar el peso relativo del saldo, la figura siguiente divide",
-    "la diferencia entre la ganancia inicial y la ganancia del momento 2 por la",
-    "masa de ganancia inicial de cada sección. Esto muestra qué proporción de",
-    "la ganancia observada representa la apropiación o cesión asociada a la",
-    "sobrevaluación."
+    "Para dimensionar el peso relativo del cambio, la figura siguiente divide",
+    "la diferencia entre la ganancia del momento 2 y la ganancia inicial por la",
+    "masa de ganancia inicial de cada sección. Esto muestra en qué proporción",
+    "aumenta o disminuye la ganancia contrafactual frente a la ganancia",
+    "observada."
   ),
   "",
-  paste0("![Escenario 1: saldo relativo sobre la ganancia inicial](", fig_rel(scenario_sections$comercio_exterior$figures[["saldo_pct"]]), ")"),
+  paste0("![Escenario 1: delta relativo de ganancia del momento 2](", fig_rel(scenario_sections$comercio_exterior$figures[["saldo_pct"]]), ")"),
   "",
   md_table(scenario_sections$comercio_exterior$table),
   "",
@@ -1209,13 +1209,13 @@ md <- c(
   paste0("![Escenario 2: saldo de ganancia por segmento](", fig_rel(scenario_sections$bienes_transables$figures[["saldo"]]), ")"),
   "",
   paste(
-    "La lectura relativa permite comparar secciones de tamaño distinto sin",
-    "perder el signo económico del ejercicio: valores positivos indican una",
-    "sobrepercepción de ganancia bajo sobrevaluación y valores negativos",
-    "indican ganancia dejada de percibir."
+    "La lectura relativa permite comparar secciones de tamaño distinto:",
+    "valores positivos indican que la ganancia del momento 2 supera a la",
+    "ganancia inicial, mientras que valores negativos indican una ganancia",
+    "contrafactual menor a la observada."
   ),
   "",
-  paste0("![Escenario 2: saldo relativo sobre la ganancia inicial](", fig_rel(scenario_sections$bienes_transables$figures[["saldo_pct"]]), ")"),
+  paste0("![Escenario 2: delta relativo de ganancia del momento 2](", fig_rel(scenario_sections$bienes_transables$figures[["saldo_pct"]]), ")"),
   "",
   md_table(scenario_sections$bienes_transables$table),
   "",
@@ -1256,7 +1256,7 @@ md <- c(
   "variable_devaluacion = variable_base + delta_variable",
   "ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo",
   "saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario",
-  "saldo_sobrevaluacion_ganancia_pb_pct = saldo_sobrevaluacion_ganancia_pb / ganancia_pb * 100",
+  "delta_ganancia_momento2_pct = (ganancia_pb_escenario - ganancia_pb) / ganancia_pb * 100",
   "ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario",
   "saldo_sobrevaluacion_ganancia_pb_desp_intereses = ganancia_pb_desp_intereses - ganancia_pb_desp_intereses_escenario",
   "```",

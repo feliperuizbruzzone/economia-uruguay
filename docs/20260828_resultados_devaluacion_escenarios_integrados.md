@@ -24,7 +24,7 @@ En 2024, el escenario de comercio exterior registra para la industria total un s
 - El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.
 - El canal positivo se modela sobre `vbp_pp`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.
 - La medida principal de esta minuta es `ganancia_pb`; como complemento se reporta `ganancia_pb_desp_intereses`.
-- La medida relativa complementaria normaliza el saldo de sobrevaluación como `saldo_sobrevaluacion_ganancia_pb / ganancia_pb_inicial * 100`; debe leerse como saldo neto sobre la masa de ganancia inicial, no como tasa de ganancia.
+- La medida relativa complementaria normaliza el cambio de la ganancia del momento 2 como `(ganancia_pb_momento_2 - ganancia_pb_inicial) / ganancia_pb_inicial * 100`; debe leerse como variación relativa de la masa de ganancia contrafactual, no como tasa de ganancia.
 - Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.
 - El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.
 
@@ -97,9 +97,9 @@ A nivel de industria total, los dos escenarios producen saldos opuestos. En el e
 
 ![Industria total: saldo de ganancia asociado a la sobrevaluación](../output/figures/devaluacion_escenarios_integrados_20260828/01_industria_total_saldo_sobrevaluacion_ganancia.png)
 
-La figura siguiente expresa el saldo de sobrevaluación como proporción de la ganancia inicial. Esta medida no reemplaza el saldo monetario: permite leer cuánto pesa la apropiación o cesión neta sobre la masa de ganancia observada en cada sección.
+La figura siguiente expresa el cambio de la ganancia del momento 2 como proporción de la ganancia inicial. Esta medida no reemplaza el saldo monetario: permite leer cuánto cambia la masa de ganancia contrafactual respecto de la ganancia observada en cada sección.
 
-![Saldo de sobrevaluación como proporción de la ganancia inicial por sección](../output/figures/devaluacion_escenarios_integrados_20260828/01b_saldo_pct_ganancia_inicial_por_seccion.png)
+![Delta de ganancia del momento 2 como proporción de la ganancia inicial por sección](../output/figures/devaluacion_escenarios_integrados_20260828/01b_saldo_pct_ganancia_inicial_por_seccion.png)
 
 | Escenario | Ganancia base prom. | Ganancia escenario prom. | Saldo sobrevaluación prom. | Saldo post intereses prom. | Ganancia base 2024 | Ganancia escenario 2024 | Saldo 2024 | Saldo post intereses 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -117,9 +117,9 @@ En el mismo año, el segmento exportador registra -87,4 y el segmento mercado in
 
 ![Escenario 1: saldo de ganancia por segmento](../output/figures/devaluacion_escenarios_integrados_20260828/03_comercio_exterior_saldo_ganancia_segmentos.png)
 
-Para dimensionar el peso relativo del saldo, la figura siguiente divide la diferencia entre la ganancia inicial y la ganancia del momento 2 por la masa de ganancia inicial de cada sección. Esto muestra qué proporción de la ganancia observada representa la apropiación o cesión asociada a la sobrevaluación.
+Para dimensionar el peso relativo del cambio, la figura siguiente divide la diferencia entre la ganancia del momento 2 y la ganancia inicial por la masa de ganancia inicial de cada sección. Esto muestra en qué proporción aumenta o disminuye la ganancia contrafactual frente a la ganancia observada.
 
-![Escenario 1: saldo relativo sobre la ganancia inicial](../output/figures/devaluacion_escenarios_integrados_20260828/03b_comercio_exterior_saldo_pct_ganancia_inicial_segmentos.png)
+![Escenario 1: delta relativo de ganancia del momento 2](../output/figures/devaluacion_escenarios_integrados_20260828/03b_comercio_exterior_saldo_pct_ganancia_inicial_segmentos.png)
 
 | Sección | Ganancia base prom. | Ganancia escenario prom. | Saldo sobrevaluación prom. | Saldo post intereses prom. | Ganancia base 2024 | Ganancia escenario 2024 | Saldo 2024 | Saldo post intereses 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -163,9 +163,9 @@ En el mismo año, el segmento exportador registra -112,8 y el segmento mercado i
 
 ![Escenario 2: saldo de ganancia por segmento](../output/figures/devaluacion_escenarios_integrados_20260828/03_bienes_transables_saldo_ganancia_segmentos.png)
 
-La lectura relativa permite comparar secciones de tamaño distinto sin perder el signo económico del ejercicio: valores positivos indican una sobrepercepción de ganancia bajo sobrevaluación y valores negativos indican ganancia dejada de percibir.
+La lectura relativa permite comparar secciones de tamaño distinto: valores positivos indican que la ganancia del momento 2 supera a la ganancia inicial, mientras que valores negativos indican una ganancia contrafactual menor a la observada.
 
-![Escenario 2: saldo relativo sobre la ganancia inicial](../output/figures/devaluacion_escenarios_integrados_20260828/03b_bienes_transables_saldo_pct_ganancia_inicial_segmentos.png)
+![Escenario 2: delta relativo de ganancia del momento 2](../output/figures/devaluacion_escenarios_integrados_20260828/03b_bienes_transables_saldo_pct_ganancia_inicial_segmentos.png)
 
 | Sección | Ganancia base prom. | Ganancia escenario prom. | Saldo sobrevaluación prom. | Saldo post intereses prom. | Ganancia base 2024 | Ganancia escenario 2024 | Saldo 2024 | Saldo post intereses 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -214,7 +214,7 @@ delta_variable = variable_base * incidencia_seccion_variable * factor_devaluacio
 variable_devaluacion = variable_base + delta_variable
 ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo
 saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario
-saldo_sobrevaluacion_ganancia_pb_pct = saldo_sobrevaluacion_ganancia_pb / ganancia_pb * 100
+delta_ganancia_momento2_pct = (ganancia_pb_escenario - ganancia_pb) / ganancia_pb * 100
 ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario
 saldo_sobrevaluacion_ganancia_pb_desp_intereses = ganancia_pb_desp_intereses - ganancia_pb_desp_intereses_escenario
 ```

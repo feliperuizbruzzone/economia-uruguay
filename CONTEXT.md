@@ -345,9 +345,9 @@ Artefactos:
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
 | `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` | Minuta metodológica sobre la hoja `efecto-devaluacion-corrientes`, con fórmulas, supuestos y calidad de resultados. |
 | `docs/methodology/20260820_minuta_modelamiento_devaluacion_1.md` | Minuta metodológica sobre la hoja `devaluación-1` del libro de modelamiento de devaluación. |
-| `docs/20260828_resultados_devaluacion_escenarios_integrados.md` | Minuta integrada de dos escenarios de devaluación; presenta saldos absolutos de ganancia asociados a sobrevaluación y la medida relativa `saldo_sobrevaluacion_ganancia_pb_pct`. |
+| `docs/20260828_resultados_devaluacion_escenarios_integrados.md` | Minuta integrada de dos escenarios de devaluación; presenta saldos absolutos de ganancia asociados a sobrevaluación y la medida relativa `delta_ganancia_momento2_pct`. |
 | `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` | Minuta de lectura para audiencia amplia sobre consecuencias distributivas de una devaluación industrial bajo escenarios de salario fijo y salario compensado. |
-| `output/figures/devaluacion_escenarios_integrados_20260828/` | Carpeta de figuras PNG respaldadas para la minuta integrada 20260828; incluye saldos absolutos, coeficientes, factor de devaluación y saldos relativos sobre ganancia inicial. |
+| `output/figures/devaluacion_escenarios_integrados_20260828/` | Carpeta de figuras PNG respaldadas para la minuta integrada 20260828; incluye saldos absolutos, coeficientes, factor de devaluación y deltas relativos de ganancia del momento 2 sobre ganancia inicial. |
 | `output/figures/devaluacion_sector_industrial_20260817/` | Carpeta de figuras PNG respaldadas para la minuta de resultados de devaluación sector industrial. |
 
 Decisiones del panel integrado:
@@ -546,12 +546,12 @@ Decisiones del panel integrado:
   ganancia asociado a la sobrevaluación:
   `saldo_sobrevaluacion_ganancia_pb = ganancia_pb -
   ganancia_pb_devaluacion`. Como complemento visual, se agrega
-  `saldo_sobrevaluacion_ganancia_pb_pct =
-  saldo_sobrevaluacion_ganancia_pb / ganancia_pb * 100`. El denominador es la
-  ganancia inicial observada, no la ganancia contrafactual del momento 2, para
-  leer el saldo neto como proporción de la masa de ganancia inicial y evitar
-  cocientes inestables si la ganancia contrafactual se aproxima a cero o cambia
-  de signo. Esta medida no debe interpretarse como tasa de ganancia.
+  `delta_ganancia_momento2_pct = (ganancia_pb_devaluacion - ganancia_pb) /
+  ganancia_pb * 100`. El denominador es la ganancia inicial observada, no la
+  ganancia contrafactual del momento 2, para leer el cambio contrafactual como
+  proporción de la masa de ganancia inicial y evitar cocientes inestables si la
+  ganancia contrafactual se aproxima a cero o cambia de signo. Esta medida no
+  debe interpretarse como tasa de ganancia.
   Las figuras específicas son
   `01b_saldo_pct_ganancia_inicial_por_seccion.png`,
   `03b_comercio_exterior_saldo_pct_ganancia_inicial_segmentos.png` y
@@ -2102,7 +2102,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Corrección del flujo integrado EAAE-BCU para extraer directamente por subrama `fbcf`, `fbkf_maq_eq`, `adquisiciones_importadas`, `adquisiciones_origen_importado` e `importaciones_maquinaria` desde los cuadros fuente de FBKF/componentes; creación de `eaae_subrama_fbkf_direct.py`, auditoría `20260819_auditoria_fbkf_directa_subrama_eaae.csv`, panel `20260819_panel_eeae_bcu_total_industria_subrama.csv` y libro `20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | ✓ |
 | Aug 2026 | Creación del procesamiento específico `20260824_panel_eaae_2020_2024_industria.csv` y `20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` para modelar devaluación en industria total, ramas exportadoras y ramas de mercado interno según clasificación Mussi | ✓ |
 | Aug 2026 | Actualización del modelamiento de devaluación industrial a dos escenarios desde `20260827-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`: `Modelo` aporta coeficientes para industria total; `Impo_Expo - Mercado Interno` aporta coeficientes segmentados del escenario comercio exterior; `Transable_Expo - MI` aporta coeficientes segmentados del escenario bienes transables. Se crea `20260827-coeficientes-efecto-devaluacion.csv`, el libro `20260827_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` con hojas `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`, y dos minutas específicas en `docs/` con figuras respaldadas en `output/figures/` | ✓ |
-| Aug 2026 | Regeneración del flujo de modelamiento de devaluación desde la fuente actualizada `20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. El script de coeficientes queda parametrizado para usar el último XLSX fuente de dos escenarios; se crean `20260828-coeficientes-efecto-devaluacion.csv`, `20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, minutas por escenario 20260828 y la minuta integrada `20260828_resultados_devaluacion_escenarios_integrados.md`, incluyendo figuras de saldo absoluto y saldo relativo sobre ganancia inicial | ✓ |
+| Aug 2026 | Regeneración del flujo de modelamiento de devaluación desde la fuente actualizada `20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. El script de coeficientes queda parametrizado para usar el último XLSX fuente de dos escenarios; se crean `20260828-coeficientes-efecto-devaluacion.csv`, `20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, minutas por escenario 20260828 y la minuta integrada `20260828_resultados_devaluacion_escenarios_integrados.md`, incluyendo figuras de saldo absoluto y delta relativo de ganancia del momento 2 sobre ganancia inicial | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 
