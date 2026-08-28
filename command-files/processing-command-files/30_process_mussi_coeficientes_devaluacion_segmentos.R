@@ -11,10 +11,18 @@ root_dir <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 
 mussi_dir <- file.path(root_dir, "data", "input-data", "mussi")
 
-source_workbook_path <- file.path(
+latest_file <- function(pattern) {
+  files <- Sys.glob(pattern)
+  if (length(files) == 0) {
+    stop("No files found for pattern: ", pattern)
+  }
+  sort(files)[[length(files)]]
+}
+
+source_workbook_path <- latest_file(file.path(
   mussi_dir,
-  "20260827-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx"
-)
+  "*-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx"
+))
 
 output_path <- file.path(
   mussi_dir,

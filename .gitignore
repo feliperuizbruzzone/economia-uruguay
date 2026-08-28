@@ -12,6 +12,7 @@ __pycache__/
 .Rhistory
 .RData
 .Rproj.user/
+Rplots.pdf
 
 output/*
 !output/figures/

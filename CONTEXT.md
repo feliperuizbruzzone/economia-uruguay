@@ -308,7 +308,11 @@ Artefactos:
 | `command-files/processing-command-files/27_fix_panel_eaae_bcu_deflactores_base2005.R` | Script reproducible ad hoc que corrige el deflactor BCU del agregado industria depurada, reconstruyéndolo desde componentes subramales normalizados a base 2005=1. |
 | `command-files/processing-command-files/28_process_mussi_coeficientes_devaluacion.R` | Script reproducible ad hoc que regenera `20260819-coeficientes-efecto-devaluacion.csv` desde `Modelo!B6:G13` del archivo Mussi de impacto de devaluación. |
 | `command-files/processing-command-files/29_extract_eaae_industria_source_direct_2020_2024.py` | Helper específico para extraer variables directas EAAE por división fuente manufacturera 2020-2024, preservando la división publicada para clasificar subramas según Mussi. |
+| `command-files/processing-command-files/30_process_mussi_coeficientes_devaluacion_segmentos.R` | Script reproducible ad hoc para procesar coeficientes de incidencia de devaluación por escenario y sección industrial desde los XLSX de trabajo de Mussi/Oyanthabal. |
 | `command-files/analysis-command-files/11_build_eaae_industria_grupos_mussi_devaluacion.R` | Script reproducible específico para construir el panel industrial 2020-2024 por grupos Mussi y el XLSX de escenario de devaluación en valores corrientes. |
+| `command-files/analysis-command-files/12_update_eaae_industria_devaluacion_segmentos.R` | Script reproducible para actualizar el libro de modelamiento de devaluación industrial por secciones, escenarios, tipo de cambio y coeficientes específicos. |
+| `command-files/analysis-command-files/13_generar_minuta_devaluacion_segmentos.R` | Script reproducible para generar la minuta de resultados de devaluación por industria total, segmento exportador y mercado interno. |
+| `command-files/analysis-command-files/14_generar_minuta_devaluacion_escenarios_integrados.R` | Script reproducible para generar la minuta integrada de dos escenarios de devaluación, sus tablas y figuras respaldadas. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
@@ -331,6 +335,7 @@ Artefactos:
 | `data/analysis-data/20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` | Libro específico de resultados corrientes y escenario de devaluación para industria 2020-2024; contiene hojas `metodología`, `escenario-inicial`, `tipo-cambio` y `devaluación-1`. |
 | `data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv` | Versión del panel específico 2020-2024 con distribución de intereses por segmentos según microdatos CIU: 65,6% exportadoras y 34,4% mercado interno. |
 | `data/analysis-data/20260826_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` | Libro específico de resultados corrientes y escenario de cierre de brecha cambiaria para industria 2020-2024, regenerado desde el panel 20260826 y coeficientes diferenciados por sección. |
+| `data/analysis-data/20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` | Último libro específico de resultados corrientes y modelamiento de devaluación para industria 2020-2024; contiene `escenario-inicial`, `tipo-cambio`, `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`. |
 | `docs/20260706_resultados_eaae_bcu_total_industria_subrama.md` | Informe visual en Markdown basado en el libro largo EAAE-BCU, con figuras agregadas y sección específica de subramas industriales. |
 | `docs/20260806_resultados_eaae_bcu_tres_niveles.md` | Minuta visual actualizada para economía total, industria total e industria manufacturera depurada, con anexos de ganancia industrial, tasas por niveles seleccionados, comparación contra Oyanthabal y comparación de stock EAAE-CIU. |
 | `output/figures/eaae_bcu_tres_niveles_20260806/` | Carpeta de 12 figuras PNG respaldadas para la minuta visual 20260806. |
@@ -340,7 +345,9 @@ Artefactos:
 | `docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md` | Minuta metodológica sobre homologación CIIU, deflactores, empalmes, rotaciones e imputaciones. |
 | `docs/methodology/20260817_minuta_efecto_devaluacion_industria.md` | Minuta metodológica sobre la hoja `efecto-devaluacion-corrientes`, con fórmulas, supuestos y calidad de resultados. |
 | `docs/methodology/20260820_minuta_modelamiento_devaluacion_1.md` | Minuta metodológica sobre la hoja `devaluación-1` del libro de modelamiento de devaluación. |
+| `docs/20260828_resultados_devaluacion_escenarios_integrados.md` | Minuta integrada de dos escenarios de devaluación; presenta saldos absolutos de ganancia asociados a sobrevaluación y la medida relativa `saldo_sobrevaluacion_ganancia_pb_pct`. |
 | `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` | Minuta de lectura para audiencia amplia sobre consecuencias distributivas de una devaluación industrial bajo escenarios de salario fijo y salario compensado. |
+| `output/figures/devaluacion_escenarios_integrados_20260828/` | Carpeta de figuras PNG respaldadas para la minuta integrada 20260828; incluye saldos absolutos, coeficientes, factor de devaluación y saldos relativos sobre ganancia inicial. |
 | `output/figures/devaluacion_sector_industrial_20260817/` | Carpeta de figuras PNG respaldadas para la minuta de resultados de devaluación sector industrial. |
 
 Decisiones del panel integrado:
@@ -520,6 +527,35 @@ Decisiones del panel integrado:
   tasa de ganancia y mecanismo de transmisión para industria total, segmento
   exportador y segmento mercado interno. Las figuras respaldadas quedan en
   `output/figures/devaluacion_industria_segmentos_20260826/`.
+- **ACTUALIZACIÓN 2026-08-28:** se regenera el flujo de modelamiento de
+  devaluación desde
+  `data/input-data/mussi/20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`.
+  El script
+  `command-files/processing-command-files/30_process_mussi_coeficientes_devaluacion_segmentos.R`
+  queda parametrizado para usar el último XLSX fuente de dos escenarios y
+  genera `data/input-data/mussi/20260828-coeficientes-efecto-devaluacion.csv`.
+  Con esos coeficientes se produce
+  `data/analysis-data/20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`,
+  que contiene `escenario-inicial`, `tipo-cambio`,
+  `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`.
+  Las minutas específicas por escenario 20260828 y la minuta integrada
+  `docs/20260828_resultados_devaluacion_escenarios_integrados.md` se generan
+  con figuras respaldadas en `output/figures/`.
+- **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
+  devaluación, la medida principal sigue siendo el saldo monetario de masa de
+  ganancia asociado a la sobrevaluación:
+  `saldo_sobrevaluacion_ganancia_pb = ganancia_pb -
+  ganancia_pb_devaluacion`. Como complemento visual, se agrega
+  `saldo_sobrevaluacion_ganancia_pb_pct =
+  saldo_sobrevaluacion_ganancia_pb / ganancia_pb * 100`. El denominador es la
+  ganancia inicial observada, no la ganancia contrafactual del momento 2, para
+  leer el saldo neto como proporción de la masa de ganancia inicial y evitar
+  cocientes inestables si la ganancia contrafactual se aproxima a cero o cambia
+  de signo. Esta medida no debe interpretarse como tasa de ganancia.
+  Las figuras específicas son
+  `01b_saldo_pct_ganancia_inicial_por_seccion.png`,
+  `03b_comercio_exterior_saldo_pct_ganancia_inicial_segmentos.png` y
+  `03b_bienes_transables_saldo_pct_ganancia_inicial_segmentos.png`.
 - **ACTUALIZACIÓN 2026-08-17:** se crea
   `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` mediante
   `command-files/analysis-command-files/07_generar_minuta_devaluacion_sector_industrial.R`.
@@ -2066,6 +2102,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Corrección del flujo integrado EAAE-BCU para extraer directamente por subrama `fbcf`, `fbkf_maq_eq`, `adquisiciones_importadas`, `adquisiciones_origen_importado` e `importaciones_maquinaria` desde los cuadros fuente de FBKF/componentes; creación de `eaae_subrama_fbkf_direct.py`, auditoría `20260819_auditoria_fbkf_directa_subrama_eaae.csv`, panel `20260819_panel_eeae_bcu_total_industria_subrama.csv` y libro `20260819_resultados_eaae_bcu_total_industria_subrama.xlsx` | ✓ |
 | Aug 2026 | Creación del procesamiento específico `20260824_panel_eaae_2020_2024_industria.csv` y `20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` para modelar devaluación en industria total, ramas exportadoras y ramas de mercado interno según clasificación Mussi | ✓ |
 | Aug 2026 | Actualización del modelamiento de devaluación industrial a dos escenarios desde `20260827-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`: `Modelo` aporta coeficientes para industria total; `Impo_Expo - Mercado Interno` aporta coeficientes segmentados del escenario comercio exterior; `Transable_Expo - MI` aporta coeficientes segmentados del escenario bienes transables. Se crea `20260827-coeficientes-efecto-devaluacion.csv`, el libro `20260827_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` con hojas `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`, y dos minutas específicas en `docs/` con figuras respaldadas en `output/figures/` | ✓ |
+| Aug 2026 | Regeneración del flujo de modelamiento de devaluación desde la fuente actualizada `20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. El script de coeficientes queda parametrizado para usar el último XLSX fuente de dos escenarios; se crean `20260828-coeficientes-efecto-devaluacion.csv`, `20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, minutas por escenario 20260828 y la minuta integrada `20260828_resultados_devaluacion_escenarios_integrados.md`, incluyendo figuras de saldo absoluto y saldo relativo sobre ganancia inicial | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

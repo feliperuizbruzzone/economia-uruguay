@@ -10,13 +10,15 @@ documentación en `docs/` y las figuras en `output/figures/`.
 
 ## Resultados Brecha Cambiaria Industria 2020-2024
 
-- [20260827_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260827_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx): último libro de modelamiento del cierre de brecha cambiaria para industria total, segmento exportador y segmento mercado interno, con dos escenarios diferenciados.
+- [20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx): último libro de modelamiento del cierre de brecha cambiaria para industria total, segmento exportador y segmento mercado interno, con dos escenarios diferenciados.
 - [20260826_panel_eaae_2020_2024_industria.csv](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv): panel base 2020-2024 de industria total y grupos de subramas industriales, actualizado con distribución de intereses por microdatos CIU.
-- [20260827_resultados_devaluacion_escenario_1_comercio_exterior.md](docs/20260827_resultados_devaluacion_escenario_1_comercio_exterior.md): minuta de resultados del escenario de incidencia directa del comercio exterior.
-- [20260827_resultados_devaluacion_escenario_2_bienes_transables.md](docs/20260827_resultados_devaluacion_escenario_2_bienes_transables.md): minuta de resultados del escenario de incidencia de bienes transables.
-- [Figuras escenario 1 comercio exterior 20260827](output/figures/devaluacion_industria_segmentos_20260827_escenario_1_comercio_exterior/): figuras respaldadas para la minuta del escenario 1.
-- [Figuras escenario 2 bienes transables 20260827](output/figures/devaluacion_industria_segmentos_20260827_escenario_2_bienes_transables/): figuras respaldadas para la minuta del escenario 2.
-- [20260827-coeficientes-efecto-devaluacion.csv](data/input-data/mussi/20260827-coeficientes-efecto-devaluacion.csv): tabla consolidada de coeficientes de incidencia por escenario, industria total, segmento exportador y segmento mercado interno.
+- [20260828_resultados_devaluacion_escenarios_integrados.md](docs/20260828_resultados_devaluacion_escenarios_integrados.md): minuta integrada de comparación de los dos escenarios, con lectura agregada para industria total y secciones específicas por escenario.
+- [20260828_resultados_devaluacion_escenario_1_comercio_exterior.md](docs/20260828_resultados_devaluacion_escenario_1_comercio_exterior.md): minuta de resultados del escenario de incidencia directa del comercio exterior.
+- [20260828_resultados_devaluacion_escenario_2_bienes_transables.md](docs/20260828_resultados_devaluacion_escenario_2_bienes_transables.md): minuta de resultados del escenario de incidencia de bienes transables.
+- [Figuras integradas de escenarios 20260828](output/figures/devaluacion_escenarios_integrados_20260828/): figuras respaldadas para la minuta integrada.
+- [Figuras escenario 1 comercio exterior 20260828](output/figures/devaluacion_industria_segmentos_20260828_escenario_1_comercio_exterior/): figuras respaldadas para la minuta del escenario 1.
+- [Figuras escenario 2 bienes transables 20260828](output/figures/devaluacion_industria_segmentos_20260828_escenario_2_bienes_transables/): figuras respaldadas para la minuta del escenario 2.
+- [20260828-coeficientes-efecto-devaluacion.csv](data/input-data/mussi/20260828-coeficientes-efecto-devaluacion.csv): tabla consolidada de coeficientes de incidencia por escenario, industria total, segmento exportador y segmento mercado interno.
 
 ## Resultados Integrados EAAE-BCU
 
