@@ -24,12 +24,6 @@ latest_file <- function(pattern) {
   sort(files)[[length(files)]]
 }
 
-safe_divide <- function(numerator, denominator) {
-  result <- numerator / denominator
-  result[is.na(numerator) | is.na(denominator) | denominator == 0] <- NA_real_
-  result
-}
-
 fmt_pct <- function(x, digits = 1) {
   ifelse(
     is.na(x),
@@ -38,14 +32,13 @@ fmt_pct <- function(x, digits = 1) {
   )
 }
 
-fmt_pp <- function(x, digits = 1) {
+fmt_delta <- function(x, digits = 1) {
   ifelse(
     is.na(x),
     "",
     paste0(
       ifelse(x > 0, "+", ""),
-      trimws(format(round(x, digits), big.mark = ".", decimal.mark = ",")),
-      " pp"
+      trimws(format(round(x, digits), big.mark = ".", decimal.mark = ","))
     )
   )
 }
@@ -76,12 +69,6 @@ fig_rel <- function(path) {
   paste0("../", path)
 }
 
-value_for <- function(data, scenario, variable) {
-  data %>%
-    filter(.data$escenario == !!scenario) %>%
-    pull({{ variable }})
-}
-
 section_value <- function(data, seccion, variable) {
   data %>%
     filter(.data$seccion == !!seccion) %>%
@@ -100,6 +87,7 @@ output_md <- file.path(
 
 dir.create(docs_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(figures_dir, recursive = TRUE, showWarnings = FALSE)
+unlink(Sys.glob(file.path(figures_dir, "*.png")))
 
 scenario_specs <- tibble::tribble(
   ~sheet, ~escenario, ~titulo, ~descripcion, ~vbp_label,
@@ -110,7 +98,7 @@ scenario_specs <- tibble::tribble(
     "La apropiación de riqueza vía sobrevaluación de la moneda se aplica a",
     "los componentes importados de costos y capital y a la parte exportada de",
     "la producción. Por tanto, recoge el efecto directo de importaciones y",
-    "exportaciones sobre la tasa de ganancia."
+    "exportaciones sobre la masa de ganancia."
   ),
   "VBP/exportador",
   "Escenario 2 - Bienes Transables",
@@ -121,7 +109,7 @@ scenario_specs <- tibble::tribble(
     "mercancías cuyos precios internos se rigen por precios internacionales,",
     "aunque sean producidas localmente y vendidas en el mercado interno.",
     "Así, incorpora la revaluación de producción local transable y su efecto",
-    "sobre la tasa de ganancia."
+    "sobre la masa de ganancia."
   ),
   "VBP/transable"
 )
@@ -151,13 +139,6 @@ theme_report <- theme_minimal(base_size = 11) +
     legend.position = "bottom"
   )
 
-escenario_inicial <- read_excel(input_xlsx, sheet = "escenario-inicial") %>%
-  filter(!is.na(.data$anno), !is.na(.data$seccion)) %>%
-  mutate(
-    seccion_label = recode(.data$seccion, !!!section_labels),
-    seccion_label = factor(.data$seccion_label, levels = unname(section_labels))
-  )
-
 read_scenario <- function(sheet_name) {
   spec <- scenario_specs %>%
     filter(.data$sheet == !!sheet_name)
@@ -171,7 +152,24 @@ read_scenario <- function(sheet_name) {
       descripcion_escenario = spec$descripcion,
       vbp_label = spec$vbp_label,
       seccion_label = recode(.data$seccion, !!!section_labels),
-      seccion_label = factor(.data$seccion_label, levels = unname(section_labels))
+      seccion_label = factor(.data$seccion_label, levels = unname(section_labels)),
+      # DECISION: the analytical sign is inverted relative to the devaluation
+      # workbook. Positive values mean the initial overvalued exchange-rate
+      # setting over-perceives profit relative to parity; negative values mean
+      # profit left unperceived under overvaluation.
+      saldo_sobrevaluacion_ganancia_pb =
+        .data$ganancia_pb - .data$ganancia_pb_devaluacion,
+      saldo_sobrevaluacion_ganancia_pb_desp_intereses =
+        .data$ganancia_pb_desp_intereses - .data$ganancia_pb_desp_intereses_devaluacion,
+      delta_ganancia_pb_escenario =
+        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
+      delta_ganancia_pb_desp_intereses_escenario =
+        .data$ganancia_pb_desp_intereses_devaluacion - .data$ganancia_pb_desp_intereses,
+      saldo_vbp = -.data$delta_vbp_pp,
+      saldo_consumo_intermedio = .data$delta_consumo_intermedio_estimado,
+      saldo_remuneraciones = .data$delta_remuneraciones,
+      saldo_consumo_capital_fijo = .data$delta_consumo_capital_fijo,
+      saldo_intereses = .data$delta_intereses_industria_pesos
     )
 }
 
@@ -180,117 +178,111 @@ escenarios <- bind_rows(lapply(scenario_specs$sheet, read_scenario))
 if (nrow(escenarios) != 30L) {
   stop("Se esperaban 30 filas de escenarios: 2 escenarios x 5 años x 3 secciones.")
 }
-if (any(is.na(escenarios$factor_devaluacion))) {
-  stop("Hay escenarios sin factor de devaluación.")
+
+required_profit_cols <- c(
+  "ganancia_pb",
+  "ganancia_pb_devaluacion",
+  "ganancia_pb_desp_intereses",
+  "ganancia_pb_desp_intereses_devaluacion"
+)
+if (any(escenarios %>% select(all_of(required_profit_cols)) %>% is.na())) {
+  stop("Hay faltantes en las variables de masa de ganancia requeridas.")
 }
 
-component_labels_generic <- c(
-  delta_vbp_pp = "VBP afectado",
-  delta_consumo_intermedio_estimado = "Consumo intermedio",
-  delta_remuneraciones = "Remuneraciones",
-  delta_consumo_capital_fijo = "Consumo capital fijo",
-  delta_stock_capital_imputado = "Stock imputado",
-  delta_intereses_industria_pesos = "Intereses pagados"
+saldo_labels <- c(
+  saldo_sobrevaluacion_ganancia_pb = "Ganancia pb",
+  saldo_sobrevaluacion_ganancia_pb_desp_intereses = "Ganancia pb post intereses"
+)
+
+component_labels <- c(
+  saldo_vbp = "Menor valorización del VBP",
+  saldo_consumo_intermedio = "Ahorro en consumo intermedio",
+  saldo_remuneraciones = "Ahorro en remuneraciones",
+  saldo_consumo_capital_fijo = "Ahorro en consumo capital fijo",
+  saldo_intereses = "Ahorro en intereses pagados"
 )
 
 summary_by_scenario_section <- escenarios %>%
   group_by(.data$escenario, .data$escenario_label, .data$seccion, .data$seccion_label) %>%
   summarise(
-    tg_base_prom_pct = mean(.data$tasa_ganancia_pb, na.rm = TRUE) * 100,
-    tg_escenario_prom_pct = mean(.data$tasa_ganancia_pb_devaluacion, na.rm = TRUE) * 100,
-    cambio_prom_pp = mean(.data$variacion_tasa_ganancia_pb_pp, na.rm = TRUE),
-    tg_base_2024_pct = .data$tasa_ganancia_pb[.data$anno == 2024] * 100,
-    tg_escenario_2024_pct = .data$tasa_ganancia_pb_devaluacion[.data$anno == 2024] * 100,
-    cambio_2024_pp = .data$variacion_tasa_ganancia_pb_pp[.data$anno == 2024],
-    var_ganancia_2024_pct = .data$variacion_ganancia_pb_pct[.data$anno == 2024],
+    ganancia_pb_base_prom_miles_mill = mean(.data$ganancia_pb, na.rm = TRUE) / 1e9,
+    ganancia_pb_escenario_prom_miles_mill = mean(.data$ganancia_pb_devaluacion, na.rm = TRUE) / 1e9,
+    saldo_pb_prom_miles_mill = mean(.data$saldo_sobrevaluacion_ganancia_pb, na.rm = TRUE) / 1e9,
+    saldo_post_intereses_prom_miles_mill =
+      mean(.data$saldo_sobrevaluacion_ganancia_pb_desp_intereses, na.rm = TRUE) / 1e9,
+    ganancia_pb_base_2024_miles_mill = .data$ganancia_pb[.data$anno == 2024] / 1e9,
+    ganancia_pb_escenario_2024_miles_mill = .data$ganancia_pb_devaluacion[.data$anno == 2024] / 1e9,
+    saldo_pb_2024_miles_mill = .data$saldo_sobrevaluacion_ganancia_pb[.data$anno == 2024] / 1e9,
+    saldo_post_intereses_2024_miles_mill =
+      .data$saldo_sobrevaluacion_ganancia_pb_desp_intereses[.data$anno == 2024] / 1e9,
     .groups = "drop"
   )
 
 industry_summary <- summary_by_scenario_section %>%
   filter(.data$seccion == "industria-total")
 
-industry_tg_long <- bind_rows(
-  escenarios %>%
-    filter(.data$seccion == "industria-total") %>%
-    distinct(.data$anno, .data$tasa_ganancia_pb) %>%
-    transmute(
-      anno = .data$anno,
-      serie = "Escenario inicial",
-      tasa = .data$tasa_ganancia_pb
-    ),
-  escenarios %>%
-    filter(.data$seccion == "industria-total") %>%
-    transmute(
-      anno = .data$anno,
-      serie = .data$escenario_label,
-      tasa = .data$tasa_ganancia_pb_devaluacion
-    )
-) %>%
-  distinct()
+industry_saldo_long <- escenarios %>%
+  filter(.data$seccion == "industria-total") %>%
+  select(
+    "anno",
+    "escenario_label",
+    all_of(names(saldo_labels))
+  ) %>%
+  pivot_longer(
+    cols = all_of(names(saldo_labels)),
+    names_to = "medida",
+    values_to = "saldo"
+  ) %>%
+  mutate(
+    medida = recode(.data$medida, !!!saldo_labels),
+    saldo_miles_mill = .data$saldo / 1e9
+  )
 
-fig1_path <- file.path(figures_dir, "01_industria_total_tasa_ganancia_escenarios.png")
-fig2_path <- file.path(figures_dir, "02_industria_total_cambio_tasa_ganancia.png")
-fig3_path <- file.path(figures_dir, "03_industria_total_componentes_2024.png")
+fig1_path <- file.path(figures_dir, "01_industria_total_saldo_sobrevaluacion_ganancia.png")
+fig2_path <- file.path(figures_dir, "02_industria_total_componentes_saldo_2024.png")
 
-ggplot(industry_tg_long, aes(x = .data$anno, y = .data$tasa, color = .data$serie)) +
+ggplot(industry_saldo_long, aes(
+  x = .data$anno,
+  y = .data$saldo_miles_mill,
+  color = .data$escenario_label
+)) +
+  geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
   geom_line(linewidth = 0.85) +
   geom_point(size = 2) +
-  scale_x_continuous(breaks = sort(unique(industry_tg_long$anno))) +
-  scale_y_continuous(labels = percent_format(accuracy = 1, decimal.mark = ",")) +
+  facet_wrap(vars(.data$medida), nrow = 1, scales = "free_y") +
+  scale_x_continuous(breaks = sort(unique(industry_saldo_long$anno))) +
   scale_color_manual(values = c(
-    "Escenario inicial" = "#457B9D",
     "Escenario 1 - Comercio exterior" = "#2D6A4F",
     "Escenario 2 - Bienes transables" = "#E76F51"
   )) +
   labs(
-    title = "Industria total: tasa de ganancia según escenario",
+    title = "Industria total: saldo de ganancia asociado a la sobrevaluación",
+    subtitle = "Saldo = ganancia observada inicial - ganancia contrafactual con cierre de brecha",
     x = NULL,
-    y = NULL,
+    y = "Miles de millones de pesos corrientes",
     color = NULL,
     caption = caption_fuente
   ) +
   theme_report
-ggsave(fig1_path, width = 9, height = 5, dpi = 160)
-
-ggplot(
-  escenarios %>% filter(.data$seccion == "industria-total"),
-  aes(x = factor(.data$anno), y = .data$variacion_tasa_ganancia_pb_pp, fill = .data$escenario_label)
-) +
-  geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
-  geom_col(position = position_dodge(width = 0.75), width = 0.68) +
-  scale_fill_manual(values = c(
-    "Escenario 1 - Comercio exterior" = "#2D6A4F",
-    "Escenario 2 - Bienes transables" = "#E76F51"
-  )) +
-  labs(
-    title = "Industria total: cambio en la tasa de ganancia",
-    x = NULL,
-    y = "Puntos porcentuales",
-    fill = NULL,
-    caption = caption_fuente
-  ) +
-  theme_report
-ggsave(fig2_path, width = 8.5, height = 5, dpi = 160)
+ggsave(fig1_path, width = 10, height = 5.2, dpi = 160)
 
 industry_components_2024 <- escenarios %>%
   filter(.data$anno == 2024, .data$seccion == "industria-total") %>%
-  select("escenario_label", all_of(names(component_labels_generic))) %>%
+  select("escenario_label", all_of(names(component_labels))) %>%
   pivot_longer(
-    cols = all_of(names(component_labels_generic)),
+    cols = all_of(names(component_labels)),
     names_to = "componente",
     values_to = "valor"
   ) %>%
   mutate(
-    componente = recode(.data$componente, !!!component_labels_generic),
-    componente = factor(.data$componente, levels = unname(component_labels_generic)),
-    # DECISION: the VBP channel is plotted as a positive impulse; the remaining
-    # channels are plotted as costs or capital requirements.
-    signo_grafico = if_else(.data$componente == "VBP afectado", .data$valor, -.data$valor)
+    componente = recode(.data$componente, !!!component_labels),
+    componente = factor(.data$componente, levels = unname(component_labels)),
+    valor_miles_mill = .data$valor / 1e9
   )
 
 ggplot(industry_components_2024, aes(
   x = .data$componente,
-  y = .data$signo_grafico / 1e9,
+  y = .data$valor_miles_mill,
   fill = .data$escenario_label
 )) +
   geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
@@ -300,8 +292,8 @@ ggplot(industry_components_2024, aes(
     "Escenario 2 - Bienes transables" = "#E76F51"
   )) +
   labs(
-    title = "Industria total: canales monetarios del cierre de brecha en 2024",
-    subtitle = "VBP afectado se muestra como impulso positivo; costos, stock e intereses pagados como cargas adicionales",
+    title = "Industria total: componentes del saldo de sobrevaluación en 2024",
+    subtitle = "VBP negativo indica ganancia dejada de percibir; costos positivos indican ahorro bajo sobrevaluación",
     x = NULL,
     y = "Miles de millones de pesos corrientes",
     fill = NULL,
@@ -309,7 +301,7 @@ ggplot(industry_components_2024, aes(
   ) +
   theme_report +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
-ggsave(fig3_path, width = 10, height = 5.2, dpi = 160)
+ggsave(fig2_path, width = 10.5, height = 5.2, dpi = 160)
 
 scenario_section <- function(scenario_id) {
   spec <- scenario_specs %>%
@@ -317,94 +309,76 @@ scenario_section <- function(scenario_id) {
   data <- escenarios %>%
     filter(.data$escenario == !!scenario_id)
 
-  tg_long <- data %>%
+  saldo_long <- data %>%
     select(
-      anno,
-      seccion_label,
-      tasa_base = tasa_ganancia_pb,
-      tasa_escenario = tasa_ganancia_pb_devaluacion
+      "anno",
+      "seccion",
+      "seccion_label",
+      all_of(names(saldo_labels))
     ) %>%
     pivot_longer(
-      cols = c("tasa_base", "tasa_escenario"),
-      names_to = "serie",
-      values_to = "tasa"
+      cols = all_of(names(saldo_labels)),
+      names_to = "medida",
+      values_to = "saldo"
     ) %>%
     mutate(
-      serie = recode(
-        .data$serie,
-        tasa_base = "Escenario inicial",
-        tasa_escenario = "Cierre de brecha"
-      )
+      medida = recode(.data$medida, !!!saldo_labels),
+      saldo_miles_mill = .data$saldo / 1e9
     )
 
-  fig_tg <- file.path(figures_dir, paste0("04_", scenario_id, "_tasa_ganancia_segmentos.png"))
-  fig_change <- file.path(figures_dir, paste0("05_", scenario_id, "_cambio_tasa_segmentos.png"))
-  fig_components <- file.path(figures_dir, paste0("06_", scenario_id, "_componentes_2024_segmentos.png"))
+  fig_saldo <- file.path(figures_dir, paste0("03_", scenario_id, "_saldo_ganancia_segmentos.png"))
+  fig_components <- file.path(figures_dir, paste0("04_", scenario_id, "_componentes_saldo_2024_segmentos.png"))
 
-  ggplot(tg_long, aes(x = .data$anno, y = .data$tasa, color = .data$serie)) +
+  ggplot(saldo_long, aes(x = .data$anno, y = .data$saldo_miles_mill, color = .data$seccion_label)) +
+    geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
     geom_line(linewidth = 0.8) +
     geom_point(size = 1.8) +
-    facet_wrap(vars(.data$seccion_label), nrow = 1) +
-    scale_x_continuous(breaks = sort(unique(tg_long$anno))) +
-    scale_y_continuous(labels = percent_format(accuracy = 1, decimal.mark = ",")) +
-    scale_color_manual(values = c("Escenario inicial" = "#457B9D", "Cierre de brecha" = "#E63946")) +
+    facet_wrap(vars(.data$medida), nrow = 1, scales = "free_y") +
+    scale_x_continuous(breaks = sort(unique(saldo_long$anno))) +
+    scale_color_manual(values = c(
+      "Industria total" = "#457B9D",
+      "Segmento exportador" = "#2D6A4F",
+      "Mercado interno" = "#E76F51"
+    )) +
     labs(
-      title = paste(spec$titulo, "- tasa de ganancia a precios básicos"),
+      title = paste(spec$titulo, "- saldo de ganancia asociado a la sobrevaluación"),
+      subtitle = "Saldo = ganancia observada inicial - ganancia contrafactual con cierre de brecha",
       x = NULL,
-      y = NULL,
+      y = "Miles de millones de pesos corrientes",
       color = NULL,
       caption = caption_fuente
     ) +
     theme_report
-  ggsave(fig_tg, width = 10.5, height = 4.8, dpi = 160)
-
-  ggplot(data, aes(
-    x = factor(.data$anno),
-    y = .data$variacion_tasa_ganancia_pb_pp,
-    fill = .data$seccion_label
-  )) +
-    geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
-    geom_col(position = position_dodge(width = 0.75), width = 0.68) +
-    scale_fill_manual(values = c(
-      "Industria total" = "#457B9D",
-      "Segmento exportador" = "#2D6A4F",
-      "Mercado interno" = "#E76F51"
-    )) +
-    labs(
-      title = paste(spec$titulo, "- cambio en tasa de ganancia"),
-      x = NULL,
-      y = "Puntos porcentuales",
-      fill = NULL,
-      caption = caption_fuente
-    ) +
-    theme_report
-  ggsave(fig_change, width = 9, height = 5, dpi = 160)
+  ggsave(fig_saldo, width = 10.5, height = 5.2, dpi = 160)
 
   components_2024 <- data %>%
     filter(.data$anno == 2024) %>%
-    select("seccion", "seccion_label", all_of(names(component_labels_generic))) %>%
+    select("seccion_label", all_of(names(component_labels))) %>%
     pivot_longer(
-      cols = all_of(names(component_labels_generic)),
+      cols = all_of(names(component_labels)),
       names_to = "componente",
       values_to = "valor"
     ) %>%
     mutate(
-      componente = recode(.data$componente, !!!component_labels_generic),
-      componente = if_else(.data$componente == "VBP afectado", spec$vbp_label, as.character(.data$componente)),
+      componente = recode(.data$componente, !!!component_labels),
+      componente = if_else(
+        .data$componente == "Menor valorización del VBP",
+        paste("Menor valorización", spec$vbp_label),
+        as.character(.data$componente)
+      ),
       componente = factor(.data$componente, levels = c(
-        spec$vbp_label,
-        "Consumo intermedio",
-        "Remuneraciones",
-        "Consumo capital fijo",
-        "Stock imputado",
-        "Intereses pagados"
+        paste("Menor valorización", spec$vbp_label),
+        "Ahorro en consumo intermedio",
+        "Ahorro en remuneraciones",
+        "Ahorro en consumo capital fijo",
+        "Ahorro en intereses pagados"
       )),
-      signo_grafico = if_else(.data$componente == spec$vbp_label, .data$valor, -.data$valor)
+      valor_miles_mill = .data$valor / 1e9
     )
 
   ggplot(components_2024, aes(
     x = .data$componente,
-    y = .data$signo_grafico / 1e9,
+    y = .data$valor_miles_mill,
     fill = .data$seccion_label
   )) +
     geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
@@ -415,8 +389,8 @@ scenario_section <- function(scenario_id) {
       "Mercado interno" = "#E76F51"
     )) +
     labs(
-      title = paste(spec$titulo, "- canales monetarios en 2024"),
-      subtitle = paste(spec$vbp_label, "se muestra como impulso positivo; costos, stock e intereses pagados como cargas adicionales"),
+      title = paste(spec$titulo, "- componentes del saldo en 2024"),
+      subtitle = "Valores positivos: sobrepercepción o ahorro bajo sobrevaluación; valores negativos: ganancia dejada de percibir",
       x = NULL,
       y = "Miles de millones de pesos corrientes",
       fill = NULL,
@@ -430,13 +404,14 @@ scenario_section <- function(scenario_id) {
     filter(.data$escenario == !!scenario_id) %>%
     transmute(
       `Sección` = as.character(.data$seccion_label),
-      `TG base prom.` = fmt_pct(.data$tg_base_prom_pct),
-      `TG escenario prom.` = fmt_pct(.data$tg_escenario_prom_pct),
-      `Cambio prom.` = fmt_pp(.data$cambio_prom_pp),
-      `TG base 2024` = fmt_pct(.data$tg_base_2024_pct),
-      `TG escenario 2024` = fmt_pct(.data$tg_escenario_2024_pct),
-      `Cambio 2024` = fmt_pp(.data$cambio_2024_pp),
-      `Var. ganancia 2024` = fmt_pct(.data$var_ganancia_2024_pct)
+      `Ganancia base prom.` = fmt_num(.data$ganancia_pb_base_prom_miles_mill),
+      `Ganancia escenario prom.` = fmt_num(.data$ganancia_pb_escenario_prom_miles_mill),
+      `Saldo sobrevaluación prom.` = fmt_delta(.data$saldo_pb_prom_miles_mill),
+      `Saldo post intereses prom.` = fmt_delta(.data$saldo_post_intereses_prom_miles_mill),
+      `Ganancia base 2024` = fmt_num(.data$ganancia_pb_base_2024_miles_mill),
+      `Ganancia escenario 2024` = fmt_num(.data$ganancia_pb_escenario_2024_miles_mill),
+      `Saldo 2024` = fmt_delta(.data$saldo_pb_2024_miles_mill),
+      `Saldo post intereses 2024` = fmt_delta(.data$saldo_post_intereses_2024_miles_mill)
     )
 
   coef_table <- data %>%
@@ -446,7 +421,6 @@ scenario_section <- function(scenario_id) {
       incidencia_consumo_intermedio_estimado,
       incidencia_remuneraciones,
       incidencia_consumo_capital_fijo,
-      incidencia_stock_capital_imputado,
       incidencia_intereses_industria_pesos
     ) %>%
     pivot_longer(
@@ -461,7 +435,6 @@ scenario_section <- function(scenario_id) {
         incidencia_consumo_intermedio_estimado = "Consumo intermedio",
         incidencia_remuneraciones = "Masa salarial",
         incidencia_consumo_capital_fijo = "Consumo capital fijo",
-        incidencia_stock_capital_imputado = "Stock imputado",
         incidencia_intereses_industria_pesos = "Intereses pagados"
       )
     ) %>%
@@ -479,23 +452,19 @@ scenario_section <- function(scenario_id) {
     spec = spec,
     table = summary_table,
     coef_table = coef_table,
-    figures = c(fig_tg, fig_change, fig_components),
+    figures = c(fig_saldo, fig_components),
     text = c(
       paste0(
-        "En 2024, la industria total pasa de ",
-        fmt_pct(section_value(summary_2024, "industria-total", tg_base_2024_pct)),
-        " a ",
-        fmt_pct(section_value(summary_2024, "industria-total", tg_escenario_2024_pct)),
-        ", con un cambio de ",
-        fmt_pp(section_value(summary_2024, "industria-total", cambio_2024_pp)),
-        "."
+        "En 2024, la industria total registra un saldo de sobrevaluación de ",
+        fmt_delta(section_value(summary_2024, "industria-total", saldo_pb_2024_miles_mill)),
+        " miles de millones de pesos corrientes en ganancia a precios básicos."
       ),
       paste0(
-        "El segmento exportador registra un cambio de ",
-        fmt_pp(section_value(summary_2024, "exportadora", cambio_2024_pp)),
-        " en 2024, mientras que el segmento mercado interno registra ",
-        fmt_pp(section_value(summary_2024, "mercado-interno", cambio_2024_pp)),
-        "."
+        "En el mismo año, el segmento exportador registra ",
+        fmt_delta(section_value(summary_2024, "exportadora", saldo_pb_2024_miles_mill)),
+        " y el segmento mercado interno registra ",
+        fmt_delta(section_value(summary_2024, "mercado-interno", saldo_pb_2024_miles_mill)),
+        " miles de millones."
       )
     )
   )
@@ -507,30 +476,30 @@ names(scenario_sections) <- scenario_specs$escenario
 industry_table <- industry_summary %>%
   transmute(
     `Escenario` = .data$escenario_label,
-    `TG base prom.` = fmt_pct(.data$tg_base_prom_pct),
-    `TG escenario prom.` = fmt_pct(.data$tg_escenario_prom_pct),
-    `Cambio prom.` = fmt_pp(.data$cambio_prom_pp),
-    `TG base 2024` = fmt_pct(.data$tg_base_2024_pct),
-    `TG escenario 2024` = fmt_pct(.data$tg_escenario_2024_pct),
-    `Cambio 2024` = fmt_pp(.data$cambio_2024_pp),
-    `Var. ganancia 2024` = fmt_pct(.data$var_ganancia_2024_pct)
+    `Ganancia base prom.` = fmt_num(.data$ganancia_pb_base_prom_miles_mill),
+    `Ganancia escenario prom.` = fmt_num(.data$ganancia_pb_escenario_prom_miles_mill),
+    `Saldo sobrevaluación prom.` = fmt_delta(.data$saldo_pb_prom_miles_mill),
+    `Saldo post intereses prom.` = fmt_delta(.data$saldo_post_intereses_prom_miles_mill),
+    `Ganancia base 2024` = fmt_num(.data$ganancia_pb_base_2024_miles_mill),
+    `Ganancia escenario 2024` = fmt_num(.data$ganancia_pb_escenario_2024_miles_mill),
+    `Saldo 2024` = fmt_delta(.data$saldo_pb_2024_miles_mill),
+    `Saldo post intereses 2024` = fmt_delta(.data$saldo_post_intereses_2024_miles_mill)
   )
 
 component_table <- industry_components_2024 %>%
   mutate(
-    valor_miles_mill = .data$valor / 1e9,
     escenario_label = as.character(.data$escenario_label)
   ) %>%
   select("escenario_label", "componente", "valor_miles_mill") %>%
   pivot_wider(names_from = "escenario_label", values_from = "valor_miles_mill") %>%
   transmute(
     `Componente` = as.character(.data$componente),
-    `Escenario 1` = fmt_num(.data$`Escenario 1 - Comercio exterior`),
-    `Escenario 2` = fmt_num(.data$`Escenario 2 - Bienes transables`)
+    `Escenario 1` = fmt_delta(.data$`Escenario 1 - Comercio exterior`),
+    `Escenario 2` = fmt_delta(.data$`Escenario 2 - Bienes transables`)
   )
 
 md <- c(
-  "# Análisis integrado de escenarios de devaluación industrial, 2020-2024",
+  "# Saldos de ganancia asociados a la sobrevaluación cambiaria industrial, 2020-2024",
   "",
   paste0(
     "Fuente de trabajo: `",
@@ -541,46 +510,56 @@ md <- c(
   "",
   paste(
     "Esta minuta integra los dos ejercicios de cierre de brecha cambiaria",
-    "construidos para la industria manufacturera uruguaya. El objetivo es",
-    "comparar, primero a nivel de industria general, cómo cambia la tasa de",
-    "ganancia bajo dos supuestos de incidencia; luego se presenta una lectura",
-    "separada de cada escenario para industria total, segmento exportador y",
-    "segmento orientado al mercado interno."
+    "construidos para la industria manufacturera uruguaya. A diferencia de la",
+    "lectura centrada en el resultado contrafactual de devaluación, aquí el",
+    "foco está puesto en el saldo monetario que se observa desde el escenario",
+    "inicial de sobrevaluación."
   ),
   "",
   paste(
-    "El ejercicio debe leerse como una forma de dimensionar la apropiación de",
-    "riqueza asociada a sostener un tipo de cambio comercial por debajo del",
-    "tipo de cambio de paridad. En todos los casos se trabaja año a año, sin",
-    "efectos acumulados ni cambios en cantidades, productividad o estructura",
-    "productiva."
+    "La convención de signo es `ganancia inicial - ganancia contrafactual con",
+    "cierre de brecha`. Por eso, un valor negativo indica ganancia dejada de",
+    "percibir bajo sobrevaluación: si se cerrara la brecha cambiaria, la masa",
+    "de ganancia sería mayor. Un valor positivo indica ganancia sobrepercibida",
+    "bajo sobrevaluación: si se cerrara la brecha, la masa de ganancia sería",
+    "menor. Las magnitudes se presentan en miles de millones de pesos",
+    "corrientes."
   ),
-  "",
-  "## 1. Industria general: lectura comparada de los dos escenarios",
   "",
   paste(
-    "La comparación agregada muestra dos resultados claramente distintos. En el",
-    "escenario de comercio exterior, el canal positivo asociado al VBP afectado",
-    "por comercio exterior domina sobre los aumentos de costos, capital e",
-    "intereses. En el escenario de bienes transables, el aumento modelado de",
-    "costos y componentes transables del capital pesa más que el impulso sobre",
-    "el VBP, llevando la tasa agregada a un resultado negativo en el tramo final."
+    "La medida principal es la masa de ganancia a precios básicos",
+    "`ganancia_pb`. Como complemento se reporta `ganancia_pb_desp_intereses`,",
+    "que descuenta intereses pagados y permite observar si el saldo se mantiene",
+    "una vez considerado el canal financiero. No se presentan tasas de ganancia",
+    "en esta versión de la minuta."
   ),
   "",
-  paste0("![Industria total: tasa de ganancia según escenario](", fig_rel(fig1_path), ")"),
+  "## 1. Industria general: saldos comparados entre escenarios",
   "",
-  paste0("![Industria total: cambio en tasa de ganancia](", fig_rel(fig2_path), ")"),
+  paste(
+    "A nivel de industria total, los dos escenarios producen saldos opuestos.",
+    "En el escenario de comercio exterior, el cierre de la brecha elevaría la",
+    "ganancia industrial; por tanto, desde la posición inicial de sobrevaluación",
+    "aparece un saldo negativo: ganancia dejada de percibir. En el escenario de",
+    "bienes transables, el cierre de la brecha reduce la ganancia agregada por",
+    "el mayor peso de consumo intermedio y masa salarial; desde la posición",
+    "inicial, eso aparece como saldo positivo: ganancia sobrepercibida bajo",
+    "sobrevaluación."
+  ),
+  "",
+  paste0("![Industria total: saldo de ganancia asociado a la sobrevaluación](", fig_rel(fig1_path), ")"),
   "",
   md_table(industry_table),
   "",
   paste(
-    "El contraste de componentes en 2024 permite ver el mecanismo: el escenario",
-    "1 tiene un delta de VBP mayor que los costos modelados; el escenario 2",
-    "incorpora una incidencia mucho más alta sobre consumo intermedio y masa",
-    "salarial, por lo que el cierre de brecha deteriora la rentabilidad agregada."
+    "La descomposición de 2024 muestra el mecanismo. La menor valorización del",
+    "VBP aparece con signo negativo porque representa ganancia dejada de",
+    "percibir bajo sobrevaluación. Los menores costos observados bajo",
+    "sobrevaluación aparecen con signo positivo porque elevan la ganancia",
+    "inicial respecto del contrafactual de paridad."
   ),
   "",
-  paste0("![Industria total: canales monetarios 2024](", fig_rel(fig3_path), ")"),
+  paste0("![Industria total: componentes del saldo 2024](", fig_rel(fig2_path), ")"),
   "",
   md_table(component_table),
   "",
@@ -589,24 +568,21 @@ md <- c(
   scenario_sections$comercio_exterior$spec$descripcion,
   "",
   paste(
-    "En este escenario, el efecto positivo opera sobre la parte de la producción",
-    "directamente asociada al comercio exterior, mientras los efectos negativos",
-    "se aplican sobre componentes importados de costos, capital fijo, stock e",
-    "intereses. Por eso, el resultado favorece especialmente al segmento",
-    "exportador."
+    "En este escenario, la sobrevaluación comprime la valorización en pesos del",
+    "VBP asociado al comercio exterior y, al mismo tiempo, abarata componentes",
+    "importados de costos y capital. El balance de esos canales se expresa como",
+    "saldo de masa de ganancia observado desde el escenario inicial."
   ),
   "",
   scenario_sections$comercio_exterior$text,
   "",
-  paste0("![Escenario 1: tasa de ganancia por segmento](", fig_rel(scenario_sections$comercio_exterior$figures[[1]]), ")"),
-  "",
-  paste0("![Escenario 1: cambio en tasa de ganancia](", fig_rel(scenario_sections$comercio_exterior$figures[[2]]), ")"),
+  paste0("![Escenario 1: saldo de ganancia por segmento](", fig_rel(scenario_sections$comercio_exterior$figures[[1]]), ")"),
   "",
   md_table(scenario_sections$comercio_exterior$table),
   "",
-  paste0("![Escenario 1: componentes 2024](", fig_rel(scenario_sections$comercio_exterior$figures[[3]]), ")"),
+  paste0("![Escenario 1: componentes del saldo 2024](", fig_rel(scenario_sections$comercio_exterior$figures[[2]]), ")"),
   "",
-  "Coeficientes usados:",
+  "Coeficientes que inciden en la masa de ganancia:",
   "",
   md_table(scenario_sections$comercio_exterior$coef_table),
   "",
@@ -617,38 +593,47 @@ md <- c(
   paste(
     "En este escenario, la incidencia no queda limitada al comercio exterior",
     "directo. También se consideran mercancías producidas localmente cuyos",
-    "precios internos se rigen por precios internacionales. Esto amplía el peso",
-    "de los componentes afectados, en particular consumo intermedio y masa",
-    "salarial, y modifica de manera sustantiva el resultado de rentabilidad."
+    "precios internos se rigen por precios internacionales. Esto amplía tanto",
+    "los canales positivos del VBP como los canales de costos, por lo que la",
+    "lectura debe concentrarse en el saldo neto de masa de ganancia."
   ),
   "",
   scenario_sections$bienes_transables$text,
   "",
-  paste0("![Escenario 2: tasa de ganancia por segmento](", fig_rel(scenario_sections$bienes_transables$figures[[1]]), ")"),
-  "",
-  paste0("![Escenario 2: cambio en tasa de ganancia](", fig_rel(scenario_sections$bienes_transables$figures[[2]]), ")"),
+  paste0("![Escenario 2: saldo de ganancia por segmento](", fig_rel(scenario_sections$bienes_transables$figures[[1]]), ")"),
   "",
   md_table(scenario_sections$bienes_transables$table),
   "",
-  paste0("![Escenario 2: componentes 2024](", fig_rel(scenario_sections$bienes_transables$figures[[3]]), ")"),
+  paste0("![Escenario 2: componentes del saldo 2024](", fig_rel(scenario_sections$bienes_transables$figures[[2]]), ")"),
   "",
-  "Coeficientes usados:",
+  "Coeficientes que inciden en la masa de ganancia:",
   "",
   md_table(scenario_sections$bienes_transables$coef_table),
+  "",
+  "## Nota técnica",
   "",
   "La fórmula común aplicada en ambos escenarios es:",
   "",
   "```text",
   "factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1",
   "delta_variable = variable_base * incidencia_seccion_variable * factor_devaluacion",
-  "ganancia_pb_devaluacion = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo",
-  "capital_total_adelantado_devaluacion = capital_total_adelantado + delta_stock_capital_imputado + (delta_remuneraciones + delta_consumo_intermedio_estimado) / rotacion_calibrada_sobre_6_6",
-  "tasa_ganancia_pb_devaluacion = ganancia_pb_devaluacion / capital_total_adelantado_devaluacion",
-  "```"
+  "ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo",
+  "saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario",
+  "ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario",
+  "saldo_sobrevaluacion_ganancia_pb_desp_intereses = ganancia_pb_desp_intereses - ganancia_pb_desp_intereses_escenario",
+  "```",
+  "",
+  paste(
+    "El coeficiente de stock de capital imputado se mantiene en el XLSX porque",
+    "afecta cálculos de tasa de ganancia, pero no se presenta en esta minuta",
+    "porque la medida solicitada es masa absoluta de ganancia. Por esa razón,",
+    "las figuras y tablas de componentes de esta versión usan VBP, consumo",
+    "intermedio, remuneraciones, consumo de capital fijo e intereses."
+  )
 )
 
 writeLines(md, output_md, useBytes = TRUE)
 
-cat("Minuta integrada creada: ", output_md, "\n", sep = "")
+cat("Minuta integrada actualizada: ", output_md, "\n", sep = "")
 cat("Figuras creadas en: ", figures_dir, "\n", sep = "")
 cat("Fuente XLSX: ", input_xlsx, "\n", sep = "")
