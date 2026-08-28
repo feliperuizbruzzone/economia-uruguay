@@ -8,6 +8,43 @@ La convención de signo es `ganancia inicial - ganancia contrafactual con cierre
 
 La medida principal es la masa de ganancia a precios básicos `ganancia_pb`. Como complemento se reporta `ganancia_pb_desp_intereses`, que descuenta intereses pagados y permite observar si el saldo se mantiene una vez considerado el canal financiero. No se presentan tasas de ganancia en esta versión de la minuta.
 
+## Supuestos, fuentes y factor de devaluación
+
+El ejercicio utiliza resultados corrientes de la EAAE para 2020-2024 y aplica coeficientes de incidencia diferenciados por escenario y sección. La industria total conserva los coeficientes agregados; los segmentos exportador y mercado interno usan coeficientes específicos construidos para cada escenario. La serie de intereses corresponde a la industria manufacturera agregada y su apertura entre segmentos se asigna según microdatos del CIU.
+
+| Bloque | Ítem | Criterio documentado |
+| --- | --- | --- |
+| Fuente | panel EAAE 2020-2024 | El escenario se actualiza desde el panel CSV ya validado: 20260826_panel_eaae_2020_2024_industria.csv. No se recalcula el panel porque los nuevos coeficientes son parámetros de modelamiento de devaluación y no modifican variables base EAAE. |
+| Fuente | coeficientes de devaluación | Los coeficientes se toman desde 20260828-coeficientes-efecto-devaluacion.csv. La hoja Modelo del archivo fuente entrega los coeficientes para industria total en dos escenarios; las hojas Impo_Expo - Mercado Interno y Transable_Expo - MI entregan coeficientes específicos para exportadora y mercado-interno. |
+| Fuente | intereses industriales | La serie de intereses disponible es anual y corresponde a la industria manufacturera agregada. La apertura entre grupos exportadora y mercado interno se toma de microdatos del CIU. |
+| Decisión | criterio de asignación de intereses | Para los grupos de subramas, los intereses industriales se asignan según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno. La industria total conserva el 100% de la serie agregada. |
+| Fórmula | intereses por grupo | intereses_grupo = intereses_industria_total * participacion_CIU; participacion_CIU exportadora = 0,656; participacion_CIU mercado-interno = 0,344. |
+| Devaluación | factor de devaluación | factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1. |
+| Fuente | archivo de trabajo de coeficientes | Archivo de trabajo: `data/input-data/mussi/20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. Las fuentes sustantivas de cada coeficiente se toman de su columna `Fuente` y se reportan en las tablas por escenario. |
+| Fuente | tipo de cambio comercial/paridad | La hoja `tipo-cambio` del XLSX se construye desde `data/analysis-data/20260812-exportaciones-manufactura-uruguay.csv`, con tipo de cambio comercial y tipo de cambio de paridad. |
+
+El factor de devaluación considerado se calcula año a año como `tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`. No se trata de un shock acumulado entre años, sino de un cierre contrafactual de la brecha cambiaria en cada año observado. En el período 2020-2024, el factor promedio es 44,4%, con un mínimo de 35,4% y un máximo de 55,1%.
+
+| Año | Tipo de cambio comercial | Tipo de cambio paridad | Factor de devaluación |
+| --- | --- | --- | --- |
+| 2020 | 42,00 | 57,61 | 37,2% |
+| 2021 | 43,56 | 58,98 | 35,4% |
+| 2022 | 41,30 | 58,13 | 40,8% |
+| 2023 | 38,70 | 60,01 | 55,1% |
+| 2024 | 40,24 | 61,85 | 53,7% |
+
+La hoja `Efecto TCC - TCP` del archivo de trabajo propone leer el ejercicio como una combinación de cesión y apropiación respecto de una ganancia inicial. El VBP/exportaciones aparece como cesión bajo sobrevaluación cuando el cierre de la brecha lo valoriza al alza; los costos aparecen como apropiación bajo sobrevaluación cuando el cierre de la brecha los encarece. La tabla y el gráfico siguientes reproducen ese esquema de lectura como ejemplo conceptual, no como resultado empírico de la serie EAAE.
+
+| Año | Variable ejemplo | Monto base | Factor devaluación | Concepto | Delta monetario | % sobre ganancia inicial |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2024 | VBP/exportaciones | 200 | 53,7% | Cesión | -107,4 | -10,7% |
+| 2024 | Insumos | 100 | 53,7% | Apropiación | +53,7 | +5,4% |
+| 2024 | Masa salarial | 30 | 53,7% | Apropiación | +16,1 | +1,6% |
+
+![Esquema TCC-TCP: cesión y apropiación](../output/figures/devaluacion_escenarios_integrados_20260828/00_esquema_efecto_tcc_tcp.png)
+
+Los coeficientes de incidencia se reportan en las secciones de cada escenario. En todos los casos indican qué proporción de cada variable se ve afectada por el cierre de la brecha cambiaria; la columna de efecto explicita si esa incidencia eleva la valorización del VBP o aumenta costos, intereses y componentes que reducen la masa de ganancia. La fuente del coeficiente se toma de la columna `Fuente` del XLSX de coeficientes cuando está disponible; si una celda de fuente está vacía, se conserva la trazabilidad a la hoja y bloque desde donde fue extraído el coeficiente.
+
 ## 1. Industria general: saldos comparados entre escenarios
 
 A nivel de industria total, los dos escenarios producen saldos opuestos. En el escenario de comercio exterior, el cierre de la brecha elevaría la ganancia industrial; por tanto, desde la posición inicial de sobrevaluación aparece un saldo negativo: ganancia dejada de percibir. En el escenario de bienes transables, el cierre de la brecha reduce la ganancia agregada por el mayor peso de consumo intermedio y masa salarial; desde la posición inicial, eso aparece como saldo positivo: ganancia sobrepercibida bajo sobrevaluación.
@@ -50,25 +87,28 @@ En el mismo año, el segmento exportador registra -87,4 y el segmento mercado in
 
 ![Escenario 1: componentes del saldo 2024](../output/figures/devaluacion_escenarios_integrados_20260828/04_comercio_exterior_componentes_saldo_2024_segmentos.png)
 
-Coeficientes que inciden en la masa de ganancia:
+Coeficientes del modelo utilizados en este escenario:
 
-| Sección | Variable afectada | Incidencia |
-| --- | --- | --- |
-| Industria total | Consumo capital fijo | 1,7% |
-| Industria total | Consumo intermedio | 18,9% |
-| Industria total | Intereses pagados | 8,5% |
-| Industria total | Masa salarial | 9,3% |
-| Industria total | VBP/exportador | 39,5% |
-| Mercado interno | Consumo capital fijo | 1,1% |
-| Mercado interno | Consumo intermedio | 22,7% |
-| Mercado interno | Intereses pagados | 8,5% |
-| Mercado interno | Masa salarial | 9,3% |
-| Mercado interno | VBP/exportador | 10,7% |
-| Segmento exportador | Consumo capital fijo | 0,8% |
-| Segmento exportador | Consumo intermedio | 18,1% |
-| Segmento exportador | Intereses pagados | 8,5% |
-| Segmento exportador | Masa salarial | 9,3% |
-| Segmento exportador | VBP/exportador | 42,0% |
+| Sección | Variable afectada | Incidencia | Efecto ante devaluación | Fuente del coeficiente |
+| --- | --- | --- | --- | --- |
+| Industria total | Consumo capital fijo | 1,7% | Negativo: aumenta costos y reduce la masa de ganancia | Efecto de inversión importada, prorrateada por depreciación lineal estimación a 20 años a partir de EAAE |
+| Industria total | Consumo intermedio | 18,9% | Negativo: aumenta costos y reduce la masa de ganancia | Se toma COU porque incluye impuestos y márgenes de comercio y transporte, promedio 2015/2016 |
+| Industria total | Intereses pagados | 8,5% | Negativo: aumenta intereses pagados y reduce la ganancia post intereses | CIU 2006/2024 |
+| Industria total | Masa salarial | 9,3% | Negativo: aumenta costos y reduce la masa de ganancia | Se toma COU porque incluye impuestos y márgenes de comercio y transporte, promedio 2015/2016 |
+| Industria total | Stock capital imputado | 3,7% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Efecto de inversión importada en stock de capital a partir de EAAE |
+| Industria total | VBP/exportador | 39,5% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Exportaciones CCNN, con factor de microdatos, respecto de VBP EAAE, promedio 2001/2024 |
+| Mercado interno | Consumo capital fijo | 1,1% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja impo_expo - mercado interno; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Consumo intermedio | 22,7% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja impo_expo - mercado interno; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Intereses pagados | 8,5% | Negativo: aumenta intereses pagados y reduce la ganancia post intereses | Hoja impo_expo - mercado interno; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Masa salarial | 9,3% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja impo_expo - mercado interno; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Stock capital imputado | 1,8% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Hoja impo_expo - mercado interno; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | VBP/exportador | 10,7% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Hoja impo_expo - mercado interno; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Segmento exportador | Consumo capital fijo | 0,8% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja impo_expo - mercado interno; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Consumo intermedio | 18,1% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja impo_expo - mercado interno; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Intereses pagados | 8,5% | Negativo: aumenta intereses pagados y reduce la ganancia post intereses | Hoja impo_expo - mercado interno; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Masa salarial | 9,3% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja impo_expo - mercado interno; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Stock capital imputado | 0,9% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Hoja impo_expo - mercado interno; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | VBP/exportador | 42,0% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Hoja impo_expo - mercado interno; Bloque exportadores; fuente específica no explicitada en celda. |
 
 ## 3. Escenario 2 - Bienes Transables
 
@@ -89,25 +129,28 @@ En el mismo año, el segmento exportador registra -112,8 y el segmento mercado i
 
 ![Escenario 2: componentes del saldo 2024](../output/figures/devaluacion_escenarios_integrados_20260828/04_bienes_transables_componentes_saldo_2024_segmentos.png)
 
-Coeficientes que inciden en la masa de ganancia:
+Coeficientes del modelo utilizados en este escenario:
 
-| Sección | Variable afectada | Incidencia |
-| --- | --- | --- |
-| Industria total | Consumo capital fijo | 1,7% |
-| Industria total | Consumo intermedio | 81,2% |
-| Industria total | Intereses pagados | 8,5% |
-| Industria total | Masa salarial | 45,3% |
-| Industria total | VBP/transable | 33,3% |
-| Mercado interno | Consumo capital fijo | 1,1% |
-| Mercado interno | Consumo intermedio | 76,4% |
-| Mercado interno | Intereses pagados | 8,5% |
-| Mercado interno | Masa salarial | 8,3% |
-| Mercado interno | VBP/transable | 92,4% |
-| Segmento exportador | Consumo capital fijo | 0,8% |
-| Segmento exportador | Consumo intermedio | 82,0% |
-| Segmento exportador | Intereses pagados | 8,5% |
-| Segmento exportador | Masa salarial | 13,3% |
-| Segmento exportador | VBP/transable | 97,2% |
+| Sección | Variable afectada | Incidencia | Efecto ante devaluación | Fuente del coeficiente |
+| --- | --- | --- | --- | --- |
+| Industria total | Consumo capital fijo | 1,7% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja modelo; Bloque v.2 \| cantidades fijas \| transable; fuente específica no explicitada en celda. |
+| Industria total | Consumo intermedio | 81,2% | Negativo: aumenta costos y reduce la masa de ganancia | Se toma COU porque incluye impuestos y márgenes de comercio y transporte, promedio 2015/2016 |
+| Industria total | Intereses pagados | 8,5% | Negativo: aumenta intereses pagados y reduce la ganancia post intereses | CIU 2006/2024 |
+| Industria total | Masa salarial | 45,3% | Negativo: aumenta costos y reduce la masa de ganancia | Se toma COU porque incluye impuestos y márgenes de comercio y transporte, promedio 2015/2016 |
+| Industria total | Stock capital imputado | 2,5% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Hoja modelo; Bloque v.2 \| cantidades fijas \| transable; fuente específica no explicitada en celda. |
+| Industria total | VBP/transable | 33,3% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Exportaciones CCNN, con factor de microdatos, respecto de VBP EAAE, promedio 2001/2024 |
+| Mercado interno | Consumo capital fijo | 1,1% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja transable_expo - mi; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Consumo intermedio | 76,4% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja transable_expo - mi; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Intereses pagados | 8,5% | Negativo: aumenta intereses pagados y reduce la ganancia post intereses | Hoja transable_expo - mi; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Masa salarial | 8,3% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja transable_expo - mi; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | Stock capital imputado | 1,8% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Hoja transable_expo - mi; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Mercado interno | VBP/transable | 92,4% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Hoja transable_expo - mi; Bloque mercado interno; fuente específica no explicitada en celda. |
+| Segmento exportador | Consumo capital fijo | 0,8% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Consumo intermedio | 82,0% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Intereses pagados | 8,5% | Negativo: aumenta intereses pagados y reduce la ganancia post intereses | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Masa salarial | 13,3% | Negativo: aumenta costos y reduce la masa de ganancia | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | Stock capital imputado | 0,9% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
+| Segmento exportador | VBP/transable | 97,2% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
 
 ## Nota técnica
 

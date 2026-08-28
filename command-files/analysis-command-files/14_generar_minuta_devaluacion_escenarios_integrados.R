@@ -3,6 +3,7 @@
 suppressPackageStartupMessages({
   library(dplyr)
   library(ggplot2)
+  library(readr)
   library(readxl)
   library(scales)
   library(stringr)
@@ -20,6 +21,14 @@ latest_file <- function(pattern) {
   files <- Sys.glob(pattern)
   if (length(files) == 0) {
     stop("No files found for pattern: ", pattern)
+  }
+  sort(files)[[length(files)]]
+}
+
+latest_file_optional <- function(pattern) {
+  files <- Sys.glob(pattern)
+  if (length(files) == 0) {
+    return(NA_character_)
   }
   sort(files)[[length(files)]]
 }
@@ -56,6 +65,11 @@ md_table <- function(data) {
   if (ncol(data) == 0) {
     return("")
   }
+  data[] <- lapply(data, function(col_i) {
+    col_i <- as.character(col_i)
+    col_i <- str_replace_all(col_i, "\\|", "\\\\|")
+    str_replace_all(col_i, "[\r\n]+", " ")
+  })
 
   header <- paste0("| ", paste(names(data), collapse = " | "), " |")
   separator <- paste0("| ", paste(rep("---", ncol(data)), collapse = " | "), " |")
@@ -79,6 +93,22 @@ input_xlsx <- latest_file(file.path(
   analysis_dir,
   "*_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx"
 ))
+coef_source_xlsx <- latest_file_optional(file.path(
+  "data",
+  "input-data",
+  "mussi",
+  "*segmentos-dos-escenarios.xlsx"
+))
+coeficientes_path <- latest_file(file.path(
+  "data",
+  "input-data",
+  "mussi",
+  "*-coeficientes-efecto-devaluacion.csv"
+))
+tipo_cambio_source_csv <- file.path(
+  analysis_dir,
+  "20260812-exportaciones-manufactura-uruguay.csv"
+)
 
 output_md <- file.path(
   docs_dir,
@@ -119,6 +149,10 @@ missing_sheets <- setdiff(required_sheets, excel_sheets(input_xlsx))
 if (length(missing_sheets) > 0) {
   stop("Missing sheets in workbook: ", paste(missing_sheets, collapse = ", "))
 }
+
+metodologia_xlsx <- read_excel(input_xlsx, sheet = "metodología")
+tipo_cambio_xlsx <- read_excel(input_xlsx, sheet = "tipo-cambio")
+coeficientes_xlsx <- read_csv(coeficientes_path, show_col_types = FALSE)
 
 section_labels <- c(
   "industria-total" = "Industria total",
@@ -175,6 +209,35 @@ read_scenario <- function(sheet_name) {
 
 escenarios <- bind_rows(lapply(scenario_specs$sheet, read_scenario))
 
+clean_coef_source <- function(source) {
+  source <- str_squish(as.character(source))
+  source <- str_replace(source, "^[^;]+;\\s*", "")
+  parts <- str_split(source, ";\\s*", simplify = FALSE)
+
+  vapply(parts, function(parts_i) {
+    parts_i <- parts_i[!is.na(parts_i) & parts_i != ""]
+    if (length(parts_i) >= 3) {
+      paste(parts_i[3:length(parts_i)], collapse = "; ")
+    } else if (length(parts_i) > 0) {
+      paste0(
+        paste(str_to_sentence(parts_i), collapse = "; "),
+        "; fuente específica no explicitada en celda."
+      )
+    } else {
+      "Fuente específica no explicitada en celda."
+    }
+  }, character(1))
+}
+
+coeficientes_sources <- coeficientes_xlsx %>%
+  transmute(
+    escenario_sheet = .data$escenario_nombre,
+    seccion = .data$seccion,
+    variable_join = .data$Variable,
+    comentario_coeficiente = .data$Comentario,
+    fuente_coeficiente = clean_coef_source(.data$Fuente)
+  )
+
 if (nrow(escenarios) != 30L) {
   stop("Se esperaban 30 filas de escenarios: 2 escenarios x 5 años x 3 secciones.")
 }
@@ -188,6 +251,105 @@ required_profit_cols <- c(
 if (any(escenarios %>% select(all_of(required_profit_cols)) %>% is.na())) {
   stop("Hay faltantes en las variables de masa de ganancia requeridas.")
 }
+
+source_assumptions_table <- metodologia_xlsx %>%
+  filter(.data$seccion %in% c("fuentes", "decision", "formula", "devaluacion")) %>%
+  filter(!str_detect(.data$item, "^Escenario ")) %>%
+  mutate(
+    detalle = str_replace_all(.data$detalle, " \\.", "."),
+    detalle = str_replace_all(.data$detalle, "parametros", "parámetros")
+  ) %>%
+  transmute(
+    `Bloque` = recode(
+      .data$seccion,
+      fuentes = "Fuente",
+      decision = "Decisión",
+      formula = "Fórmula",
+      devaluacion = "Devaluación"
+    ),
+    `Ítem` = .data$item,
+    `Criterio documentado` = .data$detalle
+  ) %>%
+  bind_rows(tibble::tibble(
+    `Bloque` = c("Fuente", "Fuente"),
+    `Ítem` = c("archivo de trabajo de coeficientes", "tipo de cambio comercial/paridad"),
+    `Criterio documentado` = c(
+      ifelse(
+        is.na(coef_source_xlsx),
+        "Archivo de trabajo de dos escenarios no localizado en data/input-data/mussi al momento de regenerar la minuta.",
+        paste0(
+          "Archivo de trabajo: `",
+          coef_source_xlsx,
+          "`. Las fuentes sustantivas de cada coeficiente se toman de su columna `Fuente` y se reportan en las tablas por escenario."
+        )
+      ),
+      paste0(
+        "La hoja `tipo-cambio` del XLSX se construye desde `",
+        tipo_cambio_source_csv,
+        "`, con tipo de cambio comercial y tipo de cambio de paridad."
+      )
+    )
+  ))
+
+factor_table <- tipo_cambio_xlsx %>%
+  transmute(
+    `Año` = .data$anio,
+    `Tipo de cambio comercial` = fmt_num(.data$tipo_cambio_comercial_pesos_usd, 2),
+    `Tipo de cambio paridad` = fmt_num(.data$tipo_cambio_paridad_pesos_usd, 2),
+    `Factor de devaluación` = fmt_pct(
+      ((.data$tipo_cambio_paridad_pesos_usd / .data$tipo_cambio_comercial_pesos_usd) - 1) * 100,
+      1
+    )
+  )
+
+factor_summary <- tipo_cambio_xlsx %>%
+  summarise(
+    promedio = mean((.data$tipo_cambio_paridad_pesos_usd / .data$tipo_cambio_comercial_pesos_usd) - 1, na.rm = TRUE),
+    minimo = min((.data$tipo_cambio_paridad_pesos_usd / .data$tipo_cambio_comercial_pesos_usd) - 1, na.rm = TRUE),
+    maximo = max((.data$tipo_cambio_paridad_pesos_usd / .data$tipo_cambio_comercial_pesos_usd) - 1, na.rm = TRUE)
+  )
+
+read_effect_demo <- function(source_path) {
+  if (is.na(source_path) || !"Efecto TCC - TCP" %in% excel_sheets(source_path)) {
+    return(tibble())
+  }
+
+  raw <- read_excel(
+    source_path,
+    sheet = "Efecto TCC - TCP",
+    range = "A2:K5",
+    col_names = FALSE,
+    .name_repair = "minimal"
+  )
+  names(raw) <- paste0("col", seq_along(raw))
+
+  raw[-1, , drop = FALSE] %>%
+    transmute(
+      anio = as.numeric(.data$col1),
+      variable = as.character(.data$col2),
+      monto_base = as.numeric(.data$col3),
+      tcc = as.numeric(.data$col4),
+      tcp = as.numeric(.data$col5),
+      factor_devaluacion = as.numeric(.data$col6),
+      delta_monto = as.numeric(.data$col7),
+      concepto = as.character(.data$col8),
+      ganancia_inicial = as.numeric(.data$col10),
+      pct_sobre_ganancia = as.numeric(.data$col11)
+    ) %>%
+    filter(!is.na(.data$variable))
+}
+
+effect_demo <- read_effect_demo(coef_source_xlsx)
+effect_demo_table <- effect_demo %>%
+  transmute(
+    `Año` = .data$anio,
+    `Variable ejemplo` = recode(.data$variable, Expo = "VBP/exportaciones"),
+    `Monto base` = fmt_num(.data$monto_base, 1),
+    `Factor devaluación` = fmt_pct(.data$factor_devaluacion * 100, 1),
+    `Concepto` = .data$concepto,
+    `Delta monetario` = fmt_delta(.data$delta_monto, 1),
+    `% sobre ganancia inicial` = paste0(fmt_delta(.data$pct_sobre_ganancia * 100, 1), "%")
+  )
 
 saldo_labels <- c(
   saldo_sobrevaluacion_ganancia_pb = "Ganancia pb",
@@ -238,8 +400,41 @@ industry_saldo_long <- escenarios %>%
     saldo_miles_mill = .data$saldo / 1e9
   )
 
+fig0_path <- file.path(figures_dir, "00_esquema_efecto_tcc_tcp.png")
 fig1_path <- file.path(figures_dir, "01_industria_total_saldo_sobrevaluacion_ganancia.png")
 fig2_path <- file.path(figures_dir, "02_industria_total_componentes_saldo_2024.png")
+
+if (nrow(effect_demo) > 0) {
+  effect_demo_plot <- effect_demo %>%
+    mutate(
+      variable = recode(.data$variable, Expo = "VBP/exportaciones"),
+      pct_sobre_ganancia = .data$pct_sobre_ganancia * 100
+    )
+
+  ggplot(effect_demo_plot, aes(
+    x = .data$variable,
+    y = .data$pct_sobre_ganancia,
+    fill = .data$concepto
+  )) +
+    geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
+    geom_col(width = 0.62) +
+    geom_text(
+      aes(label = paste0(fmt_delta(.data$pct_sobre_ganancia, 1), "%")),
+      vjust = ifelse(effect_demo_plot$pct_sobre_ganancia >= 0, -0.35, 1.25),
+      size = 3.3
+    ) +
+    scale_fill_manual(values = c(Cesión = "#B23A48", Apropiación = "#2D6A4F")) +
+    labs(
+      title = "Esquema de lectura TCC-TCP: cesión y apropiación",
+      subtitle = "Ejemplo de la hoja Efecto TCC - TCP: efecto relativo a una ganancia inicial",
+      x = NULL,
+      y = "% sobre ganancia inicial",
+      fill = NULL,
+      caption = "Fuente: hoja Efecto TCC - TCP del archivo de trabajo de coeficientes."
+    ) +
+    theme_report
+  ggsave(fig0_path, width = 8.5, height = 4.8, dpi = 160)
+}
 
 ggplot(industry_saldo_long, aes(
   x = .data$anno,
@@ -416,32 +611,65 @@ scenario_section <- function(scenario_id) {
 
   coef_table <- data %>%
     distinct(
+      seccion,
       seccion_label,
       incidencia_vbp_pp,
       incidencia_consumo_intermedio_estimado,
       incidencia_remuneraciones,
       incidencia_consumo_capital_fijo,
-      incidencia_intereses_industria_pesos
+      incidencia_intereses_industria_pesos,
+      incidencia_stock_capital_imputado
     ) %>%
     pivot_longer(
       cols = starts_with("incidencia_"),
-      names_to = "variable",
+      names_to = "variable_codigo",
       values_to = "incidencia"
     ) %>%
     mutate(
-      variable = recode(
-        .data$variable,
-        incidencia_vbp_pp = spec$vbp_label,
+      variable_join = recode(
+        .data$variable_codigo,
+        incidencia_vbp_pp = "VBP",
         incidencia_consumo_intermedio_estimado = "Consumo intermedio",
         incidencia_remuneraciones = "Masa salarial",
-        incidencia_consumo_capital_fijo = "Consumo capital fijo",
-        incidencia_intereses_industria_pesos = "Intereses pagados"
+        incidencia_consumo_capital_fijo = "Consumo de capital fijo",
+        incidencia_intereses_industria_pesos = "Intereses",
+        incidencia_stock_capital_imputado = "Stock capital imputado"
+      ),
+      efecto = case_when(
+        .data$variable_codigo == "incidencia_vbp_pp" ~
+          "Positivo: eleva el VBP valorizado al tipo de cambio de paridad",
+        .data$variable_codigo == "incidencia_intereses_industria_pesos" ~
+          "Negativo: aumenta intereses pagados y reduce la ganancia post intereses",
+        .data$variable_codigo == "incidencia_stock_capital_imputado" ~
+          "Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada",
+        TRUE ~
+          "Negativo: aumenta costos y reduce la masa de ganancia"
+      ),
+      variable = recode(
+        .data$variable_join,
+        VBP = spec$vbp_label,
+        `Intereses` = "Intereses pagados",
+        `Consumo de capital fijo` = "Consumo capital fijo"
+      ),
+      escenario_sheet = spec$sheet[[1]]
+    ) %>%
+    left_join(
+      coeficientes_sources,
+      by = c(
+        "seccion",
+        "variable_join",
+        "escenario_sheet"
       )
     ) %>%
     transmute(
       `Sección` = as.character(.data$seccion_label),
       `Variable afectada` = .data$variable,
-      `Incidencia` = fmt_pct(.data$incidencia * 100)
+      `Incidencia` = fmt_pct(.data$incidencia * 100),
+      `Efecto ante devaluación` = .data$efecto,
+      `Fuente del coeficiente` = coalesce(
+        .data$fuente_coeficiente,
+        "Fuente del coeficiente no localizada en la tabla procesada."
+      )
     ) %>%
     arrange(.data$`Sección`, .data$`Variable afectada`)
 
@@ -534,6 +762,64 @@ md <- c(
     "en esta versión de la minuta."
   ),
   "",
+  "## Supuestos, fuentes y factor de devaluación",
+  "",
+  paste(
+    "El ejercicio utiliza resultados corrientes de la EAAE para 2020-2024 y",
+    "aplica coeficientes de incidencia diferenciados por escenario y sección.",
+    "La industria total conserva los coeficientes agregados; los segmentos",
+    "exportador y mercado interno usan coeficientes específicos construidos",
+    "para cada escenario. La serie de intereses corresponde a la industria",
+    "manufacturera agregada y su apertura entre segmentos se asigna según",
+    "microdatos del CIU."
+  ),
+  "",
+  md_table(source_assumptions_table),
+  "",
+  paste0(
+    "El factor de devaluación considerado se calcula año a año como",
+    " `tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`. ",
+    "No se trata de un shock acumulado entre años, sino de un cierre ",
+    "contrafactual de la brecha cambiaria en cada año observado. En el período ",
+    "2020-2024, el factor promedio es ",
+    fmt_pct(factor_summary$promedio * 100),
+    ", con un mínimo de ",
+    fmt_pct(factor_summary$minimo * 100),
+    " y un máximo de ",
+    fmt_pct(factor_summary$maximo * 100),
+    "."
+  ),
+  "",
+  md_table(factor_table),
+  "",
+  if (nrow(effect_demo) > 0) c(
+    paste(
+      "La hoja `Efecto TCC - TCP` del archivo de trabajo propone leer el",
+      "ejercicio como una combinación de cesión y apropiación respecto de una",
+      "ganancia inicial. El VBP/exportaciones aparece como cesión bajo",
+      "sobrevaluación cuando el cierre de la brecha lo valoriza al alza; los",
+      "costos aparecen como apropiación bajo sobrevaluación cuando el cierre de",
+      "la brecha los encarece. La tabla y el gráfico siguientes reproducen ese",
+      "esquema de lectura como ejemplo conceptual, no como resultado empírico de",
+      "la serie EAAE."
+    ),
+    "",
+    md_table(effect_demo_table),
+    "",
+    paste0("![Esquema TCC-TCP: cesión y apropiación](", fig_rel(fig0_path), ")"),
+    ""
+  ) else character(0),
+  paste(
+    "Los coeficientes de incidencia se reportan en las secciones de cada",
+    "escenario. En todos los casos indican qué proporción de cada variable se",
+    "ve afectada por el cierre de la brecha cambiaria; la columna de efecto",
+    "explicita si esa incidencia eleva la valorización del VBP o aumenta",
+    "costos, intereses y componentes que reducen la masa de ganancia. La fuente",
+    "del coeficiente se toma de la columna `Fuente` del XLSX de coeficientes",
+    "cuando está disponible; si una celda de fuente está vacía, se conserva la",
+    "trazabilidad a la hoja y bloque desde donde fue extraído el coeficiente."
+  ),
+  "",
   "## 1. Industria general: saldos comparados entre escenarios",
   "",
   paste(
@@ -582,7 +868,7 @@ md <- c(
   "",
   paste0("![Escenario 1: componentes del saldo 2024](", fig_rel(scenario_sections$comercio_exterior$figures[[2]]), ")"),
   "",
-  "Coeficientes que inciden en la masa de ganancia:",
+  "Coeficientes del modelo utilizados en este escenario:",
   "",
   md_table(scenario_sections$comercio_exterior$coef_table),
   "",
@@ -606,7 +892,7 @@ md <- c(
   "",
   paste0("![Escenario 2: componentes del saldo 2024](", fig_rel(scenario_sections$bienes_transables$figures[[2]]), ")"),
   "",
-  "Coeficientes que inciden en la masa de ganancia:",
+  "Coeficientes del modelo utilizados en este escenario:",
   "",
   md_table(scenario_sections$bienes_transables$coef_table),
   "",
