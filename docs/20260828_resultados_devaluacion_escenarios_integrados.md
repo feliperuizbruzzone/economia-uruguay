@@ -6,7 +6,7 @@ Fuente de trabajo: `data/analysis-data/20260828_panel_eaae_2020_2024_industria_e
 
 Esta minuta integra los dos ejercicios de cierre de brecha cambiaria construidos para la industria manufacturera uruguaya. El primer escenario mide la incidencia directa del comercio exterior; el segundo amplía el ejercicio hacia bienes transables cuyos precios internos se rigen por precios internacionales.
 
-La lectura se realiza desde el escenario inicial de sobrevaluación. Por eso, el resultado se expresa como saldo monetario y no como tasa: `ganancia inicial - ganancia contrafactual con cierre de brecha`. Un valor negativo indica ganancia dejada de percibir bajo sobrevaluación; un valor positivo indica ganancia sobrepercibida bajo sobrevaluación. El cálculo se realiza año a año, sin efectos acumulados ni respuestas dinámicas de cantidades, productividad o estructura productiva.
+La lectura se realiza desde el escenario inicial de sobrevaluación. Por eso, el resultado principal se expresa como saldo monetario y no como tasa de ganancia: `ganancia inicial - ganancia contrafactual con cierre de brecha`. Un valor negativo indica ganancia dejada de percibir bajo sobrevaluación; un valor positivo indica ganancia sobrepercibida bajo sobrevaluación. El cálculo se realiza año a año, sin efectos acumulados ni respuestas dinámicas de cantidades, productividad o estructura productiva.
 
 ## Síntesis
 
@@ -24,6 +24,7 @@ En 2024, el escenario de comercio exterior registra para la industria total un s
 - El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.
 - El canal positivo se modela sobre `vbp_pp`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.
 - La medida principal de esta minuta es `ganancia_pb`; como complemento se reporta `ganancia_pb_desp_intereses`.
+- La medida relativa complementaria normaliza el saldo de sobrevaluación como `saldo_sobrevaluacion_ganancia_pb / ganancia_pb_inicial * 100`; debe leerse como saldo neto sobre la masa de ganancia inicial, no como tasa de ganancia.
 - Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.
 - El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.
 
@@ -96,6 +97,10 @@ A nivel de industria total, los dos escenarios producen saldos opuestos. En el e
 
 ![Industria total: saldo de ganancia asociado a la sobrevaluación](../output/figures/devaluacion_escenarios_integrados_20260828/01_industria_total_saldo_sobrevaluacion_ganancia.png)
 
+La figura siguiente expresa el saldo de sobrevaluación como proporción de la ganancia inicial. Esta medida no reemplaza el saldo monetario: permite leer cuánto pesa la apropiación o cesión neta sobre la masa de ganancia observada en cada sección.
+
+![Saldo de sobrevaluación como proporción de la ganancia inicial por sección](../output/figures/devaluacion_escenarios_integrados_20260828/01b_saldo_pct_ganancia_inicial_por_seccion.png)
+
 | Escenario | Ganancia base prom. | Ganancia escenario prom. | Saldo sobrevaluación prom. | Saldo post intereses prom. | Ganancia base 2024 | Ganancia escenario 2024 | Saldo 2024 | Saldo post intereses 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Escenario 2 - Bienes transables | 83,4 | -31,2 | +114,6 | +114,8 | 78,2 | -75,0 | +153,2 | +153,4 |
@@ -111,6 +116,10 @@ En 2024, la industria total registra un saldo de sobrevaluación de -111,3 miles
 En el mismo año, el segmento exportador registra -87,4 y el segmento mercado interno registra +6,2 miles de millones.
 
 ![Escenario 1: saldo de ganancia por segmento](../output/figures/devaluacion_escenarios_integrados_20260828/03_comercio_exterior_saldo_ganancia_segmentos.png)
+
+Para dimensionar el peso relativo del saldo, la figura siguiente divide la diferencia entre la ganancia inicial y la ganancia del momento 2 por la masa de ganancia inicial de cada sección. Esto muestra qué proporción de la ganancia observada representa la apropiación o cesión asociada a la sobrevaluación.
+
+![Escenario 1: saldo relativo sobre la ganancia inicial](../output/figures/devaluacion_escenarios_integrados_20260828/03b_comercio_exterior_saldo_pct_ganancia_inicial_segmentos.png)
 
 | Sección | Ganancia base prom. | Ganancia escenario prom. | Saldo sobrevaluación prom. | Saldo post intereses prom. | Ganancia base 2024 | Ganancia escenario 2024 | Saldo 2024 | Saldo post intereses 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -153,6 +162,10 @@ En 2024, la industria total registra un saldo de sobrevaluación de +153,2 miles
 En el mismo año, el segmento exportador registra -112,8 y el segmento mercado interno registra -39,3 miles de millones.
 
 ![Escenario 2: saldo de ganancia por segmento](../output/figures/devaluacion_escenarios_integrados_20260828/03_bienes_transables_saldo_ganancia_segmentos.png)
+
+La lectura relativa permite comparar secciones de tamaño distinto sin perder el signo económico del ejercicio: valores positivos indican una sobrepercepción de ganancia bajo sobrevaluación y valores negativos indican ganancia dejada de percibir.
+
+![Escenario 2: saldo relativo sobre la ganancia inicial](../output/figures/devaluacion_escenarios_integrados_20260828/03b_bienes_transables_saldo_pct_ganancia_inicial_segmentos.png)
 
 | Sección | Ganancia base prom. | Ganancia escenario prom. | Saldo sobrevaluación prom. | Saldo post intereses prom. | Ganancia base 2024 | Ganancia escenario 2024 | Saldo 2024 | Saldo post intereses 2024 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -201,6 +214,7 @@ delta_variable = variable_base * incidencia_seccion_variable * factor_devaluacio
 variable_devaluacion = variable_base + delta_variable
 ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo
 saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario
+saldo_sobrevaluacion_ganancia_pb_pct = saldo_sobrevaluacion_ganancia_pb / ganancia_pb * 100
 ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario
 saldo_sobrevaluacion_ganancia_pb_desp_intereses = ganancia_pb_desp_intereses - ganancia_pb_desp_intereses_escenario
 ```

@@ -60,6 +60,14 @@ fmt_num <- function(x, digits = 1) {
   )
 }
 
+safe_pct_ratio <- function(numerator, denominator) {
+  ifelse(
+    is.na(numerator) | is.na(denominator) | denominator == 0,
+    NA_real_,
+    numerator / denominator * 100
+  )
+}
+
 md_table <- function(data) {
   data <- as.data.frame(data, stringsAsFactors = FALSE)
   if (ncol(data) == 0) {
@@ -265,6 +273,14 @@ read_scenario <- function(sheet_name) {
         .data$ganancia_pb - .data$ganancia_pb_devaluacion,
       saldo_sobrevaluacion_ganancia_pb_desp_intereses =
         .data$ganancia_pb_desp_intereses - .data$ganancia_pb_desp_intereses_devaluacion,
+      # DECISION: the relative chart normalizes the overvaluation balance by
+      # the initial profit mass, not by the counterfactual moment-2 profit.
+      # This reads the balance as a share of observed profit and avoids
+      # unstable ratios if the counterfactual profit gets close to zero.
+      saldo_sobrevaluacion_ganancia_pb_pct = safe_pct_ratio(
+        .data$ganancia_pb - .data$ganancia_pb_devaluacion,
+        .data$ganancia_pb
+      ),
       delta_ganancia_pb_escenario =
         .data$ganancia_pb_devaluacion - .data$ganancia_pb,
       delta_ganancia_pb_desp_intereses_escenario =
@@ -527,6 +543,7 @@ fig_factor_path <- file.path(figures_dir, "00_factor_devaluacion_2020_2024.png")
 fig_coef_path <- file.path(figures_dir, "00_coeficientes_incidencia_escenarios.png")
 fig0_path <- file.path(figures_dir, "00_esquema_efecto_tcc_tcp.png")
 fig1_path <- file.path(figures_dir, "01_industria_total_saldo_sobrevaluacion_ganancia.png")
+fig1_pct_path <- file.path(figures_dir, "01b_saldo_pct_ganancia_inicial_por_seccion.png")
 fig2_path <- file.path(figures_dir, "02_industria_total_componentes_saldo_2024.png")
 
 ggplot(factor_plot_data, aes(
@@ -632,6 +649,52 @@ ggplot(industry_saldo_long, aes(
   theme_report
 ggsave(fig1_path, width = 10, height = 5.2, dpi = 160)
 
+saldo_pct_integrated <- escenarios %>%
+  transmute(
+    anno = .data$anno,
+    escenario_label = .data$escenario_label,
+    seccion_label = .data$seccion_label,
+    saldo_pct = .data$saldo_sobrevaluacion_ganancia_pb_pct
+  )
+
+saldo_pct_integrated_last <- saldo_pct_integrated %>%
+  group_by(.data$escenario_label, .data$seccion_label) %>%
+  filter(.data$anno == max(.data$anno, na.rm = TRUE)) %>%
+  ungroup()
+
+ggplot(saldo_pct_integrated, aes(
+  x = .data$anno,
+  y = .data$saldo_pct,
+  color = .data$escenario_label
+)) +
+  geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
+  geom_line(linewidth = 0.85) +
+  geom_point(size = 1.8) +
+  geom_text(
+    data = saldo_pct_integrated_last,
+    aes(label = paste0(fmt_delta(.data$saldo_pct, 1), "%")),
+    hjust = -0.08,
+    size = 2.9,
+    show.legend = FALSE
+  ) +
+  facet_wrap(vars(.data$seccion_label), nrow = 1) +
+  scale_x_continuous(
+    breaks = sort(unique(saldo_pct_integrated$anno)),
+    expand = expansion(mult = c(0.02, 0.2))
+  ) +
+  scale_y_continuous(labels = label_percent(scale = 1)) +
+  scale_color_manual(values = scenario_colors) +
+  labs(
+    title = "Saldo de sobrevaluación como proporción de la ganancia inicial",
+    subtitle = "Saldo relativo = (ganancia inicial - ganancia momento 2) / ganancia inicial",
+    x = NULL,
+    y = "Porcentaje de la ganancia inicial",
+    color = NULL,
+    caption = caption_fuente
+  ) +
+  theme_report
+ggsave(fig1_pct_path, width = 11.5, height = 5.4, dpi = 160)
+
 industry_components_2024 <- escenarios %>%
   filter(.data$anno == 2024, .data$seccion == "industria-total") %>%
   select("escenario_label", all_of(names(component_labels))) %>%
@@ -690,6 +753,7 @@ scenario_section <- function(scenario_id) {
     )
 
   fig_saldo <- file.path(figures_dir, paste0("03_", scenario_id, "_saldo_ganancia_segmentos.png"))
+  fig_saldo_pct <- file.path(figures_dir, paste0("03b_", scenario_id, "_saldo_pct_ganancia_inicial_segmentos.png"))
   fig_components <- file.path(figures_dir, paste0("04_", scenario_id, "_componentes_saldo_2024_segmentos.png"))
 
   ggplot(saldo_long, aes(x = .data$anno, y = .data$saldo_miles_mill, color = .data$seccion_label)) +
@@ -709,6 +773,50 @@ scenario_section <- function(scenario_id) {
     ) +
     theme_report
   ggsave(fig_saldo, width = 10.5, height = 5.2, dpi = 160)
+
+  saldo_pct <- data %>%
+    transmute(
+      anno = .data$anno,
+      seccion_label = .data$seccion_label,
+      saldo_pct = .data$saldo_sobrevaluacion_ganancia_pb_pct
+    )
+
+  saldo_pct_last <- saldo_pct %>%
+    group_by(.data$seccion_label) %>%
+    filter(.data$anno == max(.data$anno, na.rm = TRUE)) %>%
+    ungroup()
+
+  ggplot(saldo_pct, aes(
+    x = .data$anno,
+    y = .data$saldo_pct,
+    color = .data$seccion_label
+  )) +
+    geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
+    geom_line(linewidth = 0.85) +
+    geom_point(size = 1.9) +
+    geom_text(
+      data = saldo_pct_last,
+      aes(label = paste0(fmt_delta(.data$saldo_pct, 1), "%")),
+      hjust = -0.08,
+      size = 3.1,
+      show.legend = FALSE
+    ) +
+    scale_x_continuous(
+      breaks = sort(unique(saldo_pct$anno)),
+      expand = expansion(mult = c(0.02, 0.17))
+    ) +
+    scale_y_continuous(labels = label_percent(scale = 1)) +
+    scale_color_manual(values = section_colors) +
+    labs(
+      title = paste(spec$titulo, "- saldo relativo sobre la ganancia inicial"),
+      subtitle = "Saldo relativo = (ganancia inicial - ganancia momento 2) / ganancia inicial",
+      x = NULL,
+      y = "Porcentaje de la ganancia inicial",
+      color = NULL,
+      caption = caption_fuente
+    ) +
+    theme_report
+  ggsave(fig_saldo_pct, width = 10.5, height = 5.2, dpi = 160)
 
   components_2024 <- data %>%
     filter(.data$anno == 2024) %>%
@@ -840,7 +948,11 @@ scenario_section <- function(scenario_id) {
     spec = spec,
     table = summary_table,
     coef_table = coef_table,
-    figures = c(fig_saldo, fig_components),
+    figures = c(
+      saldo = fig_saldo,
+      saldo_pct = fig_saldo_pct,
+      components = fig_components
+    ),
     text = c(
       paste0(
         "En 2024, la industria total registra un saldo de sobrevaluación de ",
@@ -908,7 +1020,8 @@ md <- c(
   "",
   paste(
     "La lectura se realiza desde el escenario inicial de sobrevaluación. Por",
-    "eso, el resultado se expresa como saldo monetario y no como tasa:",
+    "eso, el resultado principal se expresa como saldo monetario y no como",
+    "tasa de ganancia:",
     "`ganancia inicial - ganancia contrafactual con cierre de brecha`. Un valor",
     "negativo indica ganancia dejada de percibir bajo sobrevaluación; un valor",
     "positivo indica ganancia sobrepercibida bajo sobrevaluación. El cálculo se",
@@ -960,6 +1073,7 @@ md <- c(
   "- El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.",
   "- El canal positivo se modela sobre `vbp_pp`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.",
   "- La medida principal de esta minuta es `ganancia_pb`; como complemento se reporta `ganancia_pb_desp_intereses`.",
+  "- La medida relativa complementaria normaliza el saldo de sobrevaluación como `saldo_sobrevaluacion_ganancia_pb / ganancia_pb_inicial * 100`; debe leerse como saldo neto sobre la masa de ganancia inicial, no como tasa de ganancia.",
   "- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.",
   "- El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.",
   "",
@@ -1034,6 +1148,15 @@ md <- c(
   "",
   paste0("![Industria total: saldo de ganancia asociado a la sobrevaluación](", fig_rel(fig1_path), ")"),
   "",
+  paste(
+    "La figura siguiente expresa el saldo de sobrevaluación como proporción de",
+    "la ganancia inicial. Esta medida no reemplaza el saldo monetario: permite",
+    "leer cuánto pesa la apropiación o cesión neta sobre la masa de ganancia",
+    "observada en cada sección."
+  ),
+  "",
+  paste0("![Saldo de sobrevaluación como proporción de la ganancia inicial por sección](", fig_rel(fig1_pct_path), ")"),
+  "",
   md_table(industry_table),
   "",
   "## 2. Escenario 1 - Comercio Exterior",
@@ -1049,11 +1172,21 @@ md <- c(
   "",
   scenario_sections$comercio_exterior$text,
   "",
-  paste0("![Escenario 1: saldo de ganancia por segmento](", fig_rel(scenario_sections$comercio_exterior$figures[[1]]), ")"),
+  paste0("![Escenario 1: saldo de ganancia por segmento](", fig_rel(scenario_sections$comercio_exterior$figures[["saldo"]]), ")"),
+  "",
+  paste(
+    "Para dimensionar el peso relativo del saldo, la figura siguiente divide",
+    "la diferencia entre la ganancia inicial y la ganancia del momento 2 por la",
+    "masa de ganancia inicial de cada sección. Esto muestra qué proporción de",
+    "la ganancia observada representa la apropiación o cesión asociada a la",
+    "sobrevaluación."
+  ),
+  "",
+  paste0("![Escenario 1: saldo relativo sobre la ganancia inicial](", fig_rel(scenario_sections$comercio_exterior$figures[["saldo_pct"]]), ")"),
   "",
   md_table(scenario_sections$comercio_exterior$table),
   "",
-  paste0("![Escenario 1: componentes del saldo 2024](", fig_rel(scenario_sections$comercio_exterior$figures[[2]]), ")"),
+  paste0("![Escenario 1: componentes del saldo 2024](", fig_rel(scenario_sections$comercio_exterior$figures[["components"]]), ")"),
   "",
   "Coeficientes del modelo utilizados en este escenario:",
   "",
@@ -1073,11 +1206,20 @@ md <- c(
   "",
   scenario_sections$bienes_transables$text,
   "",
-  paste0("![Escenario 2: saldo de ganancia por segmento](", fig_rel(scenario_sections$bienes_transables$figures[[1]]), ")"),
+  paste0("![Escenario 2: saldo de ganancia por segmento](", fig_rel(scenario_sections$bienes_transables$figures[["saldo"]]), ")"),
+  "",
+  paste(
+    "La lectura relativa permite comparar secciones de tamaño distinto sin",
+    "perder el signo económico del ejercicio: valores positivos indican una",
+    "sobrepercepción de ganancia bajo sobrevaluación y valores negativos",
+    "indican ganancia dejada de percibir."
+  ),
+  "",
+  paste0("![Escenario 2: saldo relativo sobre la ganancia inicial](", fig_rel(scenario_sections$bienes_transables$figures[["saldo_pct"]]), ")"),
   "",
   md_table(scenario_sections$bienes_transables$table),
   "",
-  paste0("![Escenario 2: componentes del saldo 2024](", fig_rel(scenario_sections$bienes_transables$figures[[2]]), ")"),
+  paste0("![Escenario 2: componentes del saldo 2024](", fig_rel(scenario_sections$bienes_transables$figures[["components"]]), ")"),
   "",
   "Coeficientes del modelo utilizados en este escenario:",
   "",
@@ -1114,6 +1256,7 @@ md <- c(
   "variable_devaluacion = variable_base + delta_variable",
   "ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo",
   "saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario",
+  "saldo_sobrevaluacion_ganancia_pb_pct = saldo_sobrevaluacion_ganancia_pb / ganancia_pb * 100",
   "ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario",
   "saldo_sobrevaluacion_ganancia_pb_desp_intereses = ganancia_pb_desp_intereses - ganancia_pb_desp_intereses_escenario",
   "```",
