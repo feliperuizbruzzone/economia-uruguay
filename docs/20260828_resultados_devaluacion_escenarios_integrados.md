@@ -1,16 +1,67 @@
-# Saldos de ganancia asociados a la sobrevaluación cambiaria industrial, 2020-2024
+# Escenarios integrados: saldos de ganancia asociados a la sobrevaluación cambiaria industrial
 
-Fuente de trabajo: `data/analysis-data/20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, hojas `escenario-inicial`, `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`.
+Fuente de trabajo: `data/analysis-data/20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, hojas `escenario-inicial`, `tipo-cambio`, `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`.
 
-Esta minuta integra los dos ejercicios de cierre de brecha cambiaria construidos para la industria manufacturera uruguaya. A diferencia de la lectura centrada en el resultado contrafactual de devaluación, aquí el foco está puesto en el saldo monetario que se observa desde el escenario inicial de sobrevaluación.
+## Introducción
 
-La convención de signo es `ganancia inicial - ganancia contrafactual con cierre de brecha`. Por eso, un valor negativo indica ganancia dejada de percibir bajo sobrevaluación: si se cerrara la brecha cambiaria, la masa de ganancia sería mayor. Un valor positivo indica ganancia sobrepercibida bajo sobrevaluación: si se cerrara la brecha, la masa de ganancia sería menor. Las magnitudes se presentan en miles de millones de pesos corrientes.
+Esta minuta integra los dos ejercicios de cierre de brecha cambiaria construidos para la industria manufacturera uruguaya. El primer escenario mide la incidencia directa del comercio exterior; el segundo amplía el ejercicio hacia bienes transables cuyos precios internos se rigen por precios internacionales.
 
-La medida principal es la masa de ganancia a precios básicos `ganancia_pb`. Como complemento se reporta `ganancia_pb_desp_intereses`, que descuenta intereses pagados y permite observar si el saldo se mantiene una vez considerado el canal financiero. No se presentan tasas de ganancia en esta versión de la minuta.
+La lectura se realiza desde el escenario inicial de sobrevaluación. Por eso, el resultado se expresa como saldo monetario y no como tasa: `ganancia inicial - ganancia contrafactual con cierre de brecha`. Un valor negativo indica ganancia dejada de percibir bajo sobrevaluación; un valor positivo indica ganancia sobrepercibida bajo sobrevaluación. El cálculo se realiza año a año, sin efectos acumulados ni respuestas dinámicas de cantidades, productividad o estructura productiva.
 
-## Supuestos, fuentes y factor de devaluación
+## Síntesis
 
-El ejercicio utiliza resultados corrientes de la EAAE para 2020-2024 y aplica coeficientes de incidencia diferenciados por escenario y sección. La industria total conserva los coeficientes agregados; los segmentos exportador y mercado interno usan coeficientes específicos construidos para cada escenario. La serie de intereses corresponde a la industria manufacturera agregada y su apertura entre segmentos se asigna según microdatos del CIU.
+Las fuentes usadas son: EAAE para VBP, VAB, remuneraciones, consumo intermedio estimado, consumo de capital fijo, stock de capital y capital adelantado; Oyanthabal, con base en la metodología de Iñigo Carrera (2007), para los tipos de cambio comercial/paridad; microdatos del CIU para distribuir los intereses industriales entre ramas exportadoras y ramas orientadas al mercado interno; y la clasificación operativa de subramas industriales 2020-2024 usada para separar industria exportadora, mercado interno y combustible. Las fuentes sustantivas de los coeficientes se toman de la columna `Fuente` del XLSX de coeficientes y se reportan en las tablas correspondientes.
+
+Se trabaja desde 2020 porque en ese tramo la fuente opera con ramas homogéneas. Extender el ejercicio al panel completo exigiría procesar distintas versiones CIIU, lo que vuelve incompatible diferenciar con criterio uniforme el segmento industrial exportador y el segmento orientado al mercado interno. Complementariamente, el período 2020-2024 es razonable para una lectura en valores corrientes porque evita grandes saltos de nivel asociados a cambios clasificatorios.
+
+En 2024, el escenario de comercio exterior registra para la industria total un saldo de -111,3 miles de millones de pesos corrientes en ganancia a precios básicos. El escenario de bienes transables registra +153,2 miles de millones. La comparación muestra que el signo del saldo depende del balance entre valorización del VBP y encarecimiento de costos.
+
+## Supuestos y escenarios
+
+- `escenario-inicial` contiene los valores corrientes observados para industria total, segmento exportador y segmento mercado interno.
+- `Escenario 1 - Comercio Exterior` contiene el contrafactual que recoge la incidencia directa de importaciones y exportaciones.
+- `Escenario 2 - Bienes Transables` contiene el contrafactual que incorpora bienes transables producidos localmente y vendidos en el mercado interno.
+- El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.
+- El canal positivo se modela sobre `vbp_pp`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.
+- La medida principal de esta minuta es `ganancia_pb`; como complemento se reporta `ganancia_pb_desp_intereses`.
+- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.
+- El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.
+
+Ramas incluidas en el segmento exportador:
+- 10: Elaboración de productos alimenticios
+- 11 y 12: Elaboración de bebidas y elaboración de productos de tabaco
+- 13: Fabricación de productos textiles
+- 15: Fabricación de cueros y productos conexos
+- 16: Producción de madera y fabricación de productos de madera y corcho, excepto muebles
+- 17: Fabricación de papel y de los productos de papel
+- 22: Fabricación de productos de caucho y plástico
+
+Ramas incluidas en el segmento mercado interno:
+- 14: Fabricación de prendas de vestir
+- 18: Actividades de impresión y reproducción de grabaciones
+- 20: Fabricación de sustancias y productos químicos
+- 21: Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos
+- 23: Fabricación de otros productos minerales no metálicos
+- 24: Fabricación de metales comunes
+- 25: Fabricación de productos derivados del metal, excepto maquinaria y equipo
+- 26 y 27: Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico
+- 28: Fabricación de maquinaria y equipo n.c.p
+- 29 y 30: Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte
+- 31: Fabricación de muebles
+- 32: Otras industrias manufactureras
+- 33: Reparación e instalación de la maquinaria y equipo
+
+![Brecha cambiaria modelada](../output/figures/devaluacion_escenarios_integrados_20260828/00_factor_devaluacion_2020_2024.png)
+
+El factor de devaluación considerado se calcula año a año como `tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`. En el período 2020-2024, el factor promedio es 44,4%, con un mínimo de 35,4% y un máximo de 55,1%.
+
+| Año | Tipo de cambio comercial | Tipo de cambio paridad | Factor de devaluación |
+| --- | --- | --- | --- |
+| 2020 | 42,00 | 57,61 | 37,2% |
+| 2021 | 43,56 | 58,98 | 35,4% |
+| 2022 | 41,30 | 58,13 | 40,8% |
+| 2023 | 38,70 | 60,01 | 55,1% |
+| 2024 | 40,24 | 61,85 | 53,7% |
 
 | Bloque | Ítem | Criterio documentado |
 | --- | --- | --- |
@@ -23,15 +74,11 @@ El ejercicio utiliza resultados corrientes de la EAAE para 2020-2024 y aplica co
 | Fuente | archivo de trabajo de coeficientes | Archivo de trabajo: `data/input-data/mussi/20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. Las fuentes sustantivas de cada coeficiente se toman de su columna `Fuente` y se reportan en las tablas por escenario. |
 | Fuente | tipo de cambio comercial/paridad | La hoja `tipo-cambio` del XLSX se construye desde `data/analysis-data/20260812-exportaciones-manufactura-uruguay.csv`, con tipo de cambio comercial y tipo de cambio de paridad. |
 
-El factor de devaluación considerado se calcula año a año como `tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`. No se trata de un shock acumulado entre años, sino de un cierre contrafactual de la brecha cambiaria en cada año observado. En el período 2020-2024, el factor promedio es 44,4%, con un mínimo de 35,4% y un máximo de 55,1%.
+## Coeficientes de incidencia
 
-| Año | Tipo de cambio comercial | Tipo de cambio paridad | Factor de devaluación |
-| --- | --- | --- | --- |
-| 2020 | 42,00 | 57,61 | 37,2% |
-| 2021 | 43,56 | 58,98 | 35,4% |
-| 2022 | 41,30 | 58,13 | 40,8% |
-| 2023 | 38,70 | 60,01 | 55,1% |
-| 2024 | 40,24 | 61,85 | 53,7% |
+Los coeficientes indican qué proporción de cada variable queda expuesta al cierre de la brecha cambiaria. Desde el punto de vista del contrafactual de paridad, el componente de VBP tiene signo positivo para la ganancia porque eleva la valorización de ventas asociadas al tipo de cambio. En cambio, consumo intermedio, masa salarial, consumo de capital fijo e intereses pagados operan como gastos o costos; el stock imputado afecta negativamente el capital adelantado y se mantiene como supuesto del modelo, aunque la minuta no presenta tasas de ganancia.
+
+![Coeficientes de incidencia por escenario y segmento](../output/figures/devaluacion_escenarios_integrados_20260828/00_coeficientes_incidencia_escenarios.png)
 
 La hoja `Efecto TCC - TCP` del archivo de trabajo propone leer el ejercicio como una combinación de cesión y apropiación respecto de una ganancia inicial. El VBP/exportaciones aparece como cesión bajo sobrevaluación cuando el cierre de la brecha lo valoriza al alza; los costos aparecen como apropiación bajo sobrevaluación cuando el cierre de la brecha los encarece. La tabla y el gráfico siguientes reproducen ese esquema de lectura como ejemplo conceptual, no como resultado empírico de la serie EAAE.
 
@@ -43,8 +90,6 @@ La hoja `Efecto TCC - TCP` del archivo de trabajo propone leer el ejercicio como
 
 ![Esquema TCC-TCP: cesión y apropiación](../output/figures/devaluacion_escenarios_integrados_20260828/00_esquema_efecto_tcc_tcp.png)
 
-Los coeficientes de incidencia se reportan en las secciones de cada escenario. En todos los casos indican qué proporción de cada variable se ve afectada por el cierre de la brecha cambiaria; la columna de efecto explicita si esa incidencia eleva la valorización del VBP o aumenta costos, intereses y componentes que reducen la masa de ganancia. La fuente del coeficiente se toma de la columna `Fuente` del XLSX de coeficientes cuando está disponible; si una celda de fuente está vacía, se conserva la trazabilidad a la hoja y bloque desde donde fue extraído el coeficiente.
-
 ## 1. Industria general: saldos comparados entre escenarios
 
 A nivel de industria total, los dos escenarios producen saldos opuestos. En el escenario de comercio exterior, el cierre de la brecha elevaría la ganancia industrial; por tanto, desde la posición inicial de sobrevaluación aparece un saldo negativo: ganancia dejada de percibir. En el escenario de bienes transables, el cierre de la brecha reduce la ganancia agregada por el mayor peso de consumo intermedio y masa salarial; desde la posición inicial, eso aparece como saldo positivo: ganancia sobrepercibida bajo sobrevaluación.
@@ -55,18 +100,6 @@ A nivel de industria total, los dos escenarios producen saldos opuestos. En el e
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Escenario 2 - Bienes transables | 83,4 | -31,2 | +114,6 | +114,8 | 78,2 | -75,0 | +153,2 | +153,4 |
 | Escenario 1 - Comercio exterior | 83,4 | 168,5 | -85,1 | -84,9 | 78,2 | 189,4 | -111,3 | -111,0 |
-
-La descomposición de 2024 muestra el mecanismo. La menor valorización del VBP aparece con signo negativo porque representa ganancia dejada de percibir bajo sobrevaluación. Los menores costos observados bajo sobrevaluación aparecen con signo positivo porque elevan la ganancia inicial respecto del contrafactual de paridad.
-
-![Industria total: componentes del saldo 2024](../output/figures/devaluacion_escenarios_integrados_20260828/02_industria_total_componentes_saldo_2024.png)
-
-| Componente | Escenario 1 | Escenario 2 |
-| --- | --- | --- |
-| Menor valorización del VBP | -182,1 | -153,5 |
-| Ahorro en consumo intermedio | +64,9 | +278,9 |
-| Ahorro en remuneraciones | +5,6 | +27,5 |
-| Ahorro en consumo capital fijo | +0,3 | +0,3 |
-| Ahorro en intereses pagados | +0,3 | +0,3 |
 
 ## 2. Escenario 1 - Comercio Exterior
 
@@ -152,13 +185,20 @@ Coeficientes del modelo utilizados en este escenario:
 | Segmento exportador | Stock capital imputado | 0,9% | Negativo: aumenta capital adelantado; no entra en la masa de ganancia presentada | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
 | Segmento exportador | VBP/transable | 97,2% | Positivo: eleva el VBP valorizado al tipo de cambio de paridad | Hoja transable_expo - mi; Bloque exportadores; fuente específica no explicitada en celda. |
 
-## Nota técnica
+## Interpretación
+
+La simulación sugiere que la sobrevaluación cambiaria redistribuye condiciones de rentabilidad dentro de la industria. La lectura agregada de la industria total debe interpretarse con cautela porque sintetiza estructuras de exposición distintas. La separación entre segmento exportador y segmento mercado interno permite observar qué parte del resultado responde al canal de valorización del producto y qué parte queda condicionada por el encarecimiento de costos, capital adelantado e intereses pagados al cerrar la brecha cambiaria.
+
+Dado que esta versión expresa saldos absolutos desde el escenario inicial, la comparación privilegia magnitudes monetarias antes que variaciones de tasas. Esto facilita leer la apropiación o cesión de riqueza asociada a la sobrevaluación como diferencia entre la situación observada y el contrafactual de paridad.
+
+## Anexo técnico
 
 La fórmula común aplicada en ambos escenarios es:
 
 ```text
 factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1
 delta_variable = variable_base * incidencia_seccion_variable * factor_devaluacion
+variable_devaluacion = variable_base + delta_variable
 ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo
 saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario
 ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario

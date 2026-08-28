@@ -89,6 +89,12 @@ section_value <- function(data, seccion, variable) {
     pull({{ variable }})
 }
 
+scenario_value <- function(data, escenario, variable) {
+  data %>%
+    filter(.data$escenario == !!escenario) %>%
+    pull({{ variable }})
+}
+
 input_xlsx <- latest_file(file.path(
   analysis_dir,
   "*_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx"
@@ -160,17 +166,81 @@ section_labels <- c(
   "mercado-interno" = "Mercado interno"
 )
 
+ramas_exportadoras <- c(
+  "10: Elaboración de productos alimenticios",
+  "11 y 12: Elaboración de bebidas y elaboración de productos de tabaco",
+  "13: Fabricación de productos textiles",
+  "15: Fabricación de cueros y productos conexos",
+  "16: Producción de madera y fabricación de productos de madera y corcho, excepto muebles",
+  "17: Fabricación de papel y de los productos de papel",
+  "22: Fabricación de productos de caucho y plástico"
+)
+
+ramas_mercado_interno <- c(
+  "14: Fabricación de prendas de vestir",
+  "18: Actividades de impresión y reproducción de grabaciones",
+  "20: Fabricación de sustancias y productos químicos",
+  "21: Fabricación de productos farmacéuticos, sustancias químicas medicinales y de productos botánicos",
+  "23: Fabricación de otros productos minerales no metálicos",
+  "24: Fabricación de metales comunes",
+  "25: Fabricación de productos derivados del metal, excepto maquinaria y equipo",
+  "26 y 27: Fabricación de los productos informáticos, electrónicos y ópticos. Fabricación de equipo eléctrico",
+  "28: Fabricación de maquinaria y equipo n.c.p",
+  "29 y 30: Fabricación de vehículos automotores, remolques y semirremolques. Fabricación de otros tipos de equipo de transporte",
+  "31: Fabricación de muebles",
+  "32: Otras industrias manufactureras",
+  "33: Reparación e instalación de la maquinaria y equipo"
+)
+
 caption_fuente <- paste(
   "Fuente: elaboración propia en base a EAAE, microdatos CIU y Oyanthabal,",
   "con base en metodología de Iñigo Carrera (2007)."
 )
 
+blue_palette <- c(
+  navy = "#0B1F3A",
+  deep = "#173B63",
+  main = "#2F5F8F",
+  steel = "#5F86AD",
+  soft = "#9DB8D2",
+  pale = "#DCE8F3",
+  grey = "#6C7785",
+  grid = "#D9E1E8"
+)
+
+scenario_colors <- c(
+  "Escenario 1 - Comercio exterior" = blue_palette[["deep"]],
+  "Escenario 2 - Bienes transables" = blue_palette[["steel"]]
+)
+
+section_colors <- c(
+  "Industria total" = blue_palette[["navy"]],
+  "Segmento exportador" = blue_palette[["main"]],
+  "Mercado interno" = blue_palette[["soft"]]
+)
+
+concept_colors <- c(
+  Cesión = blue_palette[["soft"]],
+  Apropiación = blue_palette[["deep"]]
+)
+
 theme_report <- theme_minimal(base_size = 11) +
   theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_line(color = blue_palette[["grid"]], linewidth = 0.28),
     panel.grid.minor = element_blank(),
     plot.title.position = "plot",
+    plot.title = element_text(color = blue_palette[["navy"]], face = "bold", size = 13),
+    plot.subtitle = element_text(color = blue_palette[["grey"]], size = 10.5),
+    plot.caption = element_text(color = blue_palette[["grey"]], size = 8.5, hjust = 0),
     plot.caption.position = "plot",
-    legend.position = "bottom"
+    axis.title = element_text(color = blue_palette[["grey"]], size = 9.5),
+    axis.text = element_text(color = blue_palette[["navy"]], size = 9),
+    strip.text = element_text(color = blue_palette[["navy"]], face = "bold"),
+    legend.position = "bottom",
+    legend.title = element_text(color = blue_palette[["grey"]], size = 9),
+    legend.text = element_text(color = blue_palette[["navy"]], size = 9)
   )
 
 read_scenario <- function(sheet_name) {
@@ -400,9 +470,113 @@ industry_saldo_long <- escenarios %>%
     saldo_miles_mill = .data$saldo / 1e9
   )
 
+factor_plot_data <- tipo_cambio_xlsx %>%
+  transmute(
+    anio = .data$anio,
+    factor_devaluacion_pct =
+      ((.data$tipo_cambio_paridad_pesos_usd / .data$tipo_cambio_comercial_pesos_usd) - 1) * 100
+  )
+
+coeficientes_plot_data <- escenarios %>%
+  distinct(
+    .data$escenario,
+    .data$escenario_label,
+    .data$seccion_label,
+    .data$incidencia_vbp_pp,
+    .data$incidencia_consumo_intermedio_estimado,
+    .data$incidencia_remuneraciones,
+    .data$incidencia_consumo_capital_fijo,
+    .data$incidencia_intereses_industria_pesos,
+    .data$incidencia_stock_capital_imputado
+  ) %>%
+  pivot_longer(
+    cols = starts_with("incidencia_"),
+    names_to = "variable_codigo",
+    values_to = "incidencia"
+  ) %>%
+  mutate(
+    variable = case_when(
+      .data$variable_codigo == "incidencia_vbp_pp" &
+        .data$escenario == "comercio_exterior" ~ "VBP/exportador",
+      .data$variable_codigo == "incidencia_vbp_pp" &
+        .data$escenario == "bienes_transables" ~ "VBP/transable",
+      .data$variable_codigo == "incidencia_consumo_intermedio_estimado" ~
+        "Consumo intermedio",
+      .data$variable_codigo == "incidencia_remuneraciones" ~ "Masa salarial",
+      .data$variable_codigo == "incidencia_consumo_capital_fijo" ~
+        "Consumo capital fijo",
+      .data$variable_codigo == "incidencia_intereses_industria_pesos" ~
+        "Intereses pagados",
+      .data$variable_codigo == "incidencia_stock_capital_imputado" ~
+        "Stock imputado",
+      TRUE ~ .data$variable_codigo
+    ),
+    variable = factor(.data$variable, levels = c(
+      "VBP/exportador",
+      "VBP/transable",
+      "Consumo intermedio",
+      "Masa salarial",
+      "Consumo capital fijo",
+      "Stock imputado",
+      "Intereses pagados"
+    )),
+    incidencia_pct = .data$incidencia * 100
+  )
+
+fig_factor_path <- file.path(figures_dir, "00_factor_devaluacion_2020_2024.png")
+fig_coef_path <- file.path(figures_dir, "00_coeficientes_incidencia_escenarios.png")
 fig0_path <- file.path(figures_dir, "00_esquema_efecto_tcc_tcp.png")
 fig1_path <- file.path(figures_dir, "01_industria_total_saldo_sobrevaluacion_ganancia.png")
 fig2_path <- file.path(figures_dir, "02_industria_total_componentes_saldo_2024.png")
+
+ggplot(factor_plot_data, aes(
+  x = .data$anio,
+  y = .data$factor_devaluacion_pct
+)) +
+  geom_line(color = blue_palette[["main"]], linewidth = 0.9) +
+  geom_point(color = blue_palette[["main"]], size = 2.2) +
+  geom_text(
+    aes(label = fmt_pct(.data$factor_devaluacion_pct, 1)),
+    vjust = -0.75,
+    size = 3.2,
+    color = blue_palette[["navy"]]
+  ) +
+  scale_x_continuous(breaks = sort(unique(factor_plot_data$anio))) +
+  scale_y_continuous(labels = label_percent(scale = 1), expand = expansion(mult = c(0.05, 0.18))) +
+  labs(
+    title = "Brecha cambiaria modelada",
+    subtitle = "Factor anual de cierre entre tipo de cambio comercial y tipo de cambio de paridad",
+    x = NULL,
+    y = "Factor de devaluación",
+    caption = caption_fuente
+  ) +
+  theme_report
+ggsave(fig_factor_path, width = 8.5, height = 4.8, dpi = 160)
+
+ggplot(coeficientes_plot_data, aes(
+  x = .data$variable,
+  y = .data$seccion_label,
+  fill = .data$incidencia_pct
+)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  geom_text(aes(label = fmt_pct(.data$incidencia_pct, 1)), size = 2.8) +
+  facet_wrap(vars(.data$escenario_label), nrow = 1) +
+  scale_fill_gradient(
+    low = blue_palette[["pale"]],
+    high = blue_palette[["deep"]],
+    labels = label_percent(scale = 1)
+  ) +
+  labs(
+    title = "Coeficientes de incidencia por escenario y segmento",
+    subtitle = "Proporción de cada variable expuesta al cierre de brecha TCC-TCP",
+    x = NULL,
+    y = NULL,
+    fill = "Incidencia",
+    caption = caption_fuente
+  ) +
+  theme_report +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+ggsave(fig_coef_path, width = 12, height = 5.6, dpi = 160)
 
 if (nrow(effect_demo) > 0) {
   effect_demo_plot <- effect_demo %>%
@@ -423,7 +597,7 @@ if (nrow(effect_demo) > 0) {
       vjust = ifelse(effect_demo_plot$pct_sobre_ganancia >= 0, -0.35, 1.25),
       size = 3.3
     ) +
-    scale_fill_manual(values = c(Cesión = "#B23A48", Apropiación = "#2D6A4F")) +
+    scale_fill_manual(values = concept_colors) +
     labs(
       title = "Esquema de lectura TCC-TCP: cesión y apropiación",
       subtitle = "Ejemplo de la hoja Efecto TCC - TCP: efecto relativo a una ganancia inicial",
@@ -446,10 +620,7 @@ ggplot(industry_saldo_long, aes(
   geom_point(size = 2) +
   facet_wrap(vars(.data$medida), nrow = 1, scales = "free_y") +
   scale_x_continuous(breaks = sort(unique(industry_saldo_long$anno))) +
-  scale_color_manual(values = c(
-    "Escenario 1 - Comercio exterior" = "#2D6A4F",
-    "Escenario 2 - Bienes transables" = "#E76F51"
-  )) +
+  scale_color_manual(values = scenario_colors) +
   labs(
     title = "Industria total: saldo de ganancia asociado a la sobrevaluación",
     subtitle = "Saldo = ganancia observada inicial - ganancia contrafactual con cierre de brecha",
@@ -482,10 +653,7 @@ ggplot(industry_components_2024, aes(
 )) +
   geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
   geom_col(position = position_dodge(width = 0.75), width = 0.68) +
-  scale_fill_manual(values = c(
-    "Escenario 1 - Comercio exterior" = "#2D6A4F",
-    "Escenario 2 - Bienes transables" = "#E76F51"
-  )) +
+  scale_fill_manual(values = scenario_colors) +
   labs(
     title = "Industria total: componentes del saldo de sobrevaluación en 2024",
     subtitle = "VBP negativo indica ganancia dejada de percibir; costos positivos indican ahorro bajo sobrevaluación",
@@ -530,11 +698,7 @@ scenario_section <- function(scenario_id) {
     geom_point(size = 1.8) +
     facet_wrap(vars(.data$medida), nrow = 1, scales = "free_y") +
     scale_x_continuous(breaks = sort(unique(saldo_long$anno))) +
-    scale_color_manual(values = c(
-      "Industria total" = "#457B9D",
-      "Segmento exportador" = "#2D6A4F",
-      "Mercado interno" = "#E76F51"
-    )) +
+    scale_color_manual(values = section_colors) +
     labs(
       title = paste(spec$titulo, "- saldo de ganancia asociado a la sobrevaluación"),
       subtitle = "Saldo = ganancia observada inicial - ganancia contrafactual con cierre de brecha",
@@ -578,11 +742,7 @@ scenario_section <- function(scenario_id) {
   )) +
     geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
     geom_col(position = position_dodge(width = 0.75), width = 0.68) +
-    scale_fill_manual(values = c(
-      "Industria total" = "#457B9D",
-      "Segmento exportador" = "#2D6A4F",
-      "Mercado interno" = "#E76F51"
-    )) +
+    scale_fill_manual(values = section_colors) +
     labs(
       title = paste(spec$titulo, "- componentes del saldo en 2024"),
       subtitle = "Valores positivos: sobrepercepción o ahorro bajo sobrevaluación; valores negativos: ganancia dejada de percibir",
@@ -727,61 +887,94 @@ component_table <- industry_components_2024 %>%
   )
 
 md <- c(
-  "# Saldos de ganancia asociados a la sobrevaluación cambiaria industrial, 2020-2024",
+  "# Escenarios integrados: saldos de ganancia asociados a la sobrevaluación cambiaria industrial",
   "",
   paste0(
     "Fuente de trabajo: `",
     input_xlsx,
-    "`, hojas `escenario-inicial`, `Escenario 1 - Comercio Exterior` y ",
-    "`Escenario 2 - Bienes Transables`."
+    "`, hojas `escenario-inicial`, `tipo-cambio`, ",
+    "`Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`."
   ),
+  "",
+  "## Introducción",
   "",
   paste(
     "Esta minuta integra los dos ejercicios de cierre de brecha cambiaria",
-    "construidos para la industria manufacturera uruguaya. A diferencia de la",
-    "lectura centrada en el resultado contrafactual de devaluación, aquí el",
-    "foco está puesto en el saldo monetario que se observa desde el escenario",
-    "inicial de sobrevaluación."
+    "construidos para la industria manufacturera uruguaya. El primer escenario",
+    "mide la incidencia directa del comercio exterior; el segundo amplía el",
+    "ejercicio hacia bienes transables cuyos precios internos se rigen por",
+    "precios internacionales."
   ),
   "",
   paste(
-    "La convención de signo es `ganancia inicial - ganancia contrafactual con",
-    "cierre de brecha`. Por eso, un valor negativo indica ganancia dejada de",
-    "percibir bajo sobrevaluación: si se cerrara la brecha cambiaria, la masa",
-    "de ganancia sería mayor. Un valor positivo indica ganancia sobrepercibida",
-    "bajo sobrevaluación: si se cerrara la brecha, la masa de ganancia sería",
-    "menor. Las magnitudes se presentan en miles de millones de pesos",
-    "corrientes."
+    "La lectura se realiza desde el escenario inicial de sobrevaluación. Por",
+    "eso, el resultado se expresa como saldo monetario y no como tasa:",
+    "`ganancia inicial - ganancia contrafactual con cierre de brecha`. Un valor",
+    "negativo indica ganancia dejada de percibir bajo sobrevaluación; un valor",
+    "positivo indica ganancia sobrepercibida bajo sobrevaluación. El cálculo se",
+    "realiza año a año, sin efectos acumulados ni respuestas dinámicas de",
+    "cantidades, productividad o estructura productiva."
+  ),
+  "",
+  "## Síntesis",
+  "",
+  paste(
+    "Las fuentes usadas son: EAAE para VBP, VAB, remuneraciones, consumo",
+    "intermedio estimado, consumo de capital fijo, stock de capital y capital",
+    "adelantado; Oyanthabal, con base en la metodología de Iñigo Carrera",
+    "(2007), para los tipos de cambio comercial/paridad; microdatos del CIU",
+    "para distribuir los intereses industriales entre ramas exportadoras y",
+    "ramas orientadas al mercado interno; y la clasificación operativa de",
+    "subramas industriales 2020-2024 usada para separar industria exportadora,",
+    "mercado interno y combustible. Las fuentes sustantivas de los coeficientes",
+    "se toman de la columna `Fuente` del XLSX de coeficientes y se reportan en",
+    "las tablas correspondientes."
   ),
   "",
   paste(
-    "La medida principal es la masa de ganancia a precios básicos",
-    "`ganancia_pb`. Como complemento se reporta `ganancia_pb_desp_intereses`,",
-    "que descuenta intereses pagados y permite observar si el saldo se mantiene",
-    "una vez considerado el canal financiero. No se presentan tasas de ganancia",
-    "en esta versión de la minuta."
+    "Se trabaja desde 2020 porque en ese tramo la fuente opera con ramas",
+    "homogéneas. Extender el ejercicio al panel completo exigiría procesar",
+    "distintas versiones CIIU, lo que vuelve incompatible diferenciar con",
+    "criterio uniforme el segmento industrial exportador y el segmento orientado",
+    "al mercado interno. Complementariamente, el período 2020-2024 es razonable",
+    "para una lectura en valores corrientes porque evita grandes saltos de nivel",
+    "asociados a cambios clasificatorios."
   ),
   "",
-  "## Supuestos, fuentes y factor de devaluación",
-  "",
-  paste(
-    "El ejercicio utiliza resultados corrientes de la EAAE para 2020-2024 y",
-    "aplica coeficientes de incidencia diferenciados por escenario y sección.",
-    "La industria total conserva los coeficientes agregados; los segmentos",
-    "exportador y mercado interno usan coeficientes específicos construidos",
-    "para cada escenario. La serie de intereses corresponde a la industria",
-    "manufacturera agregada y su apertura entre segmentos se asigna según",
-    "microdatos del CIU."
+  paste0(
+    "En 2024, el escenario de comercio exterior registra para la industria total",
+    " un saldo de ",
+    fmt_delta(scenario_value(industry_summary, "comercio_exterior", saldo_pb_2024_miles_mill)),
+    " miles de millones de pesos corrientes en ganancia a precios básicos. El",
+    " escenario de bienes transables registra ",
+    fmt_delta(scenario_value(industry_summary, "bienes_transables", saldo_pb_2024_miles_mill)),
+    " miles de millones. La comparación muestra que el signo del saldo depende",
+    " del balance entre valorización del VBP y encarecimiento de costos."
   ),
   "",
-  md_table(source_assumptions_table),
+  "## Supuestos y escenarios",
+  "",
+  "- `escenario-inicial` contiene los valores corrientes observados para industria total, segmento exportador y segmento mercado interno.",
+  "- `Escenario 1 - Comercio Exterior` contiene el contrafactual que recoge la incidencia directa de importaciones y exportaciones.",
+  "- `Escenario 2 - Bienes Transables` contiene el contrafactual que incorpora bienes transables producidos localmente y vendidos en el mercado interno.",
+  "- El cálculo se realiza año a año mediante `factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`; no contempla efectos acumulados ni respuestas dinámicas de cantidades, precios relativos o productividad.",
+  "- El canal positivo se modela sobre `vbp_pp`; los canales negativos se modelan sobre consumo intermedio, remuneraciones, consumo de capital fijo, stock imputado e intereses pagados.",
+  "- La medida principal de esta minuta es `ganancia_pb`; como complemento se reporta `ganancia_pb_desp_intereses`.",
+  "- Los intereses industriales son una serie agregada de manufactura y se distribuyen por segmento según microdatos del CIU: 65,6% para ramas exportadoras y 34,4% para ramas orientadas al mercado interno.",
+  "- El grupo `combustible` no se presenta como segmento autónomo en el libro de resultados ni en esta minuta; queda incorporado en la industria total y se conserva en el panel CSV para trazabilidad contable.",
+  "",
+  "Ramas incluidas en el segmento exportador:",
+  paste0("- ", ramas_exportadoras),
+  "",
+  "Ramas incluidas en el segmento mercado interno:",
+  paste0("- ", ramas_mercado_interno),
+  "",
+  paste0("![Brecha cambiaria modelada](", fig_rel(fig_factor_path), ")"),
   "",
   paste0(
     "El factor de devaluación considerado se calcula año a año como",
     " `tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1`. ",
-    "No se trata de un shock acumulado entre años, sino de un cierre ",
-    "contrafactual de la brecha cambiaria en cada año observado. En el período ",
-    "2020-2024, el factor promedio es ",
+    "En el período 2020-2024, el factor promedio es ",
     fmt_pct(factor_summary$promedio * 100),
     ", con un mínimo de ",
     fmt_pct(factor_summary$minimo * 100),
@@ -791,6 +984,23 @@ md <- c(
   ),
   "",
   md_table(factor_table),
+  "",
+  md_table(source_assumptions_table),
+  "",
+  "## Coeficientes de incidencia",
+  "",
+  paste(
+    "Los coeficientes indican qué proporción de cada variable queda expuesta al",
+    "cierre de la brecha cambiaria. Desde el punto de vista del contrafactual",
+    "de paridad, el componente de VBP tiene signo positivo para la ganancia",
+    "porque eleva la valorización de ventas asociadas al tipo de cambio. En",
+    "cambio, consumo intermedio, masa salarial, consumo de capital fijo e",
+    "intereses pagados operan como gastos o costos; el stock imputado afecta",
+    "negativamente el capital adelantado y se mantiene como supuesto del modelo,",
+    "aunque la minuta no presenta tasas de ganancia."
+  ),
+  "",
+  paste0("![Coeficientes de incidencia por escenario y segmento](", fig_rel(fig_coef_path), ")"),
   "",
   if (nrow(effect_demo) > 0) c(
     paste(
@@ -809,17 +1019,6 @@ md <- c(
     paste0("![Esquema TCC-TCP: cesión y apropiación](", fig_rel(fig0_path), ")"),
     ""
   ) else character(0),
-  paste(
-    "Los coeficientes de incidencia se reportan en las secciones de cada",
-    "escenario. En todos los casos indican qué proporción de cada variable se",
-    "ve afectada por el cierre de la brecha cambiaria; la columna de efecto",
-    "explicita si esa incidencia eleva la valorización del VBP o aumenta",
-    "costos, intereses y componentes que reducen la masa de ganancia. La fuente",
-    "del coeficiente se toma de la columna `Fuente` del XLSX de coeficientes",
-    "cuando está disponible; si una celda de fuente está vacía, se conserva la",
-    "trazabilidad a la hoja y bloque desde donde fue extraído el coeficiente."
-  ),
-  "",
   "## 1. Industria general: saldos comparados entre escenarios",
   "",
   paste(
@@ -836,18 +1035,6 @@ md <- c(
   paste0("![Industria total: saldo de ganancia asociado a la sobrevaluación](", fig_rel(fig1_path), ")"),
   "",
   md_table(industry_table),
-  "",
-  paste(
-    "La descomposición de 2024 muestra el mecanismo. La menor valorización del",
-    "VBP aparece con signo negativo porque representa ganancia dejada de",
-    "percibir bajo sobrevaluación. Los menores costos observados bajo",
-    "sobrevaluación aparecen con signo positivo porque elevan la ganancia",
-    "inicial respecto del contrafactual de paridad."
-  ),
-  "",
-  paste0("![Industria total: componentes del saldo 2024](", fig_rel(fig2_path), ")"),
-  "",
-  md_table(component_table),
   "",
   "## 2. Escenario 1 - Comercio Exterior",
   "",
@@ -896,13 +1083,35 @@ md <- c(
   "",
   md_table(scenario_sections$bienes_transables$coef_table),
   "",
-  "## Nota técnica",
+  "## Interpretación",
+  "",
+  paste(
+    "La simulación sugiere que la sobrevaluación cambiaria redistribuye",
+    "condiciones de rentabilidad dentro de la industria. La lectura agregada",
+    "de la industria total debe interpretarse con cautela porque sintetiza",
+    "estructuras de exposición distintas. La separación entre segmento",
+    "exportador y segmento mercado interno permite observar qué parte del",
+    "resultado responde al canal de valorización del producto y qué parte queda",
+    "condicionada por el encarecimiento de costos, capital adelantado e",
+    "intereses pagados al cerrar la brecha cambiaria."
+  ),
+  "",
+  paste(
+    "Dado que esta versión expresa saldos absolutos desde el escenario inicial,",
+    "la comparación privilegia magnitudes monetarias antes que variaciones de",
+    "tasas. Esto facilita leer la apropiación o cesión de riqueza asociada a la",
+    "sobrevaluación como diferencia entre la situación observada y el",
+    "contrafactual de paridad."
+  ),
+  "",
+  "## Anexo técnico",
   "",
   "La fórmula común aplicada en ambos escenarios es:",
   "",
   "```text",
   "factor_devaluacion = tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1",
   "delta_variable = variable_base * incidencia_seccion_variable * factor_devaluacion",
+  "variable_devaluacion = variable_base + delta_variable",
   "ganancia_pb_escenario = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo",
   "saldo_sobrevaluacion_ganancia_pb = ganancia_pb - ganancia_pb_escenario",
   "ganancia_pb_desp_intereses_escenario = ganancia_pb_escenario - intereses_industria_pesos_escenario",
