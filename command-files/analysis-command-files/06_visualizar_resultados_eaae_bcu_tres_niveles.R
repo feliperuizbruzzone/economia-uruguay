@@ -43,16 +43,35 @@ safe_divide <- function(numerator, denominator) {
   result
 }
 
+blue_palette <- c(
+  navy = "#0B1F3A",
+  deep = "#173B63",
+  main = "#2F5F8F",
+  steel = "#5F86AD",
+  soft = "#9DB8D2",
+  pale = "#DCE8F3",
+  grey = "#6C7785",
+  grid = "#D9E1E8"
+)
+
 theme_eaae <- function() {
   theme_minimal(base_size = 11) +
     theme(
-      plot.title = element_text(face = "bold", size = 13),
-      plot.subtitle = element_text(size = 10, margin = margin(b = 8)),
-      plot.caption = element_text(size = 8, hjust = 0),
+      plot.background = element_rect(fill = "white", color = NA),
+      panel.background = element_rect(fill = "white", color = NA),
+      panel.grid.major = element_line(color = blue_palette[["grid"]], linewidth = 0.28),
+      panel.grid.minor = element_blank(),
+      plot.title.position = "plot",
+      plot.title = element_text(color = blue_palette[["navy"]], face = "bold", size = 13),
+      plot.subtitle = element_text(color = blue_palette[["grey"]], size = 10.5),
+      plot.caption = element_text(color = blue_palette[["grey"]], size = 8.5, hjust = 0),
+      plot.caption.position = "plot",
+      axis.title = element_text(color = blue_palette[["grey"]], size = 9.5),
+      axis.text = element_text(color = blue_palette[["navy"]], size = 9),
+      strip.text = element_text(color = blue_palette[["navy"]], face = "bold"),
       legend.position = "bottom",
       legend.title = element_blank(),
-      panel.grid.minor = element_blank(),
-      strip.text = element_text(face = "bold", size = 9),
+      legend.text = element_text(color = blue_palette[["navy"]], size = 9),
       axis.title.x = element_blank()
     )
 }
@@ -188,7 +207,7 @@ build_decomposition_plot <- function(data, title) {
     mutate(etiqueta = paste0(componente, " ", percent(participacion, accuracy = 1)))
 
   ggplot(decomposition, aes(anno, participacion, color = componente)) +
-    geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
+    geom_hline(yintercept = 0, linewidth = 0.35, color = "grey35") +
     geom_line(linewidth = 0.95) +
     geom_point(size = 1.5) +
     geom_text(
@@ -223,15 +242,15 @@ build_decomposition_plot <- function(data, title) {
 }
 
 component_palette <- c(
-  "Costo laboral" = "#2E7D32",
-  "Consumo capital fijo" = "#E07A5F",
-  "Ganancia pp" = "#6A4C93"
+  "Costo laboral" = blue_palette[["deep"]],
+  "Consumo capital fijo" = blue_palette[["steel"]],
+  "Ganancia pp" = blue_palette[["main"]]
 )
 
 scope_palette <- c(
-  "Economía total" = "#1B4E89",
-  "Industria manufacturera" = "#B23A48",
-  "Industria depurada" = "#2E7D32"
+  "Economía total" = blue_palette[["navy"]],
+  "Industria manufacturera" = blue_palette[["main"]],
+  "Industria depurada" = blue_palette[["soft"]]
 )
 
 scope_linetype <- c(
@@ -247,14 +266,14 @@ scope_shape <- c(
 )
 
 series_palette <- c(
-  "Precios básicos" = "#1B4E89",
-  "Precios productor" = "#B23A48",
-  "Stock capital operativo" = "#1B4E89",
-  "Capital circulante adelantado" = "#2E7D32",
-  "VAB pp" = "#4D908E",
-  "Ganancia pp" = "#6A4C93",
-  "Inversión / VAB manufacturero" = "#B23A48",
-  "Inversiones a precios constantes" = "#1B4E89"
+  "Precios básicos" = blue_palette[["deep"]],
+  "Precios productor" = blue_palette[["steel"]],
+  "Stock capital operativo" = blue_palette[["navy"]],
+  "Capital circulante adelantado" = blue_palette[["main"]],
+  "VAB pp" = blue_palette[["soft"]],
+  "Ganancia pp" = blue_palette[["deep"]],
+  "Inversión / VAB manufacturero" = blue_palette[["steel"]],
+  "Inversiones a precios constantes" = blue_palette[["deep"]]
 )
 
 series_linetype <- c(
@@ -340,8 +359,8 @@ representatividad <- corrientes %>%
   )
 
 fig_01 <- ggplot(representatividad, aes(anno, valor)) +
-  geom_line(color = "#1B4E89", linewidth = 0.95, na.rm = TRUE) +
-  geom_point(color = "#1B4E89", size = 1.6, na.rm = TRUE) +
+  geom_line(color = blue_palette[["main"]], linewidth = 0.95, na.rm = TRUE) +
+  geom_point(color = blue_palette[["main"]], size = 1.6, na.rm = TRUE) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
   scale_y_continuous(
     labels = percent_format(accuracy = 1),
@@ -392,8 +411,8 @@ representatividad_depurada <- corrientes %>%
   )
 
 fig_01b <- ggplot(representatividad_depurada, aes(anno, valor)) +
-  geom_line(color = "#2E7D32", linewidth = 0.95, na.rm = TRUE) +
-  geom_point(color = "#2E7D32", size = 1.6, na.rm = TRUE) +
+  geom_line(color = blue_palette[["steel"]], linewidth = 0.95, na.rm = TRUE) +
+  geom_point(color = blue_palette[["steel"]], size = 1.6, na.rm = TRUE) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
   scale_y_continuous(
     labels = percent_format(accuracy = 1),
@@ -451,9 +470,9 @@ comparacion_tg_oyanthabal <- bind_rows(
   )
 
 tg_compare_palette <- c(
-  "EAAE precios básicos" = "#1B4E89",
-  "Oyanthabal total" = "#6A4C93",
-  "Oyanthabal no agrario" = "#6A4C93"
+  "EAAE precios básicos" = blue_palette[["deep"]],
+  "Oyanthabal total" = blue_palette[["steel"]],
+  "Oyanthabal no agrario" = blue_palette[["steel"]]
 )
 
 tg_compare_linetype <- c(
@@ -463,7 +482,7 @@ tg_compare_linetype <- c(
 )
 
 fig_01c <- ggplot(comparacion_tg_oyanthabal, aes(anno, valor, color = serie, linetype = serie)) +
-  geom_hline(yintercept = 0, linewidth = 0.3, color = "grey65") +
+  geom_hline(yintercept = 0, linewidth = 0.35, color = "grey35") +
   geom_line(linewidth = 0.95, na.rm = TRUE) +
   geom_point(size = 1.6, na.rm = TRUE) +
   facet_wrap(~ indicador, ncol = 1, scales = "free_y") +
@@ -515,7 +534,7 @@ tasas_ganancia_promedio_industria <- tasas_ganancia %>%
   summarise(promedio = mean(valor, na.rm = TRUE), .groups = "drop")
 
 fig_02 <- ggplot(tasas_ganancia, aes(anno, valor, color = ambito_label)) +
-  geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
+  geom_hline(yintercept = 0, linewidth = 0.35, color = "grey35") +
   geom_hline(
     data = tasas_ganancia_promedio_industria,
     aes(yintercept = promedio),
@@ -595,7 +614,7 @@ fig_05 <- ggplot(
   capital_resultados_base_2004,
   aes(anno, valor_indice, color = serie)
 ) +
-  geom_hline(yintercept = 100, linewidth = 0.25, color = "grey75") +
+  geom_hline(yintercept = 100, linewidth = 0.35, color = "grey35") +
   geom_line(linewidth = 0.9) +
   geom_point(size = 1.35) +
   facet_wrap(
@@ -726,7 +745,7 @@ indices_industria <- indices_2005 %>%
   filter(!is.na(valor))
 
 fig_07 <- ggplot(indices_industria, aes(anno, valor, color = ambito_label)) +
-  geom_hline(yintercept = 1, linewidth = 0.25, color = "grey75") +
+  geom_hline(yintercept = 1, linewidth = 0.35, color = "grey35") +
   geom_line(linewidth = 0.95) +
   geom_point(size = 1.4) +
   facet_wrap(~ variable, ncol = 1, scales = "free_y") +
@@ -774,7 +793,7 @@ productividad <- three_constantes %>%
   filter(!is.na(valor))
 
 fig_08 <- ggplot(productividad, aes(anno, valor, color = ambito_label)) +
-  geom_hline(yintercept = 1, linewidth = 0.25, color = "grey75") +
+  geom_hline(yintercept = 1, linewidth = 0.35, color = "grey35") +
   geom_line(linewidth = 0.95) +
   geom_point(size = 1.5) +
   facet_wrap(~ medida, ncol = 1) +
@@ -811,7 +830,7 @@ ganancias_indice <- indices_2005 %>%
   filter(!is.na(valor))
 
 fig_09 <- ggplot(ganancias_indice, aes(anno, valor, color = ambito_label)) +
-  geom_hline(yintercept = 1, linewidth = 0.25, color = "grey75") +
+  geom_hline(yintercept = 1, linewidth = 0.35, color = "grey35") +
   geom_line(linewidth = 0.9) +
   geom_point(size = 1.35) +
   facet_wrap(~ serie, ncol = 1, scales = "free_y") +
@@ -879,7 +898,7 @@ referencia_tasa_labels <- label_break_points(
 )
 
 fig_10 <- ggplot(referencia_tasa, aes(anno, valor, color = serie, linetype = serie)) +
-  geom_hline(yintercept = 0, linewidth = 0.25, color = "grey75") +
+  geom_hline(yintercept = 0, linewidth = 0.35, color = "grey35") +
   geom_line(linewidth = 0.85, na.rm = TRUE) +
   geom_point(size = 1.3, na.rm = TRUE) +
   geom_text(
