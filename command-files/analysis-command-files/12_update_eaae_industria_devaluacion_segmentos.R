@@ -209,7 +209,33 @@ build_scenario_sheet <- function(
           .data$tasa_ganancia_pb_desp_intereses) * 100,
       variacion_tasa_ganancia_pp_desp_intereses_pp =
         (.data$tasa_ganancia_pp_desp_intereses_devaluacion -
-          .data$tasa_ganancia_pp_desp_intereses) * 100
+          .data$tasa_ganancia_pp_desp_intereses) * 100,
+      # DECISION: expose the same analytical deltas used in the integrated
+      # minute. The monetary saldo is read from the initial overvalued
+      # exchange-rate setting: positive means over-perceived profit and
+      # negative means profit left unperceived relative to the parity scenario.
+      delta_ganancia_pb_escenario =
+        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
+      delta_ganancia_pb_desp_intereses_escenario =
+        .data$ganancia_pb_desp_intereses_devaluacion -
+        .data$ganancia_pb_desp_intereses,
+      saldo_sobrevaluacion_ganancia_pb =
+        .data$ganancia_pb - .data$ganancia_pb_devaluacion,
+      saldo_sobrevaluacion_ganancia_pb_desp_intereses =
+        .data$ganancia_pb_desp_intereses -
+        .data$ganancia_pb_desp_intereses_devaluacion,
+      delta_ganancia_momento2_pct =
+        safe_divide(.data$delta_ganancia_pb_escenario, .data$ganancia_pb) * 100,
+      delta_ganancia_desp_intereses_momento2_pct =
+        safe_divide(
+          .data$delta_ganancia_pb_desp_intereses_escenario,
+          .data$ganancia_pb_desp_intereses
+        ) * 100,
+      saldo_vbp = -.data$delta_vbp_pp,
+      saldo_consumo_intermedio = .data$delta_consumo_intermedio_estimado,
+      saldo_remuneraciones = .data$delta_remuneraciones,
+      saldo_consumo_capital_fijo = .data$delta_consumo_capital_fijo,
+      saldo_intereses = .data$delta_intereses_industria_pesos
     ) %>%
     select(
       "escenario",
@@ -251,6 +277,9 @@ build_scenario_sheet <- function(
       "ganancia_pb",
       "ganancia_pb_devaluacion",
       "variacion_ganancia_pb_pct",
+      "delta_ganancia_pb_escenario",
+      "saldo_sobrevaluacion_ganancia_pb",
+      "delta_ganancia_momento2_pct",
       "ganancia_pp",
       "ganancia_pp_devaluacion",
       "variacion_ganancia_pp_pct",
@@ -263,9 +292,17 @@ build_scenario_sheet <- function(
       "intereses_industria_pesos",
       "intereses_industria_pesos_devaluacion",
       "delta_intereses_industria_pesos",
+      "saldo_vbp",
+      "saldo_consumo_intermedio",
+      "saldo_remuneraciones",
+      "saldo_consumo_capital_fijo",
+      "saldo_intereses",
       "ganancia_pb_desp_intereses",
       "ganancia_pb_desp_intereses_devaluacion",
       "variacion_ganancia_pb_desp_intereses_pct",
+      "delta_ganancia_pb_desp_intereses_escenario",
+      "saldo_sobrevaluacion_ganancia_pb_desp_intereses",
+      "delta_ganancia_desp_intereses_momento2_pct",
       "ganancia_pp_desp_intereses",
       "ganancia_pp_desp_intereses_devaluacion",
       "variacion_ganancia_pp_desp_intereses_pct",
@@ -558,6 +595,25 @@ metodologia <- tibble::tribble(
   paste(
     "factor_devaluacion = tipo_cambio_paridad_pesos_usd /",
     "tipo_cambio_comercial_pesos_usd - 1."
+  ),
+  "resultados", "delta de ganancia momento 2",
+  paste(
+    "delta_ganancia_pb_escenario = ganancia_pb_devaluacion - ganancia_pb;",
+    "delta_ganancia_momento2_pct expresa ese delta como porcentaje de la",
+    "ganancia_pb inicial observada."
+  ),
+  "resultados", "saldo de sobrevaluación",
+  paste(
+    "saldo_sobrevaluacion_ganancia_pb = ganancia_pb -",
+    "ganancia_pb_devaluacion. Un valor positivo indica ganancia",
+    "sobrepercibida bajo sobrevaluación; un valor negativo indica ganancia",
+    "dejada de percibir bajo sobrevaluación."
+  ),
+  "resultados", "saldos por componente",
+  paste(
+    "saldo_vbp = -delta_vbp_pp; los saldos de consumo intermedio,",
+    "remuneraciones, consumo de capital fijo e intereses se registran con",
+    "signo positivo cuando representan ahorro de costos bajo sobrevaluación."
   ),
   "devaluacion", "Escenario 1 - Comercio Exterior",
   paste(

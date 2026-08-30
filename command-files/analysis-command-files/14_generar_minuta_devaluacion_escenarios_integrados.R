@@ -251,11 +251,90 @@ theme_report <- theme_minimal(base_size = 11) +
     legend.text = element_text(color = blue_palette[["navy"]], size = 9)
   )
 
+scenario_analytical_cols <- c(
+  "delta_ganancia_pb_escenario",
+  "delta_ganancia_pb_desp_intereses_escenario",
+  "saldo_sobrevaluacion_ganancia_pb",
+  "saldo_sobrevaluacion_ganancia_pb_desp_intereses",
+  "delta_ganancia_momento2_pct",
+  "delta_ganancia_desp_intereses_momento2_pct",
+  "saldo_vbp",
+  "saldo_consumo_intermedio",
+  "saldo_remuneraciones",
+  "saldo_consumo_capital_fijo",
+  "saldo_intereses"
+)
+
+ensure_scenario_analytical_cols <- function(data, sheet_name) {
+  computed <- data %>%
+    transmute(
+      delta_ganancia_pb_escenario_calc =
+        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
+      delta_ganancia_pb_desp_intereses_escenario_calc =
+        .data$ganancia_pb_desp_intereses_devaluacion -
+        .data$ganancia_pb_desp_intereses,
+      saldo_sobrevaluacion_ganancia_pb_calc =
+        .data$ganancia_pb - .data$ganancia_pb_devaluacion,
+      saldo_sobrevaluacion_ganancia_pb_desp_intereses_calc =
+        .data$ganancia_pb_desp_intereses -
+        .data$ganancia_pb_desp_intereses_devaluacion,
+      delta_ganancia_momento2_pct_calc = safe_pct_ratio(
+        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
+        .data$ganancia_pb
+      ),
+      delta_ganancia_desp_intereses_momento2_pct_calc = safe_pct_ratio(
+        .data$ganancia_pb_desp_intereses_devaluacion -
+          .data$ganancia_pb_desp_intereses,
+        .data$ganancia_pb_desp_intereses
+      ),
+      saldo_vbp_calc = -.data$delta_vbp_pp,
+      saldo_consumo_intermedio_calc = .data$delta_consumo_intermedio_estimado,
+      saldo_remuneraciones_calc = .data$delta_remuneraciones,
+      saldo_consumo_capital_fijo_calc = .data$delta_consumo_capital_fijo,
+      saldo_intereses_calc = .data$delta_intereses_industria_pesos
+    )
+
+  if (all(scenario_analytical_cols %in% names(data))) {
+    check <- tibble(
+      columna = scenario_analytical_cols,
+      max_abs_error = vapply(
+        scenario_analytical_cols,
+        function(col_i) {
+          max(abs(data[[col_i]] - computed[[paste0(col_i, "_calc")]]), na.rm = TRUE)
+        },
+        numeric(1)
+      )
+    )
+    if (any(is.na(check$max_abs_error) | check$max_abs_error > 1e-2)) {
+      stop(
+        "Las columnas analiticas del XLSX no cierran en ",
+        sheet_name,
+        ": ",
+        paste(
+          check %>%
+            filter(is.na(.data$max_abs_error) | .data$max_abs_error > 1e-2) %>%
+            transmute(error = paste0(.data$columna, "=", signif(.data$max_abs_error, 4))) %>%
+            pull(.data$error),
+          collapse = "; "
+        )
+      )
+    }
+    return(data)
+  }
+
+  data %>%
+    bind_cols(computed %>% rename_with(~ str_remove(.x, "_calc$")))
+}
+
 read_scenario <- function(sheet_name) {
   spec <- scenario_specs %>%
     filter(.data$sheet == !!sheet_name)
 
-  read_excel(input_xlsx, sheet = sheet_name) %>%
+  scenario_data <- read_excel(input_xlsx, sheet = sheet_name) %>%
+    filter(!is.na(.data$anno), !is.na(.data$seccion)) %>%
+    ensure_scenario_analytical_cols(sheet_name)
+
+  scenario_data %>%
     filter(!is.na(.data$anno), !is.na(.data$seccion)) %>%
     mutate(
       escenario = spec$escenario,
@@ -265,31 +344,7 @@ read_scenario <- function(sheet_name) {
       vbp_label = spec$vbp_label,
       seccion_label = recode(.data$seccion, !!!section_labels),
       seccion_label = factor(.data$seccion_label, levels = unname(section_labels)),
-      # DECISION: the analytical sign is inverted relative to the devaluation
-      # workbook. Positive values mean the initial overvalued exchange-rate
-      # setting over-perceives profit relative to parity; negative values mean
-      # profit left unperceived under overvaluation.
-      saldo_sobrevaluacion_ganancia_pb =
-        .data$ganancia_pb - .data$ganancia_pb_devaluacion,
-      saldo_sobrevaluacion_ganancia_pb_desp_intereses =
-        .data$ganancia_pb_desp_intereses - .data$ganancia_pb_desp_intereses_devaluacion,
-      # DECISION: the relative chart normalizes the moment-2 profit change by
-      # the initial profit mass, not by the counterfactual moment-2 profit.
-      # Positive values mean higher profit under the parity counterfactual;
-      # negative values mean lower profit under the parity counterfactual.
-      delta_ganancia_momento2_pct = safe_pct_ratio(
-        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
-        .data$ganancia_pb
-      ),
-      delta_ganancia_pb_escenario =
-        .data$ganancia_pb_devaluacion - .data$ganancia_pb,
-      delta_ganancia_pb_desp_intereses_escenario =
-        .data$ganancia_pb_desp_intereses_devaluacion - .data$ganancia_pb_desp_intereses,
-      saldo_vbp = -.data$delta_vbp_pp,
-      saldo_consumo_intermedio = .data$delta_consumo_intermedio_estimado,
-      saldo_remuneraciones = .data$delta_remuneraciones,
-      saldo_consumo_capital_fijo = .data$delta_consumo_capital_fijo,
-      saldo_intereses = .data$delta_intereses_industria_pesos
+      saldo_stock_capital_imputado = .data$delta_stock_capital_imputado
     )
 }
 
@@ -447,6 +502,7 @@ component_labels <- c(
   saldo_consumo_intermedio = "Ahorro en consumo intermedio",
   saldo_remuneraciones = "Ahorro en remuneraciones",
   saldo_consumo_capital_fijo = "Ahorro en consumo capital fijo",
+  saldo_stock_capital_imputado = "Ahorro en stock imputado",
   saldo_intereses = "Ahorro en intereses pagados"
 )
 
@@ -544,7 +600,7 @@ fig_coef_path <- file.path(figures_dir, "00_coeficientes_incidencia_escenarios.p
 fig0_path <- file.path(figures_dir, "00_esquema_efecto_tcc_tcp.png")
 fig1_path <- file.path(figures_dir, "01_industria_total_saldo_sobrevaluacion_ganancia.png")
 fig1_pct_path <- file.path(figures_dir, "01b_saldo_pct_ganancia_inicial_por_seccion.png")
-fig2_path <- file.path(figures_dir, "02_industria_total_componentes_saldo_2024.png")
+fig2_path <- file.path(figures_dir, "02_industria_total_componentes_saldo_pct_ganancia_2024.png")
 
 ggplot(factor_plot_data, aes(
   x = .data$anio,
@@ -697,7 +753,7 @@ ggsave(fig1_pct_path, width = 11.5, height = 5.4, dpi = 160)
 
 industry_components_2024 <- escenarios %>%
   filter(.data$anno == 2024, .data$seccion == "industria-total") %>%
-  select("escenario_label", all_of(names(component_labels))) %>%
+  select("escenario_label", "ganancia_pb", all_of(names(component_labels))) %>%
   pivot_longer(
     cols = all_of(names(component_labels)),
     names_to = "componente",
@@ -706,28 +762,29 @@ industry_components_2024 <- escenarios %>%
   mutate(
     componente = recode(.data$componente, !!!component_labels),
     componente = factor(.data$componente, levels = unname(component_labels)),
-    valor_miles_mill = .data$valor / 1e9
+    valor_miles_mill = .data$valor / 1e9,
+    valor_pct_ganancia_inicial = safe_pct_ratio(.data$valor, .data$ganancia_pb)
   )
 
 ggplot(industry_components_2024, aes(
-  x = .data$componente,
-  y = .data$valor_miles_mill,
+  x = .data$valor_pct_ganancia_inicial,
+  y = .data$componente,
   fill = .data$escenario_label
 )) +
-  geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
+  geom_vline(xintercept = 0, color = "grey35", linewidth = 0.35) +
   geom_col(position = position_dodge(width = 0.75), width = 0.68) +
+  scale_x_continuous(labels = label_percent(scale = 1)) +
   scale_fill_manual(values = scenario_colors) +
   labs(
-    title = "Industria total: componentes del saldo de sobrevaluación en 2024",
-    subtitle = "VBP negativo indica ganancia dejada de percibir; costos positivos indican ahorro bajo sobrevaluación",
-    x = NULL,
-    y = "Miles de millones de pesos corrientes",
+    title = "Industria total: componentes del saldo sobre ganancia inicial en 2024",
+    subtitle = "VBP negativo indica ganancia dejada de percibir; costos y stock positivos indican ahorro/apropiación relativa bajo sobrevaluación",
+    x = "% de la ganancia inicial",
+    y = NULL,
     fill = NULL,
     caption = caption_fuente
   ) +
-  theme_report +
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))
-ggsave(fig2_path, width = 10.5, height = 5.2, dpi = 160)
+  theme_report
+ggsave(fig2_path, width = 11, height = 5.4, dpi = 160)
 
 scenario_section <- function(scenario_id) {
   spec <- scenario_specs %>%
@@ -754,7 +811,11 @@ scenario_section <- function(scenario_id) {
 
   fig_saldo <- file.path(figures_dir, paste0("03_", scenario_id, "_saldo_ganancia_segmentos.png"))
   fig_saldo_pct <- file.path(figures_dir, paste0("03b_", scenario_id, "_saldo_pct_ganancia_inicial_segmentos.png"))
-  fig_components <- file.path(figures_dir, paste0("04_", scenario_id, "_componentes_saldo_2024_segmentos.png"))
+  fig_components <- file.path(figures_dir, paste0(
+    "04_",
+    scenario_id,
+    "_componentes_saldo_pct_ganancia_2024_segmentos.png"
+  ))
 
   ggplot(saldo_long, aes(x = .data$anno, y = .data$saldo_miles_mill, color = .data$seccion_label)) +
     geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
@@ -820,7 +881,7 @@ scenario_section <- function(scenario_id) {
 
   components_2024 <- data %>%
     filter(.data$anno == 2024) %>%
-    select("seccion_label", all_of(names(component_labels))) %>%
+    select("seccion_label", "ganancia_pb", all_of(names(component_labels))) %>%
     pivot_longer(
       cols = all_of(names(component_labels)),
       names_to = "componente",
@@ -838,30 +899,32 @@ scenario_section <- function(scenario_id) {
         "Ahorro en consumo intermedio",
         "Ahorro en remuneraciones",
         "Ahorro en consumo capital fijo",
+        "Ahorro en stock imputado",
         "Ahorro en intereses pagados"
       )),
-      valor_miles_mill = .data$valor / 1e9
+      valor_miles_mill = .data$valor / 1e9,
+      valor_pct_ganancia_inicial = safe_pct_ratio(.data$valor, .data$ganancia_pb)
     )
 
   ggplot(components_2024, aes(
-    x = .data$componente,
-    y = .data$valor_miles_mill,
+    x = .data$valor_pct_ganancia_inicial,
+    y = .data$componente,
     fill = .data$seccion_label
   )) +
-    geom_hline(yintercept = 0, color = "grey35", linewidth = 0.35) +
+    geom_vline(xintercept = 0, color = "grey35", linewidth = 0.35) +
     geom_col(position = position_dodge(width = 0.75), width = 0.68) +
+    scale_x_continuous(labels = label_percent(scale = 1)) +
     scale_fill_manual(values = section_colors) +
     labs(
-      title = paste(spec$titulo, "- componentes del saldo en 2024"),
+      title = paste(spec$titulo, "- componentes del saldo sobre ganancia inicial en 2024"),
       subtitle = "Valores positivos: sobrepercepción o ahorro bajo sobrevaluación; valores negativos: ganancia dejada de percibir",
-      x = NULL,
-      y = "Miles de millones de pesos corrientes",
+      x = "% de la ganancia inicial",
+      y = NULL,
       fill = NULL,
       caption = caption_fuente
     ) +
-    theme_report +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1))
-  ggsave(fig_components, width = 10.5, height = 5.2, dpi = 160)
+    theme_report
+  ggsave(fig_components, width = 11, height = 5.4, dpi = 160)
 
   summary_table <- summary_by_scenario_section %>%
     filter(.data$escenario == !!scenario_id) %>%
@@ -1159,6 +1222,15 @@ md <- c(
   "",
   md_table(industry_table),
   "",
+  paste(
+    "El gráfico siguiente desagrega el saldo de la industria total por",
+    "componente y lo expresa como porcentaje de la ganancia inicial. Esto",
+    "permite comparar el peso relativo de VBP, costos, intereses y stock",
+    "imputado en ambos escenarios."
+  ),
+  "",
+  paste0("![Industria total: componentes del saldo sobre ganancia inicial en 2024](", fig_rel(fig2_path), ")"),
+  "",
   "## 2. Escenario 1 - Comercio Exterior",
   "",
   scenario_sections$comercio_exterior$spec$descripcion,
@@ -1186,7 +1258,14 @@ md <- c(
   "",
   md_table(scenario_sections$comercio_exterior$table),
   "",
-  paste0("![Escenario 1: componentes del saldo 2024](", fig_rel(scenario_sections$comercio_exterior$figures[["components"]]), ")"),
+  paste(
+    "El gráfico de componentes sigue la lógica del chequeo del libro XLSX:",
+    "cada delta se expresa en relación con la ganancia inicial de la sección.",
+    "Se incluye el stock imputado para transparentar su efecto sobre el capital",
+    "adelantado, aunque no entre en la masa absoluta de ganancia."
+  ),
+  "",
+  paste0("![Escenario 1: componentes del saldo sobre ganancia inicial en 2024](", fig_rel(scenario_sections$comercio_exterior$figures[["components"]]), ")"),
   "",
   "Coeficientes del modelo utilizados en este escenario:",
   "",
@@ -1219,7 +1298,15 @@ md <- c(
   "",
   md_table(scenario_sections$bienes_transables$table),
   "",
-  paste0("![Escenario 2: componentes del saldo 2024](", fig_rel(scenario_sections$bienes_transables$figures[["components"]]), ")"),
+  paste(
+    "El gráfico de componentes replica la lectura del chequeo: VBP aparece con",
+    "signo negativo cuando representa ganancia dejada de percibir bajo",
+    "sobrevaluación, mientras costos, intereses y stock imputado aparecen con",
+    "signo positivo cuando representan ahorro o apropiación relativa bajo",
+    "sobrevaluación."
+  ),
+  "",
+  paste0("![Escenario 2: componentes del saldo sobre ganancia inicial en 2024](", fig_rel(scenario_sections$bienes_transables$figures[["components"]]), ")"),
   "",
   "Coeficientes del modelo utilizados en este escenario:",
   "",
@@ -1263,10 +1350,10 @@ md <- c(
   "",
   paste(
     "El coeficiente de stock de capital imputado se mantiene en el XLSX porque",
-    "afecta cálculos de tasa de ganancia, pero no se presenta en esta minuta",
-    "porque la medida solicitada es masa absoluta de ganancia. Por esa razón,",
-    "las figuras y tablas de componentes de esta versión usan VBP, consumo",
-    "intermedio, remuneraciones, consumo de capital fijo e intereses."
+    "afecta cálculos de tasa de ganancia. En los gráficos de componentes se",
+    "lo incluye como delta relativo contra la ganancia inicial para mantener",
+    "consistencia con el chequeo, pero no debe sumarse a la masa absoluta de",
+    "ganancia: su lugar conceptual es el capital adelantado."
   )
 )
 
