@@ -1,0 +1,5 @@
+/.quarto/
+/_site/
+/data/
+/assets/figures/
+**/*.quarto_ipynb

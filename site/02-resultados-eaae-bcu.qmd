@@ -1,0 +1,49 @@
+---
+title: "Resultados EAAE-BCU"
+---
+
+Esta sección resume la lógica argumental de la minuta de resultados EAAE-BCU.
+El documento fuente completo está disponible para descarga desde la portada del
+sitio.
+
+## Criterio de lectura
+
+Los resultados construidos provienen de la EAAE. Los índices de precios del BCU
+se usan para deflactar valores corrientes y construir lecturas constantes,
+variaciones interanuales e índices de volumen. La comparación con BCU permite
+evaluar representatividad de la serie EAAE frente a cuentas nacionales.
+
+## Representatividad
+
+![Peso manufacturero y representatividad EAAE-BCU](assets/figures/eaae_bcu_tres_niveles_20260819/01_representatividad_peso_manufacturero.png)
+
+![Representatividad de manufactura depurada](assets/figures/eaae_bcu_tres_niveles_20260819/01b_representatividad_manufactura_depurada.png)
+
+## Tasa de ganancia
+
+![Tasa de ganancia en tres niveles](assets/figures/eaae_bcu_tres_niveles_20260819/02_tasa_ganancia_tres_niveles.png)
+
+La lectura distingue economía total, industria manufacturera total e industria
+manufacturera depurada de papel, impresión, coque y refinación. Esta separación
+permite observar cuánto inciden ramas específicas sobre el perfil agregado de
+la rentabilidad industrial.
+
+## Descomposición, capital e inversión
+
+![Descomposición del VAB: economía total](assets/figures/eaae_bcu_tres_niveles_20260819/03_descomposicion_vab_total_corrientes.png)
+
+![Descomposición del VAB: industria](assets/figures/eaae_bcu_tres_niveles_20260819/04_descomposicion_vab_industria_corrientes.png)
+
+![Capital, VAB y ganancia](assets/figures/eaae_bcu_tres_niveles_20260819/05_capital_vab_ganancia_base_2004.png)
+
+![Inversión manufacturera](assets/figures/eaae_bcu_tres_niveles_20260819/06_inversion_manufacturera.png)
+
+## Productividad
+
+![Productividad del trabajo](assets/figures/eaae_bcu_tres_niveles_20260819/08_productividad_tres_niveles.png)
+
+## Archivos asociados
+
+- [Libro de resultados EAAE-BCU](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx)
+- [Panel EAAE-BCU integrado](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv)
+- [Minuta fuente en Markdown](data/docs/20260819_resultados_eaae_bcu_tres_niveles.md)

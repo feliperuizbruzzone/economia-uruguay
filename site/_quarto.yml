@@ -1,0 +1,49 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+  resources:
+    - "data/devaluacion_segmentos_20260830.json"
+    - "data/analysis-data/*"
+    - "data/docs/*"
+
+website:
+  title: "Economía Uruguay"
+  navbar:
+    background: "#0B1F3A"
+    foreground: "#FFFFFF"
+    left:
+      - text: "Inicio"
+        href: index.qmd
+      - text: "Sistematización"
+        href: 01-sistematizacion.qmd
+      - text: "Resultados EAAE-BCU"
+        href: 02-resultados-eaae-bcu.qmd
+      - text: "Resultados devaluación"
+        href: 04-resultados-devaluacion-escenarios-integrados.qmd
+      - text: "Simulador devaluación"
+        href: 05-modulos-interactivos-devaluacion.qmd
+    tools:
+      - icon: github
+        href: https://github.com/feliperuizbruzzone/economia-uruguay
+  page-footer:
+    left: "Proyecto reproducible de sistematización y análisis económico."
+    right: "Fuentes: EAAE, BCU, CIU y Oyanthabal."
+  search: true
+
+format:
+  html:
+    theme:
+      - cosmo
+      - styles.scss
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    smooth-scroll: true
+    code-fold: true
+    fig-cap-location: bottom
+    link-external-newwindow: true
+
+execute:
+  freeze: auto

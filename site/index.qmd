@@ -1,0 +1,65 @@
+---
+title: "Economía Uruguay"
+subtitle: "Sistematización de fuentes económicas y resultados para el análisis industrial"
+---
+
+Este sitio empaqueta los principales resultados reproducibles del proyecto:
+sistematización de fuentes económicas de Uruguay, construcción de paneles
+EAAE-BCU, resultados sobre la industria manufacturera y modelamiento de
+apropiación de riqueza asociada a la sobrevaluación cambiaria.
+
+El repositorio mantiene una organización inspirada en Project TIER: los datos
+primarios se preservan en `data/input-data/`, los scripts reproducibles en
+`command-files/`, las bases procesadas en `data/analysis-data/`, las minutas en
+`docs/` y las figuras en `output/figures/`.
+
+## Accesos principales
+
+::: {.download-panel}
+::: {.download-item}
+**Resultados de devaluación**
+
+<span>XLSX con escenario inicial, tipo de cambio y dos escenarios modelados.</span>
+
+[Descargar XLSX](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx){.button-link}
+:::
+
+::: {.download-item}
+**Minuta integrada**
+
+<span>Documento base de resultados de devaluación y saldos de ganancia.</span>
+
+[Abrir minuta](data/docs/20260830_resultados_devaluacion_escenarios_integrados.md){.button-link}
+:::
+
+::: {.download-item}
+**Panel industria 2020-2024**
+
+<span>CSV con industria total, segmento exportador y mercado interno.</span>
+
+[Descargar CSV](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv){.button-link}
+:::
+
+::: {.download-item}
+**Repositorio reproducible**
+
+<span>Código, datos procesados, documentación y figuras del proyecto.</span>
+
+[Ver GitHub](https://github.com/feliperuizbruzzone/economia-uruguay){.button-link}
+:::
+:::
+
+## Estructura del entregable
+
+El sitio está organizado en cuatro entradas sustantivas. La primera presenta el
+trabajo de sistematización y sus antecedentes. La segunda sintetiza los
+resultados EAAE-BCU de largo plazo. La tercera integra los escenarios de
+devaluación para la industria manufacturera. La cuarta permite explorar
+simulaciones interactivas variando el cierre de la brecha cambiaria y la
+intensidad de incidencia de cada componente.
+
+::: {.callout-note}
+El sitio es estático: no requiere servidor, Shiny ni ejecución de R o Python
+por parte de la persona usuaria. Los módulos interactivos funcionan en el
+navegador a partir de archivos JSON preprocesados.
+:::

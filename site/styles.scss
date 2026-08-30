@@ -1,0 +1,287 @@
+/*-- scss:defaults --*/
+$body-bg: #FFFFFF;
+$body-color: #0B1F3A;
+$link-color: #2F5F8F;
+$font-family-sans-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+/*-- scss:rules --*/
+:root {
+  --uy-navy: #0B1F3A;
+  --uy-deep: #173B63;
+  --uy-main: #2F5F8F;
+  --uy-steel: #5F86AD;
+  --uy-soft: #9DB8D2;
+  --uy-pale: #DCE8F3;
+  --uy-grey: #6C7785;
+  --uy-grid: #D9E1E8;
+  --uy-white: #FFFFFF;
+}
+
+body {
+  background: var(--uy-white);
+  color: var(--uy-navy);
+  line-height: 1.62;
+}
+
+.page-columns .content {
+  max-width: 1120px;
+}
+
+h1, h2, h3, h4 {
+  color: var(--uy-navy);
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: 2.05rem;
+  font-weight: 750;
+  margin-bottom: 1.1rem;
+}
+
+h2 {
+  border-bottom: 1px solid var(--uy-grid);
+  font-size: 1.45rem;
+  font-weight: 700;
+  padding-bottom: 0.35rem;
+}
+
+h3 {
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.navbar {
+  border-bottom: 1px solid var(--uy-deep);
+}
+
+.navbar-title,
+.navbar-nav .nav-link {
+  font-weight: 650;
+}
+
+a {
+  text-decoration-color: var(--uy-soft);
+  text-underline-offset: 0.18em;
+}
+
+.lead-text {
+  color: var(--uy-grey);
+  font-size: 1.05rem;
+  max-width: 880px;
+}
+
+.callout-note,
+.callout-important,
+.callout-tip {
+  border-radius: 6px;
+  border-color: var(--uy-grid);
+}
+
+.technical-panel,
+.download-panel,
+.metric-card,
+.simulator-card {
+  background: #FFFFFF;
+  border: 1px solid var(--uy-grid);
+  border-radius: 6px;
+}
+
+.download-panel {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin: 1.2rem 0 1.6rem;
+}
+
+.download-item {
+  border: 1px solid var(--uy-grid);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.download-item strong {
+  color: var(--uy-navy);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.download-item span {
+  color: var(--uy-grey);
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 0.55rem;
+}
+
+.button-link {
+  background: var(--uy-main);
+  border-radius: 4px;
+  color: #FFFFFF;
+  display: inline-block;
+  font-size: 0.92rem;
+  font-weight: 650;
+  padding: 0.46rem 0.72rem;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  background: var(--uy-deep);
+  color: #FFFFFF;
+}
+
+table {
+  border-color: var(--uy-grid);
+  font-size: 0.94rem;
+}
+
+thead th {
+  background: var(--uy-navy);
+  color: #FFFFFF;
+}
+
+tbody tr:nth-child(even) {
+  background: #F8FAFC;
+}
+
+figcaption,
+.figure-caption,
+caption {
+  color: var(--uy-grey);
+  font-size: 0.86rem;
+}
+
+.source-note {
+  color: var(--uy-grey);
+  font-size: 0.88rem;
+  margin-top: -0.5rem;
+}
+
+.sim-module {
+  border: 1px solid var(--uy-grid);
+  border-radius: 6px;
+  margin: 1.6rem 0 2rem;
+  padding: 1.1rem;
+}
+
+.sim-header {
+  border-bottom: 1px solid var(--uy-grid);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+.sim-header h3 {
+  margin-bottom: 0.2rem;
+}
+
+.sim-header p {
+  color: var(--uy-grey);
+  margin-bottom: 0;
+}
+
+.sim-layout {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+}
+
+.sim-controls {
+  align-self: start;
+  background: #F8FAFC;
+  border: 1px solid var(--uy-grid);
+  border-radius: 6px;
+  padding: 0.9rem;
+}
+
+.control-row {
+  margin-bottom: 0.85rem;
+}
+
+.control-row label {
+  color: var(--uy-navy);
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.28rem;
+}
+
+.control-row select,
+.control-row input[type="range"] {
+  width: 100%;
+}
+
+.control-value {
+  color: var(--uy-grey);
+  font-size: 0.84rem;
+}
+
+.reset-button {
+  background: var(--uy-navy);
+  border: 0;
+  border-radius: 4px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-weight: 650;
+  padding: 0.48rem 0.72rem;
+  width: 100%;
+}
+
+.reset-button:hover {
+  background: var(--uy-deep);
+}
+
+.metrics-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-bottom: 1rem;
+}
+
+.metric-card {
+  padding: 0.85rem;
+}
+
+.metric-card span {
+  color: var(--uy-grey);
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.metric-card strong {
+  color: var(--uy-navy);
+  display: block;
+  font-size: 1.18rem;
+  margin-top: 0.25rem;
+}
+
+.chart-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.chart-box {
+  border: 1px solid var(--uy-grid);
+  border-radius: 6px;
+  padding: 0.85rem;
+}
+
+.chart-box h4 {
+  font-size: 0.95rem;
+  margin-bottom: 0.55rem;
+}
+
+.sim-table {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.sim-table table {
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .sim-layout {
+    grid-template-columns: 1fr;
+  }
+}

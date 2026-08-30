@@ -1,0 +1,432 @@
+---
+title: "Simulador de devaluación"
+subtitle: "Exploración interactiva de escenarios para la industria manufacturera"
+toc: true
+---
+
+Esta sección permite variar la magnitud del cierre de la brecha entre tipo de
+cambio comercial y tipo de cambio de paridad, junto con la intensidad aplicada
+a cada coeficiente de incidencia. El valor `100%` reproduce el escenario de
+paridad calculado en el XLSX fuente; `0%` reproduce el escenario inicial.
+
+::: {.callout-note}
+Los módulos son estáticos y funcionan en el navegador a partir del JSON
+preparado por `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`.
+:::
+
+<div class="sim-module" data-scenario="Escenario 1 - Comercio Exterior">
+  <div class="sim-header">
+    <h3>Módulo escenario 1 - Comercio exterior</h3>
+    <p>Incidencia directa de importaciones y exportaciones sobre producción, costos, capital e intereses.</p>
+  </div>
+  <div class="sim-content"></div>
+</div>
+
+<div class="sim-module" data-scenario="Escenario 2 - Bienes Transables">
+  <div class="sim-header">
+    <h3>Módulo escenario 2 - Bienes transables</h3>
+    <p>Incidencia ampliada sobre bienes transables, incluidos aquellos producidos localmente y vendidos en mercado interno.</p>
+  </div>
+  <div class="sim-content"></div>
+</div>
+
+<script>
+const DATA_URL = "data/devaluacion_segmentos_20260830.json";
+const COLORS = {
+  navy: "#0B1F3A",
+  deep: "#173B63",
+  main: "#2F5F8F",
+  steel: "#5F86AD",
+  soft: "#9DB8D2",
+  pale: "#DCE8F3",
+  grey: "#6C7785",
+  grid: "#D9E1E8"
+};
+
+const SECTIONS = [
+  { value: "industria-total", label: "Industria total" },
+  { value: "exportadora", label: "Segmento exportador" },
+  { value: "mercado-interno", label: "Mercado interno" }
+];
+
+const VARIABLES = [
+  {
+    key: "vbp_pp",
+    incidence: "incidencia_vbp_pp",
+    delta: "delta_vbp_pp",
+    label: "VBP",
+    sign: 1,
+    affectsCapital: false
+  },
+  {
+    key: "consumo_intermedio_estimado",
+    incidence: "incidencia_consumo_intermedio_estimado",
+    delta: "delta_consumo_intermedio_estimado",
+    label: "Consumo intermedio",
+    sign: -1,
+    affectsCapital: true
+  },
+  {
+    key: "remuneraciones",
+    incidence: "incidencia_remuneraciones",
+    delta: "delta_remuneraciones",
+    label: "Remuneraciones",
+    sign: -1,
+    affectsCapital: true
+  },
+  {
+    key: "consumo_capital_fijo",
+    incidence: "incidencia_consumo_capital_fijo",
+    delta: "delta_consumo_capital_fijo",
+    label: "Consumo capital fijo",
+    sign: -1,
+    affectsCapital: false
+  },
+  {
+    key: "stock_capital_imputado",
+    incidence: "incidencia_stock_capital_imputado",
+    delta: "delta_stock_capital_imputado",
+    label: "Stock imputado",
+    sign: 0,
+    affectsCapital: true
+  },
+  {
+    key: "intereses_industria_pesos",
+    incidence: "incidencia_intereses_industria_pesos",
+    delta: "delta_intereses_industria_pesos",
+    label: "Intereses",
+    sign: 0,
+    affectsCapital: false
+  }
+];
+
+function numberValue(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function percent(value, digits = 1) {
+  if (!Number.isFinite(value)) return "s/d";
+  return `${value.toLocaleString("es-UY", { maximumFractionDigits: digits, minimumFractionDigits: digits })}%`;
+}
+
+function moneyBillions(value) {
+  if (!Number.isFinite(value)) return "s/d";
+  const scaled = value / 1e9;
+  return `${scaled.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })}`;
+}
+
+function pp(value) {
+  if (!Number.isFinite(value)) return "s/d";
+  return `${value.toLocaleString("es-UY", { maximumFractionDigits: 2, minimumFractionDigits: 2 })} pp`;
+}
+
+function computeScenario(row, state) {
+  const factorBase = numberValue(row.tipo_cambio_paridad_pesos_usd) / numberValue(row.tipo_cambio_comercial_pesos_usd) - 1;
+  const factorEffective = factorBase * state.devaluation / 100;
+  const deltas = {};
+
+  VARIABLES.forEach(variable => {
+    const base = numberValue(row[variable.key]);
+    const incidence = numberValue(row[variable.incidence]);
+    const intensity = state.intensities[variable.key] / 100;
+    deltas[variable.delta] = base * incidence * intensity * factorEffective;
+  });
+
+  const gainBase = numberValue(row.ganancia_pb);
+  const capitalBase = numberValue(row.capital_total_adelantado);
+  const rotation = numberValue(row.rotacion_calibrada_sobre_6_6);
+  const interestsBase = numberValue(row.intereses_industria_pesos);
+  const gainPostBase = numberValue(row.ganancia_pb_desp_intereses);
+
+  const gainSim =
+    gainBase +
+    deltas.delta_vbp_pp -
+    deltas.delta_consumo_intermedio_estimado -
+    deltas.delta_remuneraciones -
+    deltas.delta_consumo_capital_fijo;
+
+  const capitalCirculatingDelta = rotation > 0
+    ? (deltas.delta_remuneraciones + deltas.delta_consumo_intermedio_estimado) / rotation
+    : 0;
+
+  const capitalSim =
+    capitalBase +
+    deltas.delta_stock_capital_imputado +
+    capitalCirculatingDelta;
+
+  const rateBase = numberValue(row.tasa_ganancia_pb) * 100;
+  const rateSim = capitalSim !== 0 ? gainSim / capitalSim * 100 : NaN;
+  const interestsSim = interestsBase + deltas.delta_intereses_industria_pesos;
+  const gainPostSim = gainSim - interestsSim;
+  const ratePostSim = capitalSim !== 0 ? gainPostSim / capitalSim * 100 : NaN;
+  const saldo = gainBase - gainSim;
+  const deltaPct = gainBase !== 0 ? (gainSim - gainBase) / gainBase * 100 : NaN;
+  const saldoPost = gainPostBase - gainPostSim;
+
+  const components = [
+    { label: "VBP", value: -deltas.delta_vbp_pp },
+    { label: "Consumo intermedio", value: deltas.delta_consumo_intermedio_estimado },
+    { label: "Remuneraciones", value: deltas.delta_remuneraciones },
+    { label: "Consumo capital fijo", value: deltas.delta_consumo_capital_fijo },
+    { label: "Stock imputado", value: deltas.delta_stock_capital_imputado },
+    { label: "Intereses", value: deltas.delta_intereses_industria_pesos }
+  ].map(component => ({
+    ...component,
+    pctGain: gainBase !== 0 ? component.value / gainBase * 100 : NaN
+  }));
+
+  return {
+    factorBase,
+    factorEffective,
+    deltas,
+    gainBase,
+    gainSim,
+    gainPostBase,
+    gainPostSim,
+    capitalBase,
+    capitalSim,
+    rateBase,
+    rateSim,
+    ratePostSim,
+    saldo,
+    saldoPost,
+    deltaPct,
+    components
+  };
+}
+
+function barSvg(values, options = {}) {
+  const width = 520;
+  const height = 210;
+  const margin = { top: 16, right: 20, bottom: 48, left: 54 };
+  const innerW = width - margin.left - margin.right;
+  const innerH = height - margin.top - margin.bottom;
+  const minValue = Math.min(0, ...values.map(d => d.value));
+  const maxValue = Math.max(0, ...values.map(d => d.value));
+  const range = maxValue - minValue || 1;
+  const barW = innerW / values.length * 0.56;
+  const yFor = value => margin.top + (maxValue - value) / range * innerH;
+  const zeroY = yFor(0);
+
+  const bars = values.map((d, i) => {
+    const x = margin.left + i * innerW / values.length + (innerW / values.length - barW) / 2;
+    const valueY = yFor(d.value);
+    const h = Math.abs(valueY - zeroY);
+    const y = d.value >= 0 ? valueY : zeroY;
+    const color = d.color || COLORS.main;
+    const labelY = d.value >= 0 ? y - 6 : y + h + 14;
+    return `
+      <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="3"></rect>
+      <text x="${x + barW / 2}" y="${height - 22}" text-anchor="middle" fill="${COLORS.grey}" font-size="12">${d.label}</text>
+      <text x="${x + barW / 2}" y="${labelY}" text-anchor="middle" fill="${COLORS.navy}" font-size="12" font-weight="650">${d.format(d.value)}</text>
+    `;
+  }).join("");
+
+  return `
+    <svg viewBox="0 0 ${width} ${height}" role="img" width="100%" height="auto">
+      <line x1="${margin.left}" x2="${width - margin.right}" y1="${zeroY}" y2="${zeroY}" stroke="${COLORS.grid}" stroke-width="1"></line>
+      ${bars}
+    </svg>
+  `;
+}
+
+function horizontalBarsSvg(values) {
+  const width = 560;
+  const height = 250;
+  const margin = { top: 18, right: 70, bottom: 22, left: 150 };
+  const innerW = width - margin.left - margin.right;
+  const rowH = (height - margin.top - margin.bottom) / values.length;
+  const max = Math.max(...values.map(d => Math.abs(d.pctGain)), 1);
+  const zeroX = margin.left + innerW / 2;
+
+  const bars = values.map((d, i) => {
+    const y = margin.top + i * rowH + rowH * 0.24;
+    const w = Math.abs(d.pctGain) / max * innerW / 2;
+    const x = d.pctGain >= 0 ? zeroX : zeroX - w;
+    const color = d.pctGain >= 0 ? COLORS.deep : COLORS.soft;
+    const textX = d.pctGain >= 0 ? x + w + 6 : x - 6;
+    const anchor = d.pctGain >= 0 ? "start" : "end";
+    return `
+      <text x="${margin.left - 8}" y="${y + 13}" text-anchor="end" fill="${COLORS.navy}" font-size="12">${d.label}</text>
+      <rect x="${x}" y="${y}" width="${w}" height="${rowH * 0.52}" fill="${color}" rx="3"></rect>
+      <text x="${textX}" y="${y + 13}" text-anchor="${anchor}" fill="${COLORS.grey}" font-size="12">${percent(d.pctGain)}</text>
+    `;
+  }).join("");
+
+  return `
+    <svg viewBox="0 0 ${width} ${height}" role="img" width="100%" height="auto">
+      <line x1="${zeroX}" x2="${zeroX}" y1="${margin.top}" y2="${height - margin.bottom}" stroke="${COLORS.grey}" stroke-width="1"></line>
+      ${bars}
+    </svg>
+  `;
+}
+
+function renderModule(module, data) {
+  const scenario = module.dataset.scenario;
+  const rows = data.filter(row => row.escenario === scenario && SECTIONS.some(section => section.value === row.seccion));
+  const years = [...new Set(rows.map(row => Number(row.anno)))].sort((a, b) => a - b);
+  const container = module.querySelector(".sim-content");
+  const state = {
+    year: Math.max(...years),
+    section: "industria-total",
+    devaluation: 100,
+    intensities: Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]))
+  };
+
+  container.innerHTML = `
+    <div class="sim-layout">
+      <div class="sim-controls">
+        <div class="control-row">
+          <label>Año</label>
+          <select data-control="year">${years.map(year => `<option value="${year}">${year}</option>`).join("")}</select>
+        </div>
+        <div class="control-row">
+          <label>Sección</label>
+          <select data-control="section">${SECTIONS.map(section => `<option value="${section.value}">${section.label}</option>`).join("")}</select>
+        </div>
+        <div class="control-row">
+          <label>Magnitud de devaluación</label>
+          <input type="range" min="0" max="150" step="1" value="100" data-control="devaluation">
+          <div class="control-value" data-value="devaluation">100%</div>
+        </div>
+        ${VARIABLES.map(variable => `
+          <div class="control-row">
+            <label>${variable.label}</label>
+            <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
+            <div class="control-value" data-value="${variable.key}">100%</div>
+          </div>
+        `).join("")}
+        <button class="reset-button" type="button">Restaurar escenario XLSX</button>
+      </div>
+      <div>
+        <div class="metrics-grid" data-role="metrics"></div>
+        <div class="chart-row">
+          <div class="chart-box">
+            <h4>Tasa de ganancia a precios básicos</h4>
+            <div data-role="rate-chart"></div>
+          </div>
+          <div class="chart-box">
+            <h4>Saldo y variación de ganancia</h4>
+            <div data-role="saldo-chart"></div>
+          </div>
+        </div>
+        <div class="chart-box" style="margin-top: 1rem;">
+          <h4>Componentes como porcentaje de la ganancia inicial</h4>
+          <div data-role="components-chart"></div>
+        </div>
+        <div class="sim-table" data-role="summary-table"></div>
+      </div>
+    </div>
+  `;
+
+  container.querySelector('[data-control="year"]').value = state.year;
+  container.querySelector('[data-control="section"]').value = state.section;
+
+  function update() {
+    const row = rows.find(item => Number(item.anno) === state.year && item.seccion === state.section);
+    if (!row) {
+      container.querySelector('[data-role="metrics"]').innerHTML = "<p>No hay datos disponibles para la selección.</p>";
+      return;
+    }
+    const result = computeScenario(row, state);
+    const sectionLabel = SECTIONS.find(section => section.value === state.section)?.label || state.section;
+
+    container.querySelector('[data-value="devaluation"]').textContent = `${state.devaluation}%`;
+    VARIABLES.forEach(variable => {
+      container.querySelector(`[data-value="${variable.key}"]`).textContent = `${state.intensities[variable.key]}%`;
+    });
+
+    container.querySelector('[data-role="metrics"]').innerHTML = `
+      <div class="metric-card"><span>Selección</span><strong>${sectionLabel}</strong></div>
+      <div class="metric-card"><span>Factor efectivo</span><strong>${percent(result.factorEffective * 100)}</strong></div>
+      <div class="metric-card"><span>Ganancia inicial</span><strong>${moneyBillions(result.gainBase)}</strong></div>
+      <div class="metric-card"><span>Ganancia simulada</span><strong>${moneyBillions(result.gainSim)}</strong></div>
+      <div class="metric-card"><span>Saldo sobrevaluación</span><strong>${moneyBillions(result.saldo)}</strong></div>
+      <div class="metric-card"><span>Variación ganancia</span><strong>${percent(result.deltaPct)}</strong></div>
+    `;
+
+    container.querySelector('[data-role="rate-chart"]').innerHTML = barSvg([
+      { label: "Inicial", value: result.rateBase, color: COLORS.navy, format: value => percent(value, 2) },
+      { label: "Simulada", value: result.rateSim, color: COLORS.main, format: value => percent(value, 2) }
+    ]);
+
+    container.querySelector('[data-role="saldo-chart"]').innerHTML = barSvg([
+      { label: "Saldo", value: result.saldo / 1e9, color: result.saldo >= 0 ? COLORS.deep : COLORS.soft, format: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })}` },
+      { label: "Delta %", value: result.deltaPct, color: COLORS.steel, format: value => percent(value) }
+    ]);
+
+    container.querySelector('[data-role="components-chart"]').innerHTML = horizontalBarsSvg(result.components);
+
+    container.querySelector('[data-role="summary-table"]').innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Indicador</th>
+            <th>Escenario inicial</th>
+            <th>Simulación</th>
+            <th>Diferencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ganancia pb</td><td>${moneyBillions(result.gainBase)}</td><td>${moneyBillions(result.gainSim)}</td><td>${moneyBillions(result.gainSim - result.gainBase)}</td></tr>
+          <tr><td>Tasa ganancia pb</td><td>${percent(result.rateBase, 2)}</td><td>${percent(result.rateSim, 2)}</td><td>${pp(result.rateSim - result.rateBase)}</td></tr>
+          <tr><td>Ganancia pb post intereses</td><td>${moneyBillions(result.gainPostBase)}</td><td>${moneyBillions(result.gainPostSim)}</td><td>${moneyBillions(result.gainPostSim - result.gainPostBase)}</td></tr>
+          <tr><td>Saldo sobrevaluación</td><td></td><td>${moneyBillions(result.saldo)}</td><td>${percent(result.deltaPct)}</td></tr>
+          <tr><td>Capital total adelantado</td><td>${moneyBillions(result.capitalBase)}</td><td>${moneyBillions(result.capitalSim)}</td><td>${moneyBillions(result.capitalSim - result.capitalBase)}</td></tr>
+        </tbody>
+      </table>
+      <p class="source-note">Montos en miles de millones de pesos corrientes. Las tasas se expresan como porcentaje.</p>
+    `;
+  }
+
+  container.addEventListener("input", event => {
+    const control = event.target.dataset.control;
+    if (!control) return;
+    if (control === "year") state.year = Number(event.target.value);
+    if (control === "section") state.section = event.target.value;
+    if (control === "devaluation") state.devaluation = Number(event.target.value);
+    if (VARIABLES.some(variable => variable.key === control)) state.intensities[control] = Number(event.target.value);
+    update();
+  });
+
+  container.addEventListener("click", event => {
+    if (!event.target.classList.contains("reset-button")) return;
+    state.devaluation = 100;
+    VARIABLES.forEach(variable => state.intensities[variable.key] = 100);
+    container.querySelector('[data-control="devaluation"]').value = 100;
+    VARIABLES.forEach(variable => {
+      container.querySelector(`[data-control="${variable.key}"]`).value = 100;
+    });
+    update();
+  });
+
+  update();
+}
+
+fetch(DATA_URL)
+  .then(response => {
+    if (!response.ok) throw new Error(`No se pudo cargar ${DATA_URL}`);
+    return response.json();
+  })
+  .then(data => {
+    document.querySelectorAll(".sim-module").forEach(module => renderModule(module, data));
+  })
+  .catch(error => {
+    document.querySelectorAll(".sim-content").forEach(container => {
+      container.innerHTML = `<p>No se pudo cargar el módulo interactivo: ${error.message}</p>`;
+    });
+  });
+</script>
+
+## Nota técnica
+
+La simulación aplica:
+
+```text
+factor_efectivo = intensidad_devaluacion * (tipo_cambio_paridad / tipo_cambio_comercial - 1)
+```
+
+Cada variable afectada usa su coeficiente de incidencia y el porcentaje elegido
+en el slider correspondiente. El stock imputado incide en el capital total
+adelantado; los intereses inciden en la ganancia post intereses.

@@ -313,6 +313,7 @@ Artefactos:
 | `command-files/analysis-command-files/12_update_eaae_industria_devaluacion_segmentos.R` | Script reproducible para actualizar el libro de modelamiento de devaluación industrial por secciones, escenarios, tipo de cambio y coeficientes específicos. |
 | `command-files/analysis-command-files/13_generar_minuta_devaluacion_segmentos.R` | Script reproducible para generar la minuta de resultados de devaluación por industria total, segmento exportador y mercado interno. |
 | `command-files/analysis-command-files/14_generar_minuta_devaluacion_escenarios_integrados.R` | Script reproducible para generar la minuta integrada de dos escenarios de devaluación, sus tablas y figuras respaldadas. |
+| `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R` | Script reproducible para preparar los insumos del sitio Quarto: copia archivos de descarga, copia figuras hacia `site/assets/` y genera el JSON interactivo desde el XLSX de devaluación 20260830. |
 | `data/analysis-data/20260706_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 288 observaciones: 24 de economía total, 24 de industria total y 240 de subramas industriales. |
 | `data/analysis-data/20260706_resultados_eaae_bcu_total_industria_subrama.xlsx` | Libro de resultados en formato largo con hojas `metodología`, `eaae`, `check-calidad`, `resultados-corrientes`, `resultados-constantes`, `resultados-var-pct` y `resultados-ind-2005`. |
 | `data/analysis-data/20260727_panel_eeae_bcu_total_industria_subrama.csv` | Panel integrado EAAE-BCU con 312 observaciones: 24 de economía total, 24 de industria total, 24 de industria manufacturera excluyendo papel/impresión y coque/refinación, y 240 de subramas industriales. |
@@ -349,6 +350,9 @@ Artefactos:
 | `docs/minutes/20260817_resultados_devaluación_sector_industrial.md` | Minuta de lectura para audiencia amplia sobre consecuencias distributivas de una devaluación industrial bajo escenarios de salario fijo y salario compensado. |
 | `output/figures/devaluacion_escenarios_integrados_20260828/` | Carpeta de figuras PNG respaldadas para la minuta integrada 20260828; incluye saldos absolutos, coeficientes, factor de devaluación y deltas relativos de ganancia del momento 2 sobre ganancia inicial. |
 | `output/figures/devaluacion_sector_industrial_20260817/` | Carpeta de figuras PNG respaldadas para la minuta de resultados de devaluación sector industrial. |
+| `docs/minutes/20260830_prompt_sitio_github_pages_quarto_entregable.md` | Prompt operativo actualizado para construir el sitio GitHub Pages del entregable en una carpeta nueva `site/`, sin usar `docs/` como salida. |
+| `site/` | Proyecto Quarto fuente del entregable web, con páginas de sistematización, resultados EAAE-BCU, resultados integrados de devaluación y simuladores interactivos estáticos. |
+| `.github/workflows/pages.yml` | Workflow de GitHub Actions que prepara insumos, renderiza `site/` y publica `site/_site/` mediante GitHub Pages. |
 
 Decisiones del panel integrado:
 
@@ -541,6 +545,30 @@ Decisiones del panel integrado:
   Las minutas específicas por escenario 20260828 y la minuta integrada
   `docs/20260828_resultados_devaluacion_escenarios_integrados.md` se generan
   con figuras respaldadas en `output/figures/`.
+- **ACTUALIZACIÓN 2026-08-30:** se crea un sitio Quarto estático para
+  empaquetar el entregable de contraparte sin intervenir el flujo documental
+  existente en `docs/`. El prompt operativo queda en
+  `docs/minutes/20260830_prompt_sitio_github_pages_quarto_entregable.md`. El
+  sitio fuente queda en `site/` y contiene `index.qmd`,
+  `01-sistematizacion.qmd`, `02-resultados-eaae-bcu.qmd`,
+  `04-resultados-devaluacion-escenarios-integrados.qmd`,
+  `05-modulos-interactivos-devaluacion.qmd`, `_quarto.yml` y `styles.scss`.
+  El estilo replica la paleta azul sobria y el enfoque `theme_minimal` de la
+  minuta integrada, para mantener un tono institucional de consultoría
+  económica apto para una contraparte tripartita. El script reproducible
+  `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
+  copia al sitio los XLSX/CSV/MD que deben quedar disponibles como descargas,
+  copia figuras desde `output/figures/` hacia `site/assets/figures/` y genera
+  `site/data/devaluacion_segmentos_20260830.json` desde
+  `data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`.
+  Los subproductos `site/data/`, `site/assets/figures/`, `site/_site/` y
+  `site/.quarto/` son regenerables y quedan ignorados en `site/.gitignore`.
+  Para actualizar el sitio si cambian fuentes o minutas, ejecutar desde la
+  raíz:
+  `Rscript command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
+  y luego `quarto render site`. El workflow
+  `.github/workflows/pages.yml` realiza esos mismos pasos en GitHub Actions y
+  publica `site/_site/` como artefacto de GitHub Pages.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
@@ -2103,6 +2131,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Creación del procesamiento específico `20260824_panel_eaae_2020_2024_industria.csv` y `20260824_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` para modelar devaluación en industria total, ramas exportadoras y ramas de mercado interno según clasificación Mussi | ✓ |
 | Aug 2026 | Actualización del modelamiento de devaluación industrial a dos escenarios desde `20260827-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`: `Modelo` aporta coeficientes para industria total; `Impo_Expo - Mercado Interno` aporta coeficientes segmentados del escenario comercio exterior; `Transable_Expo - MI` aporta coeficientes segmentados del escenario bienes transables. Se crea `20260827-coeficientes-efecto-devaluacion.csv`, el libro `20260827_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` con hojas `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`, y dos minutas específicas en `docs/` con figuras respaldadas en `output/figures/` | ✓ |
 | Aug 2026 | Regeneración del flujo de modelamiento de devaluación desde la fuente actualizada `20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. El script de coeficientes queda parametrizado para usar el último XLSX fuente de dos escenarios; se crean `20260828-coeficientes-efecto-devaluacion.csv`, `20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, minutas por escenario 20260828 y la minuta integrada `20260828_resultados_devaluacion_escenarios_integrados.md`, incluyendo figuras de saldo absoluto y delta relativo de ganancia del momento 2 sobre ganancia inicial | ✓ |
+| Aug 2026 | Creación del sitio Quarto estático del entregable en `site/`, con prompt fechado 20260830, script reproducible de preparación de insumos, módulos interactivos de devaluación y workflow GitHub Actions para publicar `site/_site/` en GitHub Pages | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

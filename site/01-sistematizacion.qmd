@@ -1,0 +1,55 @@
+---
+title: "Sistematización y antecedentes"
+---
+
+## Propósito
+
+El proyecto sistematiza fuentes económicas de Uruguay para construir bases
+reutilizables orientadas al análisis de rentabilidad, acumulación de capital y
+estructura industrial. El flujo prioriza trazabilidad: cada resultado debe poder
+vincularse con su fuente primaria, script de procesamiento y documento de
+validación.
+
+## Organización reproducible
+
+La estructura sigue una lógica inspirada en Project TIER:
+
+- `data/input-data/`: fuentes primarias preservadas sin modificar;
+- `command-files/`: scripts reproducibles de procesamiento y análisis;
+- `data/analysis-data/`: bases procesadas, paneles y libros XLSX;
+- `docs/`: minutas metodológicas y documentos de resultados;
+- `output/figures/`: figuras generadas desde código.
+
+## Fuentes trabajadas
+
+| Fuente | Uso principal |
+|---|---|
+| EAAE | Variables de producción, valor agregado, remuneraciones, empleo, inversión, consumo de capital fijo y stock. |
+| BCU | Deflactores e indicadores compatibles con cuentas nacionales. |
+| CIU | Distribución de intereses industriales y serie externa de stock de capital. |
+| Oyanthabal | Tipo de cambio comercial/paridad y referencias de tasa de ganancia. |
+| Mussi / insumos de trabajo | Coeficientes de incidencia para modelamiento de devaluación. |
+
+## Decisiones metodológicas principales
+
+El panel EAAE-BCU integrado trabaja con economía total, industria total y
+subramas industriales compatibles con una homologación CIIU. Para la lectura de
+devaluación 2020-2024 se usa una clasificación operativa de ramas homogéneas en
+tres grupos: industria total, segmento exportador y segmento orientado al
+mercado interno. El grupo combustible queda integrado al total industrial, pero
+no se presenta como segmento autónomo del ejercicio.
+
+Los resultados de devaluación se expresan en valores corrientes. Esto es
+coherente con el alcance temporal 2020-2024 y evita introducir una nueva capa de
+supuestos sobre precios relativos en un ejercicio que busca aislar el efecto
+contable del cierre de la brecha entre tipo de cambio comercial y tipo de
+cambio de paridad.
+
+## Productos principales
+
+- Panel EAAE-BCU integrado con economía total, industria total y subramas.
+- Libro de resultados EAAE-BCU en formato largo.
+- Panel industrial 2020-2024 por segmentos.
+- Libro de modelamiento de devaluación con dos escenarios.
+- Minuta integrada de resultados de devaluación.
+- Sitio estático de entrega para navegación y descarga.
