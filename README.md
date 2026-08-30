@@ -10,12 +10,12 @@ documentación en `docs/` y las figuras en `output/figures/`.
 
 ## Resultados Brecha Cambiaria Industria 2020-2024
 
-- [20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx): último libro de modelamiento del cierre de brecha cambiaria para industria total, segmento exportador y segmento mercado interno, con dos escenarios diferenciados.
+- [20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx): último libro de modelamiento del cierre de brecha cambiaria para industria total, segmento exportador y segmento mercado interno, con dos escenarios diferenciados y columnas explícitas de delta/saldo respecto del escenario inicial.
 - [20260826_panel_eaae_2020_2024_industria.csv](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv): panel base 2020-2024 de industria total y grupos de subramas industriales, actualizado con distribución de intereses por microdatos CIU.
-- [20260828_resultados_devaluacion_escenarios_integrados.md](docs/20260828_resultados_devaluacion_escenarios_integrados.md): minuta integrada de comparación de los dos escenarios, con lectura agregada para industria total y secciones específicas por escenario.
+- [20260830_resultados_devaluacion_escenarios_integrados.md](docs/20260830_resultados_devaluacion_escenarios_integrados.md): última minuta integrada de comparación de los dos escenarios, con lectura agregada para industria total, secciones específicas por escenario y gráficos de componentes del saldo sobre ganancia inicial.
 - [20260828_resultados_devaluacion_escenario_1_comercio_exterior.md](docs/20260828_resultados_devaluacion_escenario_1_comercio_exterior.md): minuta de resultados del escenario de incidencia directa del comercio exterior.
 - [20260828_resultados_devaluacion_escenario_2_bienes_transables.md](docs/20260828_resultados_devaluacion_escenario_2_bienes_transables.md): minuta de resultados del escenario de incidencia de bienes transables.
-- [Figuras integradas de escenarios 20260828](output/figures/devaluacion_escenarios_integrados_20260828/): figuras respaldadas para la minuta integrada.
+- [Figuras integradas de escenarios 20260830](output/figures/devaluacion_escenarios_integrados_20260830/): figuras respaldadas para la última minuta integrada.
 - [Figuras escenario 1 comercio exterior 20260828](output/figures/devaluacion_industria_segmentos_20260828_escenario_1_comercio_exterior/): figuras respaldadas para la minuta del escenario 1.
 - [Figuras escenario 2 bienes transables 20260828](output/figures/devaluacion_industria_segmentos_20260828_escenario_2_bienes_transables/): figuras respaldadas para la minuta del escenario 2.
 - [20260828-coeficientes-efecto-devaluacion.csv](data/input-data/mussi/20260828-coeficientes-efecto-devaluacion.csv): tabla consolidada de coeficientes de incidencia por escenario, industria total, segmento exportador y segmento mercado interno.
@@ -104,6 +104,7 @@ Actualizar el modelamiento de devaluación diferenciada:
 Rscript command-files/processing-command-files/30_process_mussi_coeficientes_devaluacion_segmentos.R
 Rscript command-files/analysis-command-files/12_update_eaae_industria_devaluacion_segmentos.R
 Rscript command-files/analysis-command-files/13_generar_minuta_devaluacion_segmentos.R
+Rscript command-files/analysis-command-files/14_generar_minuta_devaluacion_escenarios_integrados.R
 ```
 
 Nota: la extracción desde archivos RAR requiere `unrar` o una alternativa
