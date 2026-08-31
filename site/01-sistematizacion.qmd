@@ -47,12 +47,23 @@ cambio de paridad.
 
 ## Anexo
 
-- [Minuta fuente en repositorio GitHub](data/docs/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md):
-  documento con explicación detallada de fuentes utilizadas, supuestos y
-  decisiones del análisis, así como interpretación narrativa de resultados.
-- [Documento fuente de resultados en formato XLSX](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx):
-  libro en formato Excel que respalda los datos y resultados en base a los que
-  se construyen los resultados visuales presentados.
+::: {.download-panel}
+::: {.download-item}
+**Minuta fuente de análisis**
+
+<span>Documento con explicación detallada de fuentes utilizadas, supuestos y decisiones del análisis, así como interpretación narrativa de resultados.</span>
+
+[Abrir minuta](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md){.button-link}
+:::
+
+::: {.download-item}
+**Documento fuente de resultados en formato XLSX**
+
+<span>Libro en formato Excel que respalda los datos y resultados en base a los que se construyen los resultados visuales presentados.</span>
+
+[Descargar XLSX](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx){.button-link}
+:::
+:::
 
 ## Referencias consultadas
 
