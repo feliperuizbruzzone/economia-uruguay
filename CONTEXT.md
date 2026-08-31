@@ -584,6 +584,12 @@ Decisiones del panel integrado:
   a ancho completo. Se eliminan las tarjetas resumen de período, series
   visibles, factor efectivo promedio y delta absoluto para priorizar la lectura
   de los dos paneles temporales y la tabla de resultados.
+- **ACTUALIZACIÓN 2026-08-30:** se corrige el layout responsivo del simulador
+  web para evitar desbordes dentro de la caja de cada escenario. El ajuste
+  elimina mínimos rígidos en los grids de controles, incidencias y gráficos;
+  agrega `min-width: 0` y `max-width: 100%` en los contenedores críticos; y
+  conserva la reproducción vía `quarto render site` sin cambiar datos ni
+  fórmulas.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
