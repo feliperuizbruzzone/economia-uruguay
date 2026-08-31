@@ -165,7 +165,7 @@ function computeScenario(row, state) {
   };
 }
 
-function componentBarsSvg(data) {
+function componentBarsSvg(data, options = {}) {
   const width = 840;
   const panelHeight = 138;
   const height = 88 + panelHeight * SECTIONS.length;
@@ -173,7 +173,7 @@ function componentBarsSvg(data) {
   const innerW = width - margin.left - margin.right;
   const allValues = data.flatMap(row => row.components.map(component => component.valueBillions));
   const maxAbs = Math.max(1, ...allValues.map(value => Math.abs(value)).filter(Number.isFinite));
-  const limit = maxAbs * 1.12;
+  const limit = options.limit || maxAbs * 1.12;
   const xFor = value => margin.left + (value + limit) / (2 * limit) * innerW;
   const zeroX = xFor(0);
   const ticks = [-limit, -limit / 2, 0, limit / 2, limit];
@@ -200,9 +200,10 @@ function componentBarsSvg(data) {
       const labelX = component.valueBillions >= 0 ? x1 + 7 : x0 - 7;
       const anchor = component.valueBillions >= 0 ? "start" : "end";
       const fill = component.valueBillions >= 0 ? COLORS.positive : COLORS.negative;
+      const barWidth = Math.abs(component.valueBillions) > 1e-9 ? Math.max(1, x1 - x0) : 0;
       return `
         <text x="${margin.left - 12}" y="${y + 10}" text-anchor="end" fill="${COLORS.navy}" font-size="11">${component.label}</text>
-        <rect x="${x0}" y="${y}" width="${Math.max(1, x1 - x0)}" height="${barHeight}" fill="${fill}" rx="2"></rect>
+        <rect x="${x0}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${fill}" rx="2"></rect>
         <text x="${labelX}" y="${y + 11}" text-anchor="${anchor}" fill="${COLORS.grey}" font-size="10">${moneyBillions(component.value)}</text>
       `;
     }).join("");
@@ -349,6 +350,20 @@ function fixedDomain(rows, valueKey) {
   return [min - padding, max + padding];
 }
 
+// DECISION: el gráfico de barras usa una escala horizontal fija por escenario.
+// Si se reescala con cada movimiento del slider, las barras parecen inmóviles
+// porque el eje se achica o agranda junto con los valores.
+function fixedComponentLimit(rows) {
+  const years = rows.map(row => Number(row.anno)).filter(Number.isFinite);
+  const lastYear = Math.max(...years);
+  const intensities = Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]));
+  const latestSeries = scenarioSeries(rows, { devaluation: 150, intensities })
+    .filter(row => row.year === lastYear);
+  const values = latestSeries.flatMap(row => row.components.map(component => component.valueBillions));
+  const maxAbs = Math.max(1, ...values.map(value => Math.abs(value)).filter(Number.isFinite));
+  return maxAbs * 1.12;
+}
+
 function summaryTable(series) {
   const tag = name => `<${name}>`;
   const endTag = name => `</${name}>`;
@@ -386,7 +401,8 @@ function renderModule(module, data) {
     intensities: Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]))
   };
   const domains = {
-    deltaTotalPct: fixedDomain(rows, "deltaTotalPct")
+    deltaTotalPct: fixedDomain(rows, "deltaTotalPct"),
+    componentLimit: fixedComponentLimit(rows)
   };
 
   container.innerHTML = `
@@ -447,7 +463,9 @@ function renderModule(module, data) {
       container.querySelector(`[data-value="${variable.key}"]`).textContent = `${state.intensities[variable.key]}%`;
     });
 
-    container.querySelector('[data-role="component-chart"]').innerHTML = componentBarsSvg(latestSeries);
+    container.querySelector('[data-role="component-chart"]').innerHTML = componentBarsSvg(latestSeries, {
+      limit: domains.componentLimit
+    });
     container.querySelector('[data-role="delta-pct-chart"]').innerHTML = lineChartSvg(series, "deltaTotalPct", {
       domain: domains.deltaTotalPct,
       formatTick: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 0, minimumFractionDigits: 0 })}%`

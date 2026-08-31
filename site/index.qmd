@@ -1,6 +1,6 @@
 ---
 title: "Reporte digital"
-subtitle: "Tipo de cambio y perspectivas del desarrollo industrial en Uruguay (2000 a la actualidad)"
+subtitle: "Tipo de cambio y perspectivas del desarrollo industrial en Uruguay"
 ---
 
 ::: {.institutional-header}

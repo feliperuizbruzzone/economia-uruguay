@@ -667,6 +667,13 @@ Decisiones del panel integrado:
   `site/05-modulos-interactivos-devaluacion.qmd`; luego ejecutar
   `Rscript command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
   y `quarto render site`.
+- **ACTUALIZACIÓN WEB 2026-08-31:** en
+  `site/05-modulos-interactivos-devaluacion.qmd`, el gráfico dinámico
+  `Monto apropiado/cedido según componente` fija su escala horizontal por
+  escenario usando el máximo posible del simulador (`devaluación = 150%` e
+  incidencias completas) para el último año disponible. Esto evita que el eje
+  se reescale en cada movimiento de slider y permite que el largo de las barras
+  cambie visualmente de forma proporcional.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
