@@ -14,20 +14,34 @@ Los módulos son estáticos y funcionan en el navegador a partir del JSON
 preparado por `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`.
 :::
 
-<div class="sim-module" data-scenario="Escenario 1 - Comercio Exterior">
-  <div class="sim-header">
-    <h3>Módulo escenario 1 - Comercio exterior</h3>
-    <p>Incidencia directa de importaciones y exportaciones sobre producción, costos, capital e intereses.</p>
-  </div>
-  <div class="sim-content"></div>
+El gráfico debe leerse como una comparación contra el escenario inicial de
+cada año. El panel izquierdo muestra cuánto cambia la masa de ganancia en
+términos absolutos; el panel derecho expresa ese mismo cambio como porcentaje
+de la ganancia inicial. Una línea por encima de cero indica que la simulación
+eleva la ganancia respecto del escenario inicial; una línea por debajo de cero
+indica que la reduce. Los colores distinguen industria total, segmento
+exportador y mercado interno.
+
+## Escenario 1 - Comercio exterior
+
+Incidencia directa de importaciones y exportaciones sobre producción, costos,
+capital e intereses.
+
+<div class="scenario-simulator" data-scenario="Escenario 1 - Comercio Exterior">
+<div class="sim-module">
+<div class="sim-content"></div>
+</div>
 </div>
 
-<div class="sim-module" data-scenario="Escenario 2 - Bienes Transables">
-  <div class="sim-header">
-    <h3>Módulo escenario 2 - Bienes transables</h3>
-    <p>Incidencia ampliada sobre bienes transables, incluidos aquellos producidos localmente y vendidos en mercado interno.</p>
-  </div>
-  <div class="sim-content"></div>
+## Escenario 2 - Bienes transables
+
+Incidencia ampliada sobre bienes transables, incluidos aquellos producidos
+localmente y vendidos en mercado interno.
+
+<div class="scenario-simulator" data-scenario="Escenario 2 - Bienes Transables">
+<div class="sim-module">
+<div class="sim-content"></div>
+</div>
 </div>
 
 <script>
@@ -44,9 +58,9 @@ const COLORS = {
 };
 
 const SECTIONS = [
-  { value: "industria-total", label: "Industria total" },
-  { value: "exportadora", label: "Segmento exportador" },
-  { value: "mercado-interno", label: "Mercado interno" }
+  { value: "industria-total", label: "Industria total", color: COLORS.navy },
+  { value: "exportadora", label: "Segmento exportador", color: COLORS.main },
+  { value: "mercado-interno", label: "Mercado interno", color: COLORS.steel }
 ];
 
 const VARIABLES = [
@@ -196,70 +210,148 @@ function computeScenario(row, state) {
   };
 }
 
-function barSvg(values, options = {}) {
-  const width = 520;
-  const height = 210;
-  const margin = { top: 16, right: 20, bottom: 48, left: 54 };
+function mean(values) {
+  const finite = values.filter(value => Number.isFinite(value));
+  if (finite.length === 0) return NaN;
+  return finite.reduce((total, value) => total + value, 0) / finite.length;
+}
+
+function rangeLabel(values, formatter) {
+  const finite = values.filter(value => Number.isFinite(value));
+  if (finite.length === 0) return "s/d";
+  const min = Math.min(...finite);
+  const max = Math.max(...finite);
+  if (Math.abs(max - min) < 1e-9) return formatter(max);
+  return `${formatter(min)} a ${formatter(max)}`;
+}
+
+function lineChartSvg(data, valueKey, options) {
+  const width = 660;
+  const height = 360;
+  const margin = { top: 20, right: 30, bottom: 86, left: 74 };
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
-  const minValue = Math.min(0, ...values.map(d => d.value));
-  const maxValue = Math.max(0, ...values.map(d => d.value));
-  const range = maxValue - minValue || 1;
-  const barW = innerW / values.length * 0.56;
+  const years = [...new Set(data.map(row => row.year))].sort((a, b) => a - b);
+  const sectionValues = SECTIONS.map(section => section.value);
+  const values = data.map(row => row[valueKey]).filter(value => Number.isFinite(value));
+  let minValue = Math.min(0, ...values);
+  let maxValue = Math.max(0, ...values);
+
+  if (Math.abs(maxValue - minValue) < 1e-9) {
+    minValue -= 1;
+    maxValue += 1;
+  }
+
+  const range = maxValue - minValue;
+  const xFor = year => {
+    if (years.length === 1) return margin.left + innerW / 2;
+    return margin.left + (year - years[0]) / (years[years.length - 1] - years[0]) * innerW;
+  };
   const yFor = value => margin.top + (maxValue - value) / range * innerH;
   const zeroY = yFor(0);
-
-  const bars = values.map((d, i) => {
-    const x = margin.left + i * innerW / values.length + (innerW / values.length - barW) / 2;
-    const valueY = yFor(d.value);
-    const h = Math.abs(valueY - zeroY);
-    const y = d.value >= 0 ? valueY : zeroY;
-    const color = d.color || COLORS.main;
-    const labelY = d.value >= 0 ? y - 6 : y + h + 14;
+  const ticks = Array.from({ length: 5 }, (_, i) => minValue + (maxValue - minValue) * i / 4);
+  const grid = ticks.map(tick => {
+    const y = yFor(tick);
     return `
-      <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="3"></rect>
-      <text x="${x + barW / 2}" y="${height - 22}" text-anchor="middle" fill="${COLORS.grey}" font-size="12">${d.label}</text>
-      <text x="${x + barW / 2}" y="${labelY}" text-anchor="middle" fill="${COLORS.navy}" font-size="12" font-weight="650">${d.format(d.value)}</text>
+      <line x1="${margin.left}" x2="${width - margin.right}" y1="${y}" y2="${y}" stroke="${COLORS.grid}" stroke-width="1"></line>
+      <text x="${margin.left - 10}" y="${y + 4}" text-anchor="end" fill="${COLORS.grey}" font-size="11">${options.formatTick(tick)}</text>
+    `;
+  }).join("");
+  const xAxis = years.map(year => {
+    const x = xFor(year);
+    return `
+      <line x1="${x}" x2="${x}" y1="${height - margin.bottom}" y2="${height - margin.bottom + 5}" stroke="${COLORS.grey}" stroke-width="1"></line>
+      <text x="${x}" y="${height - margin.bottom + 22}" text-anchor="middle" fill="${COLORS.grey}" font-size="12">${year}</text>
+    `;
+  }).join("");
+  const lines = sectionValues.map(sectionValue => {
+    const section = SECTIONS.find(item => item.value === sectionValue);
+    const sectionRows = data
+      .filter(row => row.section === sectionValue && Number.isFinite(row[valueKey]))
+      .sort((a, b) => a.year - b.year);
+    if (sectionRows.length === 0) return "";
+    const path = sectionRows.map((row, index) => {
+      const command = index === 0 ? "M" : "L";
+      return `${command} ${xFor(row.year).toFixed(2)} ${yFor(row[valueKey]).toFixed(2)}`;
+    }).join(" ");
+    const points = sectionRows.map(row => `
+      <circle cx="${xFor(row.year)}" cy="${yFor(row[valueKey])}" r="3.4" fill="${section.color}"></circle>
+    `).join("");
+    return `
+      <path d="${path}" fill="none" stroke="${section.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      ${points}
+    `;
+  }).join("");
+  const legendItemWidth = 170;
+  const legendTotalWidth = legendItemWidth * SECTIONS.length;
+  const legendStart = margin.left + (innerW - legendTotalWidth) / 2;
+  const legend = SECTIONS.map((section, index) => {
+    const x = legendStart + index * legendItemWidth;
+    const y = height - 24;
+    return `
+      <line x1="${x}" x2="${x + 26}" y1="${y}" y2="${y}" stroke="${section.color}" stroke-width="3" stroke-linecap="round"></line>
+      <text x="${x + 34}" y="${y + 4}" fill="${COLORS.navy}" font-size="12">${section.label}</text>
     `;
   }).join("");
 
   return `
     <svg viewBox="0 0 ${width} ${height}" role="img" width="100%" height="auto">
-      <line x1="${margin.left}" x2="${width - margin.right}" y1="${zeroY}" y2="${zeroY}" stroke="${COLORS.grid}" stroke-width="1"></line>
-      ${bars}
+      ${grid}
+      <line x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}" stroke="${COLORS.grey}" stroke-width="1"></line>
+      <line x1="${margin.left}" x2="${margin.left}" y1="${margin.top}" y2="${height - margin.bottom}" stroke="${COLORS.grey}" stroke-width="1"></line>
+      <line x1="${margin.left}" x2="${width - margin.right}" y1="${zeroY}" y2="${zeroY}" stroke="${COLORS.navy}" stroke-width="1.2" stroke-dasharray="4 4"></line>
+      ${xAxis}
+      ${lines}
+      ${legend}
     </svg>
   `;
 }
 
-function horizontalBarsSvg(values) {
-  const width = 560;
-  const height = 250;
-  const margin = { top: 18, right: 70, bottom: 22, left: 150 };
-  const innerW = width - margin.left - margin.right;
-  const rowH = (height - margin.top - margin.bottom) / values.length;
-  const max = Math.max(...values.map(d => Math.abs(d.pctGain)), 1);
-  const zeroX = margin.left + innerW / 2;
+function scenarioSeries(rows, state) {
+  return rows
+    .map(row => {
+      const result = computeScenario(row, state);
+      const deltaAbs = result.gainSim - result.gainBase;
+      return {
+        year: Number(row.anno),
+        section: row.seccion,
+        gainBase: result.gainBase,
+        gainSim: result.gainSim,
+        deltaAbs,
+        deltaAbsBillions: deltaAbs / 1e9,
+        deltaPct: result.deltaPct,
+        factorEffectivePct: result.factorEffective * 100
+      };
+    })
+    .sort((a, b) => a.year - b.year || a.section.localeCompare(b.section));
+}
 
-  const bars = values.map((d, i) => {
-    const y = margin.top + i * rowH + rowH * 0.24;
-    const w = Math.abs(d.pctGain) / max * innerW / 2;
-    const x = d.pctGain >= 0 ? zeroX : zeroX - w;
-    const color = d.pctGain >= 0 ? COLORS.deep : COLORS.soft;
-    const textX = d.pctGain >= 0 ? x + w + 6 : x - 6;
-    const anchor = d.pctGain >= 0 ? "start" : "end";
-    return `
-      <text x="${margin.left - 8}" y="${y + 13}" text-anchor="end" fill="${COLORS.navy}" font-size="12">${d.label}</text>
-      <rect x="${x}" y="${y}" width="${w}" height="${rowH * 0.52}" fill="${color}" rx="3"></rect>
-      <text x="${textX}" y="${y + 13}" text-anchor="${anchor}" fill="${COLORS.grey}" font-size="12">${percent(d.pctGain)}</text>
-    `;
+function summaryTable(series) {
+  const tag = name => `<${name}>`;
+  const endTag = name => `</${name}>`;
+  const cell = (content, name = "td") => `${tag(name)}${content}${endTag(name)}`;
+  const years = [...new Set(series.map(row => row.year))].sort((a, b) => a - b);
+  const body = years.map(year => {
+    const cells = SECTIONS.map(section => {
+      const row = series.find(item => item.year === year && item.section === section.value);
+      if (!row) return cell("s/d");
+      return cell(`${moneyBillions(row.deltaAbs)}<br><span>${percent(row.deltaPct)}</span>`);
+    }).join("");
+    return `${tag("tr")}${cell(year)}${cells}${endTag("tr")}`;
   }).join("");
 
-  return `
-    <svg viewBox="0 0 ${width} ${height}" role="img" width="100%" height="auto">
-      <line x1="${zeroX}" x2="${zeroX}" y1="${margin.top}" y2="${height - margin.bottom}" stroke="${COLORS.grey}" stroke-width="1"></line>
-      ${bars}
-    </svg>
-  `;
+  return [
+    tag("table"),
+    tag("thead"),
+    tag("tr"),
+    cell("Año", "th"),
+    SECTIONS.map(section => cell(section.label, "th")).join(""),
+    endTag("tr"),
+    endTag("thead"),
+    `${tag("tbody")}${body}${endTag("tbody")}`,
+    endTag("table"),
+    "<p class=\"source-note\">Cada celda reporta cambio absoluto de ganancia en miles de millones de pesos corrientes y, debajo, cambio porcentual respecto de la ganancia inicial.</p>"
+  ].join("");
 }
 
 function renderModule(module, data) {
@@ -268,69 +360,58 @@ function renderModule(module, data) {
   const years = [...new Set(rows.map(row => Number(row.anno)))].sort((a, b) => a - b);
   const container = module.querySelector(".sim-content");
   const state = {
-    year: Math.max(...years),
-    section: "industria-total",
-    devaluation: 100,
+    devaluation: 0,
     intensities: Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]))
   };
 
   container.innerHTML = `
     <div class="sim-layout">
       <div class="sim-controls">
-        <div class="control-row">
-          <label>Año</label>
-          <select data-control="year">${years.map(year => `<option value="${year}">${year}</option>`).join("")}</select>
-        </div>
-        <div class="control-row">
-          <label>Sección</label>
-          <select data-control="section">${SECTIONS.map(section => `<option value="${section.value}">${section.label}</option>`).join("")}</select>
-        </div>
-        <div class="control-row">
-          <label>Magnitud de devaluación</label>
-          <input type="range" min="0" max="150" step="1" value="100" data-control="devaluation">
-          <div class="control-value" data-value="devaluation">100%</div>
-        </div>
-        ${VARIABLES.map(variable => `
+        <div class="control-panel">
+          <h4>Magnitud de la devaluación</h4>
           <div class="control-row">
-            <label>${variable.label}</label>
-            <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
-            <div class="control-value" data-value="${variable.key}">100%</div>
+            <label>Cierre de brecha TCC-TCP</label>
+            <input type="range" min="0" max="150" step="1" value="0" data-control="devaluation">
+            <div class="control-value" data-value="devaluation">0%</div>
           </div>
-        `).join("")}
-        <button class="reset-button" type="button">Restaurar escenario XLSX</button>
+        </div>
+        <div class="control-panel">
+          <h4>Incidencias por componente</h4>
+          ${VARIABLES.map(variable => `
+            <div class="control-row">
+              <label>${variable.label}</label>
+              <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
+              <div class="control-value" data-value="${variable.key}">100%</div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="control-panel control-panel-action">
+          <button class="reset-button" type="button">Volver al escenario inicial</button>
+        </div>
       </div>
       <div>
         <div class="metrics-grid" data-role="metrics"></div>
         <div class="chart-row">
           <div class="chart-box">
-            <h4>Tasa de ganancia a precios básicos</h4>
-            <div data-role="rate-chart"></div>
+            <h4>Delta absoluto de ganancia</h4>
+            <div data-role="delta-abs-chart"></div>
           </div>
           <div class="chart-box">
-            <h4>Saldo y variación de ganancia</h4>
-            <div data-role="saldo-chart"></div>
+            <h4>Delta relativo sobre ganancia inicial</h4>
+            <div data-role="delta-pct-chart"></div>
           </div>
-        </div>
-        <div class="chart-box" style="margin-top: 1rem;">
-          <h4>Componentes como porcentaje de la ganancia inicial</h4>
-          <div data-role="components-chart"></div>
         </div>
         <div class="sim-table" data-role="summary-table"></div>
       </div>
     </div>
   `;
 
-  container.querySelector('[data-control="year"]').value = state.year;
-  container.querySelector('[data-control="section"]').value = state.section;
-
   function update() {
-    const row = rows.find(item => Number(item.anno) === state.year && item.seccion === state.section);
-    if (!row) {
+    const series = scenarioSeries(rows, state);
+    if (series.length === 0) {
       container.querySelector('[data-role="metrics"]').innerHTML = "<p>No hay datos disponibles para la selección.</p>";
       return;
     }
-    const result = computeScenario(row, state);
-    const sectionLabel = SECTIONS.find(section => section.value === state.section)?.label || state.section;
 
     container.querySelector('[data-value="devaluation"]').textContent = `${state.devaluation}%`;
     VARIABLES.forEach(variable => {
@@ -338,53 +419,24 @@ function renderModule(module, data) {
     });
 
     container.querySelector('[data-role="metrics"]').innerHTML = `
-      <div class="metric-card"><span>Selección</span><strong>${sectionLabel}</strong></div>
-      <div class="metric-card"><span>Factor efectivo</span><strong>${percent(result.factorEffective * 100)}</strong></div>
-      <div class="metric-card"><span>Ganancia inicial</span><strong>${moneyBillions(result.gainBase)}</strong></div>
-      <div class="metric-card"><span>Ganancia simulada</span><strong>${moneyBillions(result.gainSim)}</strong></div>
-      <div class="metric-card"><span>Saldo sobrevaluación</span><strong>${moneyBillions(result.saldo)}</strong></div>
-      <div class="metric-card"><span>Variación ganancia</span><strong>${percent(result.deltaPct)}</strong></div>
+      <div class="metric-card"><span>Período</span><strong>${years[0]}-${years[years.length - 1]}</strong></div>
+      <div class="metric-card"><span>Series visibles</span><strong>${SECTIONS.length}</strong></div>
+      <div class="metric-card"><span>Factor efectivo promedio</span><strong>${percent(mean(series.map(row => row.factorEffectivePct)))}</strong></div>
+      <div class="metric-card"><span>Delta absoluto</span><strong>${rangeLabel(series.map(row => row.deltaAbs), moneyBillions)}</strong></div>
     `;
 
-    container.querySelector('[data-role="rate-chart"]').innerHTML = barSvg([
-      { label: "Inicial", value: result.rateBase, color: COLORS.navy, format: value => percent(value, 2) },
-      { label: "Simulada", value: result.rateSim, color: COLORS.main, format: value => percent(value, 2) }
-    ]);
-
-    container.querySelector('[data-role="saldo-chart"]').innerHTML = barSvg([
-      { label: "Saldo", value: result.saldo / 1e9, color: result.saldo >= 0 ? COLORS.deep : COLORS.soft, format: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })}` },
-      { label: "Delta %", value: result.deltaPct, color: COLORS.steel, format: value => percent(value) }
-    ]);
-
-    container.querySelector('[data-role="components-chart"]').innerHTML = horizontalBarsSvg(result.components);
-
-    container.querySelector('[data-role="summary-table"]').innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>Indicador</th>
-            <th>Escenario inicial</th>
-            <th>Simulación</th>
-            <th>Diferencia</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Ganancia pb</td><td>${moneyBillions(result.gainBase)}</td><td>${moneyBillions(result.gainSim)}</td><td>${moneyBillions(result.gainSim - result.gainBase)}</td></tr>
-          <tr><td>Tasa ganancia pb</td><td>${percent(result.rateBase, 2)}</td><td>${percent(result.rateSim, 2)}</td><td>${pp(result.rateSim - result.rateBase)}</td></tr>
-          <tr><td>Ganancia pb post intereses</td><td>${moneyBillions(result.gainPostBase)}</td><td>${moneyBillions(result.gainPostSim)}</td><td>${moneyBillions(result.gainPostSim - result.gainPostBase)}</td></tr>
-          <tr><td>Saldo sobrevaluación</td><td></td><td>${moneyBillions(result.saldo)}</td><td>${percent(result.deltaPct)}</td></tr>
-          <tr><td>Capital total adelantado</td><td>${moneyBillions(result.capitalBase)}</td><td>${moneyBillions(result.capitalSim)}</td><td>${moneyBillions(result.capitalSim - result.capitalBase)}</td></tr>
-        </tbody>
-      </table>
-      <p class="source-note">Montos en miles de millones de pesos corrientes. Las tasas se expresan como porcentaje.</p>
-    `;
+    container.querySelector('[data-role="delta-abs-chart"]').innerHTML = lineChartSvg(series, "deltaAbsBillions", {
+      formatTick: value => value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })
+    });
+    container.querySelector('[data-role="delta-pct-chart"]').innerHTML = lineChartSvg(series, "deltaPct", {
+      formatTick: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 0, minimumFractionDigits: 0 })}%`
+    });
+    container.querySelector('[data-role="summary-table"]').innerHTML = summaryTable(series);
   }
 
   container.addEventListener("input", event => {
     const control = event.target.dataset.control;
     if (!control) return;
-    if (control === "year") state.year = Number(event.target.value);
-    if (control === "section") state.section = event.target.value;
     if (control === "devaluation") state.devaluation = Number(event.target.value);
     if (VARIABLES.some(variable => variable.key === control)) state.intensities[control] = Number(event.target.value);
     update();
@@ -392,9 +444,9 @@ function renderModule(module, data) {
 
   container.addEventListener("click", event => {
     if (!event.target.classList.contains("reset-button")) return;
-    state.devaluation = 100;
+    state.devaluation = 0;
     VARIABLES.forEach(variable => state.intensities[variable.key] = 100);
-    container.querySelector('[data-control="devaluation"]').value = 100;
+    container.querySelector('[data-control="devaluation"]').value = 0;
     VARIABLES.forEach(variable => {
       container.querySelector(`[data-control="${variable.key}"]`).value = 100;
     });
@@ -410,7 +462,7 @@ fetch(DATA_URL)
     return response.json();
   })
   .then(data => {
-    document.querySelectorAll(".sim-module").forEach(module => renderModule(module, data));
+    document.querySelectorAll(".scenario-simulator").forEach(module => renderModule(module, data));
   })
   .catch(error => {
     document.querySelectorAll(".sim-content").forEach(container => {

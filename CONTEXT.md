@@ -569,6 +569,15 @@ Decisiones del panel integrado:
   y luego `quarto render site`. El workflow
   `.github/workflows/pages.yml` realiza esos mismos pasos en GitHub Actions y
   publica `site/_site/` como artefacto de GitHub Pages.
+- **ACTUALIZACIÓN 2026-08-30:** se ajusta el simulador web de devaluación en
+  `site/05-modulos-interactivos-devaluacion.qmd`. Cada escenario queda con
+  título Markdown estable fuera del bloque de cálculo; los controles se
+  organizan en magnitud de devaluación, incidencias por componente y botón de
+  retorno al escenario inicial. La visualización arranca en escenario inicial
+  (`devaluación = 0%`) y grafica simultáneamente 2020-2024 para industria
+  total, segmento exportador y mercado interno. Los dos paneles muestran
+  `ganancia_simulada - ganancia_inicial` en miles de millones de pesos
+  corrientes y la misma diferencia como porcentaje de la ganancia inicial.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
@@ -2132,6 +2141,7 @@ mkdir -p data/input-data/eaae \
 | Aug 2026 | Actualización del modelamiento de devaluación industrial a dos escenarios desde `20260827-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`: `Modelo` aporta coeficientes para industria total; `Impo_Expo - Mercado Interno` aporta coeficientes segmentados del escenario comercio exterior; `Transable_Expo - MI` aporta coeficientes segmentados del escenario bienes transables. Se crea `20260827-coeficientes-efecto-devaluacion.csv`, el libro `20260827_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx` con hojas `Escenario 1 - Comercio Exterior` y `Escenario 2 - Bienes Transables`, y dos minutas específicas en `docs/` con figuras respaldadas en `output/figures/` | ✓ |
 | Aug 2026 | Regeneración del flujo de modelamiento de devaluación desde la fuente actualizada `20260828-Uruguay. Modelo de impacto de devaluación-segmentos-dos-escenarios.xlsx`. El script de coeficientes queda parametrizado para usar el último XLSX fuente de dos escenarios; se crean `20260828-coeficientes-efecto-devaluacion.csv`, `20260828_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`, minutas por escenario 20260828 y la minuta integrada `20260828_resultados_devaluacion_escenarios_integrados.md`, incluyendo figuras de saldo absoluto y delta relativo de ganancia del momento 2 sobre ganancia inicial | ✓ |
 | Aug 2026 | Creación del sitio Quarto estático del entregable en `site/`, con prompt fechado 20260830, script reproducible de preparación de insumos, módulos interactivos de devaluación y workflow GitHub Actions para publicar `site/_site/` en GitHub Pages | ✓ |
+| Aug 2026 | Actualización de la calculadora web de devaluación: títulos de escenario renderizados como Markdown, controles segmentados y gráficos de línea 2020-2024 por industria total, segmento exportador y mercado interno | ✓ |
 | Pendiente | Decisiones §8.1 (equipo de investigación) | ⏳ |
 | Pendiente | Decidir método para `amortizaciones` y tratamiento de faltantes FBCF/stock 2002/2011 | ⏳ |
 

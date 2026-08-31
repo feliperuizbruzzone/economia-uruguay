@@ -155,26 +155,14 @@ caption {
   margin-top: -0.5rem;
 }
 
+.scenario-simulator {
+  margin: 2rem 0 2.4rem;
+}
+
 .sim-module {
   border: 1px solid var(--uy-grid);
   border-radius: 6px;
-  margin: 1.6rem 0 2rem;
   padding: 1.1rem;
-}
-
-.sim-header {
-  border-bottom: 1px solid var(--uy-grid);
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-}
-
-.sim-header h3 {
-  margin-bottom: 0.2rem;
-}
-
-.sim-header p {
-  color: var(--uy-grey);
-  margin-bottom: 0;
 }
 
 .sim-layout {
@@ -185,14 +173,32 @@ caption {
 
 .sim-controls {
   align-self: start;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.control-panel {
   background: #F8FAFC;
   border: 1px solid var(--uy-grid);
   border-radius: 6px;
   padding: 0.9rem;
 }
 
+.control-panel h4 {
+  font-size: 0.92rem;
+  margin-bottom: 0.75rem;
+}
+
+.control-panel-action {
+  background: #FFFFFF;
+}
+
 .control-row {
   margin-bottom: 0.85rem;
+}
+
+.control-row:last-child {
+  margin-bottom: 0;
 }
 
 .control-row label {
@@ -278,6 +284,11 @@ caption {
 
 .sim-table table {
   width: 100%;
+}
+
+.sim-table span {
+  color: var(--uy-grey);
+  font-size: 0.86rem;
 }
 
 @media (max-width: 860px) {
