@@ -101,9 +101,10 @@ copy_figure_dir <- function(from, to) {
 }
 
 # DECISION: el sitio GitHub Pages se publica desde site/_site; por eso los
-# insumos que deben funcionar como descargas o imágenes del HTML se copian a
-# site/data y site/assets. Esto deja el sitio autocontenido y fácil de
-# regenerar si cambian los artefactos fuente.
+# insumos descargables e imágenes del HTML se copian a site/data y site/assets.
+# Las minutas Markdown no se copian como descargas locales: los botones
+# "Abrir minuta" apuntan al blob de GitHub para que el .md se visualice
+# renderizado y no como archivo crudo servido por Pages.
 download_sources <- c(
   paths$devaluation_xlsx,
   paths$eaae_bcu_xlsx,
@@ -111,15 +112,10 @@ download_sources <- c(
   paths$industry_panel_csv
 )
 walk(download_sources, copy_file, to_dir = file.path("site", "data", "analysis-data"))
-walk(
-  c(paths$devaluation_md, paths$eaae_bcu_md, paths$methodology_md),
-  copy_file,
-  to_dir = file.path("site", "data", "docs")
-)
 
-# DECISION: download buttons in the Quarto pages point to stable local aliases
-# under site/data. The source files remain dated in data/analysis-data and docs,
-# while this script refreshes the aliases on every website build.
+# DECISION: download buttons for data files in the Quarto pages point to stable
+# local aliases under site/data. Markdown minute links are absolute GitHub
+# URLs in the .qmd files for rendered browsing.
 stable_copies <- tibble::tribble(
   ~from, ~to,
   paths$devaluation_xlsx,
@@ -129,13 +125,7 @@ stable_copies <- tibble::tribble(
   paths$eaae_bcu_csv,
   file.path("site", "data", "analysis-data", "panel_eeae_bcu_total_industria_subrama.csv"),
   paths$industry_panel_csv,
-  file.path("site", "data", "analysis-data", "panel_eaae_2020_2024_industria.csv"),
-  paths$devaluation_md,
-  file.path("site", "data", "docs", "resultados_devaluacion_escenarios_integrados.md"),
-  paths$eaae_bcu_md,
-  file.path("site", "data", "docs", "resultados_eaae_bcu_tres_niveles.md"),
-  paths$methodology_md,
-  file.path("site", "data", "docs", "minuta_panel_eeae_bcu_total_industria_subrama.md")
+  file.path("site", "data", "analysis-data", "panel_eaae_2020_2024_industria.csv")
 )
 pwalk(stable_copies, copy_file_as)
 

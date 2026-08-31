@@ -77,7 +77,7 @@ como porcentaje de la ganancia a precios básicos del escenario inicial.
 
 <span>Documento con explicación detallada de fuentes utilizadas, supuestos y decisiones del análisis, así como interpretación narrativa de resultados.</span>
 
-[Abrir minuta](data/docs/resultados_devaluacion_escenarios_integrados.md){.button-link}
+[Abrir minuta](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/20260831_resultados_devaluacion_escenarios_integrados.md){.button-link}
 :::
 
 ::: {.download-item}

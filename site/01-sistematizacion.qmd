@@ -53,7 +53,7 @@ cambio de paridad.
 
 <span>Documento con explicación detallada de fuentes utilizadas, supuestos y decisiones del análisis, así como interpretación narrativa de resultados.</span>
 
-[Abrir minuta](data/docs/minuta_panel_eeae_bcu_total_industria_subrama.md){.button-link}
+[Abrir minuta](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/methodology/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md){.button-link}
 :::
 
 ::: {.download-item}
