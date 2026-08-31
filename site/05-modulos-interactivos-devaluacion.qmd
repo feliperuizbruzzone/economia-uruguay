@@ -1,5 +1,5 @@
 ---
-title: "Simulador de devaluación"
+title: "Simulador devaluación"
 subtitle: "Exploración interactiva de escenarios para la industria manufacturera"
 toc: true
 ---
@@ -9,23 +9,32 @@ cambio comercial y tipo de cambio de paridad, junto con la intensidad aplicada
 a cada coeficiente de incidencia. El valor `100%` reproduce el escenario de
 paridad calculado en el XLSX fuente; `0%` reproduce el escenario inicial.
 
-::: {.callout-note}
+::: {.technical-note}
+**Nota técnica**
+
 Los módulos son estáticos y funcionan en el navegador a partir del JSON
 preparado por `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`.
+
+Es preciso considerar que: a) el slider de consumo de capital fijo mueve el
+modelo en una escala muy pequeña en relación a las otras incidencias, y por
+tanto puede parecer inmóvil; b) esta visualización no considera la incidencia
+de intereses porque está visualizando ganancia antes de intereses; c) dado que
+la incidencia de stock de capital afecta la tasa y no la masa de ganancia, no
+se agrega como slider.
 :::
 
-El gráfico debe leerse como una comparación contra el escenario inicial de
-cada año. El primer gráfico muestra cuánto cambia la masa de ganancia en
-términos absolutos; el segundo expresa ese mismo cambio como porcentaje de la
-ganancia inicial. Una línea por encima de cero indica que la simulación eleva
-la ganancia respecto del escenario inicial; una línea por debajo de cero indica
-que la reduce. Los colores distinguen industria total, segmento exportador y
-mercado interno.
+Los gráficos deben leerse como una comparación contra el escenario inicial de
+cada año. El primer gráfico muestra, para el último año disponible, cuánto
+aporta cada componente al cambio de la masa de ganancia: VBP se representa con
+signo negativo, mientras consumo intermedio, remuneraciones y consumo de
+capital fijo se representan con signo positivo. El segundo gráfico resume el
+saldo neto de esos componentes como porcentaje de la ganancia inicial. Una
+línea por encima de cero indica que la simulación eleva la ganancia respecto
+del escenario inicial; una línea por debajo de cero indica que la reduce.
 
-## Escenario 1 - Comercio exterior
+## Escenario 1 - Comercio Exterior
 
-Incidencia directa de importaciones y exportaciones sobre producción, costos,
-capital e intereses.
+Incidencia directa de importaciones y exportaciones sobre producción y costos.
 
 <div class="scenario-simulator" data-scenario="Escenario 1 - Comercio Exterior">
 <div class="sim-module">
@@ -33,7 +42,7 @@ capital e intereses.
 </div>
 </div>
 
-## Escenario 2 - Bienes transables
+## Escenario 2 - Bienes Transables
 
 Incidencia ampliada sobre bienes transables, incluidos aquellos producidos
 localmente y vendidos en mercado interno.
@@ -45,7 +54,7 @@ localmente y vendidos en mercado interno.
 </div>
 
 <script>
-const DATA_URL = "data/devaluacion_segmentos_20260830.json";
+const DATA_URL = "data/devaluacion_segmentos_20260831.json";
 const COLORS = {
   navy: "#0B1F3A",
   deep: "#173B63",
@@ -54,7 +63,9 @@ const COLORS = {
   soft: "#9DB8D2",
   pale: "#DCE8F3",
   grey: "#6C7785",
-  grid: "#D9E1E8"
+  grid: "#D9E1E8",
+  positive: "#173B63",
+  negative: "#8AA8C5"
 };
 
 const SECTIONS = [
@@ -69,52 +80,30 @@ const VARIABLES = [
     incidence: "incidencia_vbp_pp",
     delta: "delta_vbp_pp",
     label: "VBP",
-    sign: 1,
-    affectsCapital: false
+    componentSign: -1
   },
   {
     key: "consumo_intermedio_estimado",
     incidence: "incidencia_consumo_intermedio_estimado",
     delta: "delta_consumo_intermedio_estimado",
     label: "Consumo intermedio",
-    sign: -1,
-    affectsCapital: true
+    componentSign: 1
   },
   {
     key: "remuneraciones",
     incidence: "incidencia_remuneraciones",
     delta: "delta_remuneraciones",
     label: "Remuneraciones",
-    sign: -1,
-    affectsCapital: true
+    componentSign: 1
   },
   {
     key: "consumo_capital_fijo",
     incidence: "incidencia_consumo_capital_fijo",
     delta: "delta_consumo_capital_fijo",
     label: "Consumo capital fijo",
-    sign: -1,
-    affectsCapital: false
-  },
-  {
-    key: "stock_capital_imputado",
-    incidence: "incidencia_stock_capital_imputado",
-    delta: "delta_stock_capital_imputado",
-    label: "Stock imputado",
-    sign: 0,
-    affectsCapital: true
-  },
-  {
-    key: "intereses_industria_pesos",
-    incidence: "incidencia_intereses_industria_pesos",
-    delta: "delta_intereses_industria_pesos",
-    label: "Intereses",
-    sign: 0,
-    affectsCapital: false
+    componentSign: 1
   }
 ];
-
-const CONTROL_VARIABLES = VARIABLES.filter(variable => variable.sign !== 0);
 
 function numberValue(value) {
   const parsed = Number(value);
@@ -145,47 +134,23 @@ function computeScenario(row, state) {
   });
 
   const gainBase = numberValue(row.ganancia_pb);
-  const capitalBase = numberValue(row.capital_total_adelantado);
-  const rotation = numberValue(row.rotacion_calibrada_sobre_6_6);
-  const interestsBase = numberValue(row.intereses_industria_pesos);
-  const gainPostBase = numberValue(row.ganancia_pb_desp_intereses);
-
-  const gainSim =
-    gainBase +
-    deltas.delta_vbp_pp -
-    deltas.delta_consumo_intermedio_estimado -
-    deltas.delta_remuneraciones -
+  const deltaTotal =
+    -deltas.delta_vbp_pp +
+    deltas.delta_consumo_intermedio_estimado +
+    deltas.delta_remuneraciones +
     deltas.delta_consumo_capital_fijo;
-
-  const capitalCirculatingDelta = rotation > 0
-    ? (deltas.delta_remuneraciones + deltas.delta_consumo_intermedio_estimado) / rotation
-    : 0;
-
-  const capitalSim =
-    capitalBase +
-    deltas.delta_stock_capital_imputado +
-    capitalCirculatingDelta;
-
-  const rateBase = numberValue(row.tasa_ganancia_pb) * 100;
-  const rateSim = capitalSim !== 0 ? gainSim / capitalSim * 100 : NaN;
-  const interestsSim = interestsBase + deltas.delta_intereses_industria_pesos;
-  const gainPostSim = gainSim - interestsSim;
-  const ratePostSim = capitalSim !== 0 ? gainPostSim / capitalSim * 100 : NaN;
-  const saldo = gainBase - gainSim;
-  const deltaPct = gainBase !== 0 ? (gainSim - gainBase) / gainBase * 100 : NaN;
-  const saldoPost = gainPostBase - gainPostSim;
-
-  const components = [
-    { label: "VBP", value: -deltas.delta_vbp_pp },
-    { label: "Consumo intermedio", value: deltas.delta_consumo_intermedio_estimado },
-    { label: "Remuneraciones", value: deltas.delta_remuneraciones },
-    { label: "Consumo capital fijo", value: deltas.delta_consumo_capital_fijo },
-    { label: "Stock imputado", value: deltas.delta_stock_capital_imputado },
-    { label: "Intereses", value: deltas.delta_intereses_industria_pesos }
-  ].map(component => ({
-    ...component,
-    pctGain: gainBase !== 0 ? component.value / gainBase * 100 : NaN
-  }));
+  const gainSim = gainBase + deltaTotal;
+  const deltaTotalPct = gainBase !== 0 ? deltaTotal / gainBase * 100 : NaN;
+  const components = VARIABLES.map(variable => {
+    const value = deltas[variable.delta] * variable.componentSign;
+    return {
+      key: variable.key,
+      label: variable.label,
+      value,
+      valueBillions: value / 1e9,
+      pctGain: gainBase !== 0 ? value / gainBase * 100 : NaN
+    };
+  });
 
   return {
     factorBase,
@@ -193,28 +158,79 @@ function computeScenario(row, state) {
     deltas,
     gainBase,
     gainSim,
-    gainPostBase,
-    gainPostSim,
-    capitalBase,
-    capitalSim,
-    rateBase,
-    rateSim,
-    ratePostSim,
-    saldo,
-    saldoPost,
-    deltaPct,
+    deltaTotal,
+    deltaTotalBillions: deltaTotal / 1e9,
+    deltaTotalPct,
     components
   };
 }
 
+function componentBarsSvg(data) {
+  const width = 840;
+  const panelHeight = 138;
+  const height = 88 + panelHeight * SECTIONS.length;
+  const margin = { top: 38, right: 38, bottom: 36, left: 180 };
+  const innerW = width - margin.left - margin.right;
+  const allValues = data.flatMap(row => row.components.map(component => component.valueBillions));
+  const maxAbs = Math.max(1, ...allValues.map(value => Math.abs(value)).filter(Number.isFinite));
+  const limit = maxAbs * 1.12;
+  const xFor = value => margin.left + (value + limit) / (2 * limit) * innerW;
+  const zeroX = xFor(0);
+  const ticks = [-limit, -limit / 2, 0, limit / 2, limit];
+  const tickFormat = value => value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+
+  const xAxis = ticks.map(tick => {
+    const x = xFor(tick);
+    return `
+      <line x1="${x}" x2="${x}" y1="${margin.top}" y2="${height - margin.bottom}" stroke="${COLORS.grid}" stroke-width="1"></line>
+      <text x="${x}" y="${height - 14}" text-anchor="middle" fill="${COLORS.grey}" font-size="11">${tickFormat(tick)}</text>
+    `;
+  }).join("");
+
+  const panels = SECTIONS.map((section, sectionIndex) => {
+    const row = data.find(item => item.section === section.value);
+    if (!row) return "";
+    const y0 = margin.top + sectionIndex * panelHeight;
+    const componentGap = 26;
+    const barHeight = 14;
+    const bars = row.components.map((component, index) => {
+      const y = y0 + 42 + index * componentGap;
+      const x0 = Math.min(zeroX, xFor(component.valueBillions));
+      const x1 = Math.max(zeroX, xFor(component.valueBillions));
+      const labelX = component.valueBillions >= 0 ? x1 + 7 : x0 - 7;
+      const anchor = component.valueBillions >= 0 ? "start" : "end";
+      const fill = component.valueBillions >= 0 ? COLORS.positive : COLORS.negative;
+      return `
+        <text x="${margin.left - 12}" y="${y + 10}" text-anchor="end" fill="${COLORS.navy}" font-size="11">${component.label}</text>
+        <rect x="${x0}" y="${y}" width="${Math.max(1, x1 - x0)}" height="${barHeight}" fill="${fill}" rx="2"></rect>
+        <text x="${labelX}" y="${y + 11}" text-anchor="${anchor}" fill="${COLORS.grey}" font-size="10">${moneyBillions(component.value)}</text>
+      `;
+    }).join("");
+
+    return `
+      <text x="${margin.left}" y="${y0 + 17}" text-anchor="start" fill="${COLORS.navy}" font-size="13" font-weight="700">${section.label}</text>
+      <line x1="${margin.left}" x2="${width - margin.right}" y1="${y0 + 26}" y2="${y0 + 26}" stroke="${COLORS.grid}" stroke-width="1"></line>
+      ${bars}
+    `;
+  }).join("");
+
+  return `
+    <svg viewBox="0 0 ${width} ${height}" role="img" width="100%" height="auto">
+      <text x="${margin.left}" y="20" fill="${COLORS.navy}" font-size="13">Miles de millones de pesos corrientes</text>
+      ${xAxis}
+      <line x1="${zeroX}" x2="${zeroX}" y1="${margin.top}" y2="${height - margin.bottom}" stroke="${COLORS.navy}" stroke-width="1.4" stroke-dasharray="4 4"></line>
+      ${panels}
+    </svg>
+  `;
+}
+
 function lineChartSvg(data, valueKey, options) {
-  const width = 660;
-  const height = 360;
-  const margin = { top: 20, right: 30, bottom: 86, left: 74 };
+  const width = 840;
+  const height = 380;
+  const margin = { top: 22, right: 34, bottom: 86, left: 76 };
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
   const years = [...new Set(data.map(row => row.year))].sort((a, b) => a - b);
-  const sectionValues = SECTIONS.map(section => section.value);
   const values = data.map(row => row[valueKey]).filter(value => Number.isFinite(value));
   let minValue = options.domain ? options.domain[0] : Math.min(0, ...values);
   let maxValue = options.domain ? options.domain[1] : Math.max(0, ...values);
@@ -246,10 +262,9 @@ function lineChartSvg(data, valueKey, options) {
       <text x="${x}" y="${height - margin.bottom + 22}" text-anchor="middle" fill="${COLORS.grey}" font-size="12">${year}</text>
     `;
   }).join("");
-  const lines = sectionValues.map(sectionValue => {
-    const section = SECTIONS.find(item => item.value === sectionValue);
+  const lines = SECTIONS.map(section => {
     const sectionRows = data
-      .filter(row => row.section === sectionValue && Number.isFinite(row[valueKey]))
+      .filter(row => row.section === section.value && Number.isFinite(row[valueKey]))
       .sort((a, b) => a.year - b.year);
     if (sectionRows.length === 0) return "";
     const path = sectionRows.map((row, index) => {
@@ -264,7 +279,7 @@ function lineChartSvg(data, valueKey, options) {
       ${points}
     `;
   }).join("");
-  const legendItemWidth = 170;
+  const legendItemWidth = 180;
   const legendTotalWidth = legendItemWidth * SECTIONS.length;
   const legendStart = margin.left + (innerW - legendTotalWidth) / 2;
   const legend = SECTIONS.map((section, index) => {
@@ -293,16 +308,16 @@ function scenarioSeries(rows, state) {
   return rows
     .map(row => {
       const result = computeScenario(row, state);
-      const deltaAbs = result.gainSim - result.gainBase;
       return {
         year: Number(row.anno),
         section: row.seccion,
         gainBase: result.gainBase,
         gainSim: result.gainSim,
-        deltaAbs,
-        deltaAbsBillions: deltaAbs / 1e9,
-        deltaPct: result.deltaPct,
-        factorEffectivePct: result.factorEffective * 100
+        deltaTotal: result.deltaTotal,
+        deltaTotalBillions: result.deltaTotalBillions,
+        deltaTotalPct: result.deltaTotalPct,
+        factorEffectivePct: result.factorEffective * 100,
+        components: result.components
       };
     })
     .sort((a, b) => a.year - b.year || a.section.localeCompare(b.section));
@@ -312,7 +327,7 @@ function scenarioSeries(rows, state) {
 // posible dentro del simulador para que las líneas se muevan visiblemente al
 // cambiar sliders, en vez de reescalar el eje en cada interacción.
 function fixedDomain(rows, valueKey) {
-  const keys = CONTROL_VARIABLES.map(variable => variable.key);
+  const keys = VARIABLES.map(variable => variable.key);
   const values = [0];
   const combinations = 2 ** keys.length;
 
@@ -343,7 +358,7 @@ function summaryTable(series) {
     const cells = SECTIONS.map(section => {
       const row = series.find(item => item.year === year && item.section === section.value);
       if (!row) return cell("s/d");
-      return cell(`${moneyBillions(row.deltaAbs)}<br><span>${percent(row.deltaPct)}</span>`);
+      return cell(`${moneyBillions(row.deltaTotal)}<br><span>${percent(row.deltaTotalPct)}</span>`);
     }).join("");
     return `${tag("tr")}${cell(year)}${cells}${endTag("tr")}`;
   }).join("");
@@ -358,7 +373,7 @@ function summaryTable(series) {
     endTag("thead"),
     `${tag("tbody")}${body}${endTag("tbody")}`,
     endTag("table"),
-    "<p class=\"source-note\">Cada celda reporta cambio absoluto de ganancia en miles de millones de pesos corrientes y, debajo, cambio porcentual respecto de la ganancia inicial.</p>"
+    "<p class=\"source-note\">Cada celda reporta delta total de ganancia en miles de millones de pesos corrientes y, debajo, cambio porcentual respecto de la ganancia inicial.</p>"
   ].join("");
 }
 
@@ -371,8 +386,7 @@ function renderModule(module, data) {
     intensities: Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]))
   };
   const domains = {
-    deltaAbsBillions: fixedDomain(rows, "deltaAbsBillions"),
-    deltaPct: fixedDomain(rows, "deltaPct")
+    deltaTotalPct: fixedDomain(rows, "deltaTotalPct")
   };
 
   container.innerHTML = `
@@ -389,7 +403,7 @@ function renderModule(module, data) {
         <div class="control-panel">
           <h4>Incidencias por componente</h4>
           <div class="incidence-controls">
-            ${CONTROL_VARIABLES.map(variable => `
+            ${VARIABLES.map(variable => `
               <div class="control-row">
                 <label>${variable.label}</label>
                 <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
@@ -402,17 +416,15 @@ function renderModule(module, data) {
           <button class="reset-button" type="button">Volver al escenario inicial</button>
         </div>
       </div>
-      <p class="sim-guidance">Con cierre de brecha en 0%, el gráfico reproduce el escenario inicial y las líneas quedan en cero. Para observar el efecto simulado, aumente la magnitud de cierre TCC-TCP; los sliders de incidencia ajustan cuánto pesa cada componente que afecta directamente la masa de ganancia dentro de una escala fija.</p>
+      <p class="sim-guidance">Con cierre de brecha en 0%, el gráfico reproduce el escenario inicial y los valores quedan en cero. Para observar el efecto simulado, aumente la magnitud de cierre TCC-TCP; los sliders de incidencia ajustan cuánto pesa cada componente que afecta directamente la masa de ganancia.</p>
       <div class="sim-results">
-        <div class="chart-row">
-          <div class="chart-box">
-            <h4>Delta absoluto de ganancia</h4>
-            <div data-role="delta-abs-chart"></div>
-          </div>
-          <div class="chart-box">
-            <h4>Delta relativo sobre ganancia inicial</h4>
-            <div data-role="delta-pct-chart"></div>
-          </div>
+        <div class="chart-box">
+          <h4>Gráfico 1. Monto apropiado/cedido según componente</h4>
+          <div data-role="component-chart"></div>
+        </div>
+        <div class="chart-box">
+          <h4>Gráfico 2. Delta total sobre ganancia escenario inicial</h4>
+          <div data-role="delta-pct-chart"></div>
         </div>
         <div class="sim-table" data-role="summary-table"></div>
       </div>
@@ -421,22 +433,23 @@ function renderModule(module, data) {
 
   function update() {
     const series = scenarioSeries(rows, state);
+    const years = series.map(row => row.year).filter(Number.isFinite);
+    const lastYear = Math.max(...years);
+    const latestSeries = series.filter(row => row.year === lastYear);
+
     if (series.length === 0) {
       container.querySelector('[data-role="summary-table"]').innerHTML = "<p>No hay datos disponibles para la selección.</p>";
       return;
     }
 
     container.querySelector('[data-value="devaluation"]').textContent = `${state.devaluation}%`;
-    CONTROL_VARIABLES.forEach(variable => {
+    VARIABLES.forEach(variable => {
       container.querySelector(`[data-value="${variable.key}"]`).textContent = `${state.intensities[variable.key]}%`;
     });
 
-    container.querySelector('[data-role="delta-abs-chart"]').innerHTML = lineChartSvg(series, "deltaAbsBillions", {
-      domain: domains.deltaAbsBillions,
-      formatTick: value => value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })
-    });
-    container.querySelector('[data-role="delta-pct-chart"]').innerHTML = lineChartSvg(series, "deltaPct", {
-      domain: domains.deltaPct,
+    container.querySelector('[data-role="component-chart"]').innerHTML = componentBarsSvg(latestSeries);
+    container.querySelector('[data-role="delta-pct-chart"]').innerHTML = lineChartSvg(series, "deltaTotalPct", {
+      domain: domains.deltaTotalPct,
       formatTick: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 0, minimumFractionDigits: 0 })}%`
     });
     container.querySelector('[data-role="summary-table"]').innerHTML = summaryTable(series);
@@ -455,7 +468,7 @@ function renderModule(module, data) {
     state.devaluation = 0;
     VARIABLES.forEach(variable => state.intensities[variable.key] = 100);
     container.querySelector('[data-control="devaluation"]').value = 0;
-    CONTROL_VARIABLES.forEach(variable => {
+    VARIABLES.forEach(variable => {
       container.querySelector(`[data-control="${variable.key}"]`).value = 100;
     });
     update();
@@ -485,12 +498,10 @@ La simulación aplica:
 
 ```text
 factor_efectivo = intensidad_devaluacion * (tipo_cambio_paridad / tipo_cambio_comercial - 1)
+delta_total_ganancia_pb = -delta_vbp_pp + delta_consumo_intermedio_estimado + delta_remuneraciones + delta_consumo_capital_fijo
 ```
 
 Cada variable afectada usa su coeficiente de incidencia y el porcentaje elegido
 en el slider correspondiente. El simulador expone sólo los controles que
 modifican directamente la masa de ganancia representada en los gráficos:
-`VBP`, `consumo intermedio`, `remuneraciones` y `consumo de capital fijo`. El
-stock imputado y los intereses permanecen disponibles en el JSON y en el XLSX
-fuente, pero no se muestran como sliders porque inciden sobre la tasa de
-ganancia o la ganancia post intereses, no sobre los dos gráficos principales.
+`VBP`, `consumo intermedio`, `remuneraciones` y `consumo de capital fijo`.

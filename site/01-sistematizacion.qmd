@@ -45,19 +45,19 @@ supuestos sobre precios relativos en un ejercicio que busca aislar el efecto
 contable del cierre de la brecha entre tipo de cambio comercial y tipo de
 cambio de paridad.
 
-## Productos principales
+## Anexo
 
-- [Panel EAAE-BCU integrado](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv):
-  CSV con economía total, industria total y subramas.
-- [Libro de resultados de tasa de ganancia](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx):
-  XLSX en formato largo.
-- [Minuta de resultados EAAE-BCU](data/docs/20260819_resultados_eaae_bcu_tres_niveles.md):
-  documento de lectura visual de los resultados.
-- [Panel industrial 2020-2024 por segmentos](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv):
-  CSV con industria total, segmento exportador y mercado interno.
-- [Libro de modelamiento devaluación](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
-  XLSX con escenario inicial y dos escenarios.
-- [Minuta integrada de modelamiento devaluación](data/docs/20260830_resultados_devaluacion_escenarios_integrados.md):
-  documento de saldos de ganancia y escenarios.
-- [Sitio estático de entrega](index.qmd): navegación y descarga de fuentes de
-  datos.
+- [Minuta fuente en repositorio GitHub](data/docs/20260706_minuta_panel_eeae_bcu_total_industria_subrama.md):
+  documento con explicación detallada de fuentes utilizadas, supuestos y
+  decisiones del análisis, así como interpretación narrativa de resultados.
+- [Documento fuente de resultados en formato XLSX](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx):
+  libro en formato Excel que respalda los datos y resultados en base a los que
+  se construyen los resultados visuales presentados.
+
+## Referencias consultadas
+
+- Iñigo Carrera, J. (2007). *La formación económica de la sociedad argentina. Volumen 1: Renta agraria, ganancia industrial y deuda externa, 1882-2004*. Imago Mundi.
+- Oyhantçabal Benelli, G. (2023). Exchange rate overvaluation and agrarian ground rent transfers in Uruguay: 1955-2019. *Brazilian Journal of Political Economy, 43*(1), 165-188. https://doi.org/10.1590/0101-31572023-3259
+- Oyhantçabal Benelli, G. (2024). Impuestos y tipo de cambio en la disputa por la renta agraria en Uruguay (2000-2021). En *Riqueza, desarrollo y desigualdades sociales en América Latina: Perspectivas transdisciplinarias* (pp. 411-437). CLACSO/CALAS. https://doi.org/10.54871/ca24pt92
+- Oyhantçabal Benelli, G., & Sanguinetti, M. (2017). El agro en Uruguay: renta del suelo, ingreso laboral y ganancias. *Problemas del Desarrollo, 48*(189). https://doi.org/10.22201/iiec.20078951e.2017.189.56949
+- Rojas Cifuentes, J., Rivas Castro, G., Fuentes Salvo, M., & Kornblihtt, J. (2023). *La cuantificación del desarrollo histórico de la valorización del capital en América del Sur*. Ariadna Ediciones / Universidad de Chile.

@@ -5,7 +5,7 @@ suppressPackageStartupMessages({
   library(readxl)
 })
 
-today <- "20260830"
+today <- "20260831"
 
 paths <- list(
   devaluation_xlsx = file.path(
@@ -17,6 +17,10 @@ paths <- list(
     paste0(today, "_resultados_devaluacion_escenarios_integrados.md")
   ),
   eaae_bcu_md = file.path("docs", "20260819_resultados_eaae_bcu_tres_niveles.md"),
+  methodology_md = file.path(
+    "docs", "methodology",
+    "20260706_minuta_panel_eeae_bcu_total_industria_subrama.md"
+  ),
   eaae_bcu_xlsx = file.path(
     "data", "analysis-data",
     "20260819_resultados_eaae_bcu_total_industria_subrama.xlsx"
@@ -90,7 +94,7 @@ download_sources <- c(
 )
 walk(download_sources, copy_file, to_dir = file.path("site", "data", "analysis-data"))
 walk(
-  c(paths$devaluation_md, paths$eaae_bcu_md),
+  c(paths$devaluation_md, paths$eaae_bcu_md, paths$methodology_md),
   copy_file,
   to_dir = file.path("site", "data", "docs")
 )
@@ -127,18 +131,21 @@ json_cols <- c(
   "incidencia_consumo_capital_fijo",
   "incidencia_stock_capital_imputado",
   "vbp_pp",
+  "delta_vbp_pp",
   "consumo_intermedio_estimado",
+  "delta_consumo_intermedio_estimado",
   "remuneraciones",
+  "delta_remuneraciones",
   "consumo_capital_fijo",
+  "delta_consumo_capital_fijo",
   "stock_capital_imputado",
+  "delta_stock_capital_imputado",
   "capital_total_adelantado",
   "ganancia_pb",
   "ganancia_pb_devaluacion",
   "delta_ganancia_pb_escenario",
   "saldo_sobrevaluacion_ganancia_pb",
   "delta_ganancia_momento2_pct",
-  "tasa_ganancia_pb",
-  "tasa_ganancia_pb_devaluacion",
   "intereses_industria_pesos",
   "intereses_industria_pesos_devaluacion",
   "delta_intereses_industria_pesos",
@@ -167,7 +174,10 @@ required_json_cols <- c(
   "factor_devaluacion",
   "rotacion_calibrada_sobre_6_6",
   "ganancia_pb",
-  "tasa_ganancia_pb"
+  "delta_vbp_pp",
+  "delta_consumo_intermedio_estimado",
+  "delta_remuneraciones",
+  "delta_consumo_capital_fijo"
 )
 missing_json_cols <- setdiff(required_json_cols, names(scenario_data))
 if (length(missing_json_cols) > 0) {

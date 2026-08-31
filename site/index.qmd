@@ -3,6 +3,25 @@ title: "Industria Uruguay"
 subtitle: "Sistematización de fuentes económicas y resultados para el análisis industrial"
 ---
 
+::: {.institutional-header}
+![](assets/logos/logo-pit-cnt.png){.institution-logo fig-alt="PIT-CNT Uruguay"}
+:::
+
+## Sobre el proyecto
+
+El proyecto *Tipo de cambio y perspectivas del desarrollo industrial en Uruguay
+(2000 a la actualidad)* estudia el papel del tipo de cambio en la acumulación
+de capital y el desarrollo de la industria manufacturera uruguaya. La
+investigación analiza la relación entre la evolución cambiaria, la apropiación
+de renta de la tierra y otras fuentes de riqueza extraordinaria, y sus efectos
+sobre la rentabilidad industrial, los costos de producción, los salarios, el
+mercado interno y la competitividad internacional. A partir de la construcción
+de indicadores para el período 2000-2025, el proyecto combina tanto un análisis
+agregado de la industria como un foco en su segmento exportador y mercado
+internista. Esto con el objetivo de aportar evidencia para la discusión sobre
+las alternativas y tensiones que atraviesan una estrategia de desarrollo
+productivo en Uruguay.
+
 Este sitio empaqueta los principales resultados reproducibles del proyecto:
 sistematización de fuentes económicas de Uruguay, construcción de paneles
 EAAE-BCU, resultados sobre la industria manufacturera y modelamiento de
@@ -29,7 +48,7 @@ primarios se preservan en `data/input-data/`, los scripts reproducibles en
 
 <span>XLSX con escenario inicial, tipo de cambio y dos escenarios modelados.</span>
 
-[Descargar XLSX](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx){.button-link}
+[Descargar XLSX](data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx){.button-link}
 :::
 
 ::: {.download-item}
@@ -50,8 +69,21 @@ modelamiento de devaluación para la industria manufacturera. La cuarta permite 
 simulaciones interactivas variando el cierre de la brecha cambiaria y la
 intensidad de incidencia de cada componente.
 
-::: {.callout-note}
+::: {.technical-note}
 El sitio es estático: no requiere servidor, Shiny ni ejecución de R o Python
 por parte de la persona usuaria. Los módulos interactivos funcionan en el
 navegador a partir de archivos JSON preprocesados.
 :::
+
+## Equipo de investigación
+
+El proyecto es desarrollado por un equipo especializado en economía política,
+desarrollo industrial, ciencia de datos y análisis cuantitativo. La dirección
+está a cargo del Dr. Juan Kornblihtt (CONICET / ICI-UNGS / FFyL-UBA),
+investigador especializado en acumulación de capital, renta de la tierra y
+desarrollo económico en América Latina. Participan como investigadores el Dr.
+Emiliano Mussi (CIC-PBA / ICI-UNGS), especializado en estructura productiva,
+industria y cadenas de valor, y el Dr. Felipe Ruiz Bruzzone (Fundación Nodo
+XXI), especializado en ciencia de datos y estudios laborales, económicos y de
+política pública en América Latina. El proyecto se desarrolla para el PIT-CNT
+de Uruguay.

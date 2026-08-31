@@ -70,11 +70,46 @@ a {
   max-width: 880px;
 }
 
+.institutional-header {
+  align-items: center;
+  border-bottom: 1px solid var(--uy-grid);
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 1.5rem;
+  padding: 0.2rem 0 1.1rem;
+}
+
+.institutional-header p {
+  margin: 0;
+}
+
+.institution-logo {
+  display: block;
+  height: auto;
+  max-height: 92px;
+  max-width: min(280px, 70vw);
+  object-fit: contain;
+}
+
 .callout-note,
 .callout-important,
 .callout-tip {
   border-radius: 6px;
   border-color: var(--uy-grid);
+}
+
+.technical-note {
+  background: #F8FAFC;
+  border: 1px solid var(--uy-grid);
+  border-left: 4px solid var(--uy-main);
+  border-radius: 6px;
+  color: var(--uy-navy);
+  margin: 1.2rem 0 1.5rem;
+  padding: 0.9rem 1rem;
+}
+
+.technical-note p:last-child {
+  margin-bottom: 0;
 }
 
 .technical-panel,
@@ -264,6 +299,8 @@ caption {
 }
 
 .sim-results {
+  display: grid;
+  gap: 1rem;
   min-width: 0;
   width: 100%;
 }

@@ -638,6 +638,17 @@ Decisiones del panel integrado:
   `delta_total_ganancia_pb_pct`, calculada dentro de cada año y sección como
   `(-delta_vbp_pp + delta_consumo_intermedio_estimado +
   delta_remuneraciones + delta_consumo_capital_fijo) / ganancia_pb * 100`.
+- **ACTUALIZACIÓN 2026-08-31:** se actualiza el sitio Quarto en `site/` y el
+  preparador reproducible
+  `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
+  para usar el XLSX, la minuta y las figuras `20260831` del modelamiento de
+  devaluación. El home incorpora la presentación institucional del proyecto,
+  el logo PIT-CNT y el equipo de investigación. Las páginas sustantivas cierran
+  con secciones `Anexo` y `Referencias consultadas`. El simulador dinámico
+  replica los dos gráficos centrales de la minuta integrada: barras de
+  componentes para el último año y línea de delta total sobre ganancia inicial,
+  usando la fórmula corregida de masa de ganancia y sin controles para stock o
+  intereses.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:

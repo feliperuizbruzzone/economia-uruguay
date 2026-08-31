@@ -5,20 +5,18 @@ subtitle: "Escenarios integrados para industria manufacturera"
 
 Esta sección presenta una lectura integrada de los dos escenarios de cierre de
 brecha cambiaria construidos para la industria manufacturera uruguaya. La
-medida principal es el saldo monetario de masa de ganancia asociado a la
-sobrevaluación: `ganancia inicial - ganancia contrafactual con cierre de
-brecha`. Un valor negativo indica ganancia dejada de percibir bajo
-sobrevaluación; un valor positivo indica ganancia sobrepercibida bajo
-sobrevaluación.
+unidad de análisis son tres secciones: industria total, segmento exportador y
+segmento orientado al mercado interno. El ejercicio se expresa en valores
+corrientes y se concentra en la masa de ganancia a precios básicos.
 
 ## Supuestos y fuentes
 
-Las fuentes usadas son EAAE para variables de producción, valor agregado,
-remuneraciones, consumo intermedio, consumo de capital fijo, stock y capital
-adelantado; Oyanthabal, con base en metodología de Iñigo Carrera (2007), para
-tipo de cambio comercial/paridad; CIU para distribuir intereses industriales
-entre segmentos; y coeficientes de incidencia documentados en el XLSX de
-trabajo.
+Las fuentes usadas son EAAE para VBP, VAB, remuneraciones, consumo intermedio
+estimado y consumo de capital fijo; Oyanthabal, con base en la metodología de
+Iñigo Carrera (2007), para los tipos de cambio comercial y de paridad;
+microdatos del CIU para distribuir intereses industriales en el XLSX fuente; y
+la clasificación operativa de subramas industriales 2020-2024 para separar
+industria exportadora, mercado interno y combustible.
 
 El cálculo se realiza año a año para 2020-2024, sin efectos acumulados ni
 respuestas dinámicas de cantidades, precios relativos o productividad. El
@@ -28,64 +26,62 @@ factor de devaluación se define como:
 tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1
 ```
 
-![Brecha cambiaria modelada](assets/figures/devaluacion_escenarios_integrados_20260830/00_factor_devaluacion_2020_2024.png)
+![Brecha cambiaria modelada](assets/figures/devaluacion_escenarios_integrados_20260831/00_factor_devaluacion_2020_2024.png)
 
 ## Coeficientes de incidencia
 
 Los coeficientes indican qué proporción de cada variable queda expuesta al
-cierre de la brecha cambiaria. El VBP opera como canal positivo sobre la
-ganancia cuando la devaluación revaloriza ventas. El consumo intermedio, las
-remuneraciones, el consumo de capital fijo y los intereses pagados operan como
-costos. El stock imputado afecta el capital adelantado y se presenta como
-componente de presión sobre la rentabilidad.
+cierre de la brecha cambiaria. En esta lectura se usan cuatro coeficientes de
+incidencia para construir la masa de ganancia: VBP, consumo intermedio,
+remuneraciones y consumo de capital fijo. En los gráficos de componentes, VBP
+se expresa con signo negativo; los demás deltas se expresan con signo positivo.
 
-![Coeficientes de incidencia por escenario y segmento](assets/figures/devaluacion_escenarios_integrados_20260830/00_coeficientes_incidencia_escenarios.png)
+![Coeficientes de incidencia sobre la masa de ganancia](assets/figures/devaluacion_escenarios_integrados_20260831/00_coeficientes_incidencia_masa_ganancia.png)
 
-![Esquema TCC-TCP: cesión y apropiación](assets/figures/devaluacion_escenarios_integrados_20260830/00_esquema_efecto_tcc_tcp.png)
+## Escenario 1 - Comercio Exterior
 
-## Industria total
+La apropiación de riqueza vía sobrevaluación de la moneda se aplica a los
+componentes importados de costos y capital y a la parte exportada de la
+producción. Por tanto, sólo recoge el efecto directo de importaciones y
+exportaciones sobre la masa de ganancia.
 
-En la industria total, los dos escenarios producen saldos de signo opuesto. En
-el escenario de comercio exterior, el cierre de brecha elevaría la ganancia
-industrial; desde la situación inicial aparece como ganancia dejada de percibir.
-En el escenario de bienes transables, el mayor peso de costos y componentes
-transables reduce la ganancia contrafactual; desde la situación inicial aparece
-como ganancia sobrepercibida.
+El primer gráfico muestra, para el último año disponible, el monto apropiado o
+cedido por componente en cada sección. El segundo resume el efecto neto anual
+como porcentaje de la ganancia a precios básicos del escenario inicial.
 
-![Industria total: saldo de ganancia asociado a la sobrevaluación](assets/figures/devaluacion_escenarios_integrados_20260830/01_industria_total_saldo_sobrevaluacion_ganancia.png)
+![Gráfico 1. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260831/01_comercio_exterior_monto_apropiado_cedido_componentes_2024.png)
 
-![Delta de ganancia del momento 2 como proporción de la ganancia inicial](assets/figures/devaluacion_escenarios_integrados_20260830/01b_saldo_pct_ganancia_inicial_por_seccion.png)
+![Gráfico 2. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260831/02_comercio_exterior_delta_total_ganancia_inicial.png)
 
-![Industria total: componentes del saldo sobre ganancia inicial en 2024](assets/figures/devaluacion_escenarios_integrados_20260830/02_industria_total_componentes_saldo_pct_ganancia_2024.png)
+## Escenario 2 - Bienes Transables
 
-## Escenario 1: comercio exterior
+La apropiación de riqueza vía sobrevaluación alcanza al conjunto de mercancías
+cuyos precios internos se rigen por precios internacionales, aunque sean
+producidas localmente y vendidas en el mercado interno. Así, incorpora también
+la revaluación de esa producción local y su incidencia sobre la masa de
+ganancia.
 
-Este escenario mide la incidencia directa de importaciones y exportaciones. La
-sobrevaluación comprime la valorización en pesos del VBP asociado al comercio
-exterior y abarata componentes importados de costos y capital. El resultado
-neto se expresa como saldo de masa de ganancia observado desde el escenario
-inicial.
+El primer gráfico muestra, para el último año disponible, el monto apropiado o
+cedido por componente en cada sección. El segundo resume el efecto neto anual
+como porcentaje de la ganancia a precios básicos del escenario inicial.
 
-![Escenario 1: saldo de ganancia por segmento](assets/figures/devaluacion_escenarios_integrados_20260830/03_comercio_exterior_saldo_ganancia_segmentos.png)
+![Gráfico 1. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260831/01_bienes_transables_monto_apropiado_cedido_componentes_2024.png)
 
-![Escenario 1: delta relativo de ganancia](assets/figures/devaluacion_escenarios_integrados_20260830/03b_comercio_exterior_saldo_pct_ganancia_inicial_segmentos.png)
+![Gráfico 2. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260831/02_bienes_transables_delta_total_ganancia_inicial.png)
 
-![Escenario 1: componentes del saldo en 2024](assets/figures/devaluacion_escenarios_integrados_20260830/04_comercio_exterior_componentes_saldo_pct_ganancia_2024_segmentos.png)
+## Anexo
 
-## Escenario 2: bienes transables
+- [Minuta fuente en repositorio GitHub](data/docs/20260831_resultados_devaluacion_escenarios_integrados.md):
+  documento con explicación detallada de fuentes utilizadas, supuestos y
+  decisiones del análisis, así como interpretación narrativa de resultados.
+- [Documento fuente de resultados en formato XLSX](data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
+  libro en formato Excel que respalda los datos y resultados en base a los que
+  se construyen los resultados visuales presentados.
 
-Este escenario amplía la incidencia hacia mercancías producidas localmente cuyos
-precios internos se rigen por precios internacionales. Por eso no se limita al
-comercio exterior directo: incorpora la revalorización de producción local
-transable y su incidencia sobre costos, capital y masa de ganancia.
+## Referencias consultadas
 
-![Escenario 2: saldo de ganancia por segmento](assets/figures/devaluacion_escenarios_integrados_20260830/03_bienes_transables_saldo_ganancia_segmentos.png)
-
-![Escenario 2: delta relativo de ganancia](assets/figures/devaluacion_escenarios_integrados_20260830/03b_bienes_transables_saldo_pct_ganancia_inicial_segmentos.png)
-
-![Escenario 2: componentes del saldo en 2024](assets/figures/devaluacion_escenarios_integrados_20260830/04_bienes_transables_componentes_saldo_pct_ganancia_2024_segmentos.png)
-
-## Archivos asociados
-
-- [Libro de modelamiento de devaluación](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx)
-- [Minuta fuente en Markdown](data/docs/20260830_resultados_devaluacion_escenarios_integrados.md)
+- Iñigo Carrera, J. (2007). *La formación económica de la sociedad argentina. Volumen 1: Renta agraria, ganancia industrial y deuda externa, 1882-2004*. Imago Mundi.
+- Oyhantçabal Benelli, G. (2023). Exchange rate overvaluation and agrarian ground rent transfers in Uruguay: 1955-2019. *Brazilian Journal of Political Economy, 43*(1), 165-188. https://doi.org/10.1590/0101-31572023-3259
+- Oyhantçabal Benelli, G. (2024). Impuestos y tipo de cambio en la disputa por la renta agraria en Uruguay (2000-2021). En *Riqueza, desarrollo y desigualdades sociales en América Latina: Perspectivas transdisciplinarias* (pp. 411-437). CLACSO/CALAS. https://doi.org/10.54871/ca24pt92
+- Oyhantçabal Benelli, G., & Sanguinetti, M. (2017). El agro en Uruguay: renta del suelo, ingreso laboral y ganancias. *Problemas del Desarrollo, 48*(189). https://doi.org/10.22201/iiec.20078951e.2017.189.56949
+- Rojas Cifuentes, J., Rivas Castro, G., Fuentes Salvo, M., & Kornblihtt, J. (2023). *La cuantificación del desarrollo histórico de la valorización del capital en América del Sur*. Ariadna Ediciones / Universidad de Chile.

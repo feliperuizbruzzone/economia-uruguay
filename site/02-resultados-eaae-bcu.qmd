@@ -43,8 +43,19 @@ la rentabilidad industrial.
 
 ![Productividad del trabajo](assets/figures/eaae_bcu_tres_niveles_20260819/08_productividad_tres_niveles.png)
 
-## Archivos asociados
+## Anexo
 
-- [Libro de resultados EAAE-BCU](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx)
-- [Panel EAAE-BCU integrado](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv)
-- [Minuta fuente en Markdown](data/docs/20260819_resultados_eaae_bcu_tres_niveles.md)
+- [Minuta fuente en repositorio GitHub](data/docs/20260819_resultados_eaae_bcu_tres_niveles.md):
+  documento con explicación detallada de fuentes utilizadas, supuestos y
+  decisiones del análisis, así como interpretación narrativa de resultados.
+- [Documento fuente de resultados en formato XLSX](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx):
+  libro en formato Excel que respalda los datos y resultados en base a los que
+  se construyen los resultados visuales presentados.
+
+## Referencias consultadas
+
+- Iñigo Carrera, J. (2007). *La formación económica de la sociedad argentina. Volumen 1: Renta agraria, ganancia industrial y deuda externa, 1882-2004*. Imago Mundi.
+- Oyhantçabal Benelli, G. (2023). Exchange rate overvaluation and agrarian ground rent transfers in Uruguay: 1955-2019. *Brazilian Journal of Political Economy, 43*(1), 165-188. https://doi.org/10.1590/0101-31572023-3259
+- Oyhantçabal Benelli, G. (2024). Impuestos y tipo de cambio en la disputa por la renta agraria en Uruguay (2000-2021). En *Riqueza, desarrollo y desigualdades sociales en América Latina: Perspectivas transdisciplinarias* (pp. 411-437). CLACSO/CALAS. https://doi.org/10.54871/ca24pt92
+- Oyhantçabal Benelli, G., & Sanguinetti, M. (2017). El agro en Uruguay: renta del suelo, ingreso laboral y ganancias. *Problemas del Desarrollo, 48*(189). https://doi.org/10.22201/iiec.20078951e.2017.189.56949
+- Rojas Cifuentes, J., Rivas Castro, G., Fuentes Salvo, M., & Kornblihtt, J. (2023). *La cuantificación del desarrollo histórico de la valorización del capital en América del Sur*. Ariadna Ediciones / Universidad de Chile.
