@@ -505,3 +505,12 @@ Cada variable afectada usa su coeficiente de incidencia y el porcentaje elegido
 en el slider correspondiente. El simulador expone sólo los controles que
 modifican directamente la masa de ganancia representada en los gráficos:
 `VBP`, `consumo intermedio`, `remuneraciones` y `consumo de capital fijo`.
+
+## Anexo
+
+- [Minuta fuente de análisis](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/20260831_resultados_devaluacion_escenarios_integrados.md):
+  documento con explicación detallada de fuentes utilizadas, supuestos y
+  decisiones del análisis, así como interpretación narrativa de resultados.
+- [Documento fuente de resultados en formato XLSX](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
+  libro en formato Excel que respalda los datos y resultados en base a los que
+  se construyen los resultados visuales presentados.

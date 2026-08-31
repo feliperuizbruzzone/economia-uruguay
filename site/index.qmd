@@ -79,11 +79,11 @@ navegador a partir de archivos JSON preprocesados.
 
 El proyecto es desarrollado por un equipo especializado en economía política,
 desarrollo industrial, ciencia de datos y análisis cuantitativo. La dirección
-está a cargo del Dr. Juan Kornblihtt (CONICET / ICI-UNGS / FFyL-UBA),
+está a cargo del **Dr. Juan Kornblihtt (CONICET / ICI-UNGS / FFyL-UBA)**,
 investigador especializado en acumulación de capital, renta de la tierra y
-desarrollo económico en América Latina. Participan como investigadores el Dr.
-Emiliano Mussi (CIC-PBA / ICI-UNGS), especializado en estructura productiva,
-industria y cadenas de valor, y el Dr. Felipe Ruiz Bruzzone (Fundación Nodo
-XXI), especializado en ciencia de datos y estudios laborales, económicos y de
-política pública en América Latina. El proyecto se desarrolla para el PIT-CNT
-de Uruguay.
+desarrollo económico en América Latina. Participan como investigadores el
+**Dr. Emiliano Mussi (CIC-PBA / ICI-UNGS)**, especializado en estructura
+productiva, industria y cadenas de valor, y el **Dr. Felipe Ruiz Bruzzone
+(Fundación Nodo XXI)**, especializado en ciencia de datos y estudios
+laborales, económicos y de política pública en América Latina. El proyecto se
+desarrolla para el PIT-CNT de Uruguay.

@@ -71,10 +71,10 @@ como porcentaje de la ganancia a precios básicos del escenario inicial.
 
 ## Anexo
 
-- [Minuta fuente en repositorio GitHub](data/docs/20260831_resultados_devaluacion_escenarios_integrados.md):
+- [Minuta fuente de análisis](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/20260831_resultados_devaluacion_escenarios_integrados.md):
   documento con explicación detallada de fuentes utilizadas, supuestos y
   decisiones del análisis, así como interpretación narrativa de resultados.
-- [Documento fuente de resultados en formato XLSX](data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
+- [Documento fuente de resultados en formato XLSX](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
   libro en formato Excel que respalda los datos y resultados en base a los que
   se construyen los resultados visuales presentados.
 
