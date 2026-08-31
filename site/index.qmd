@@ -1,5 +1,5 @@
 ---
-title: "Economía Uruguay"
+title: "Industria Uruguay"
 subtitle: "Sistematización de fuentes económicas y resultados para el análisis industrial"
 ---
 
@@ -17,27 +17,19 @@ primarios se preservan en `data/input-data/`, los scripts reproducibles en
 
 ::: {.download-panel}
 ::: {.download-item}
-**Resultados de devaluación**
+**Resultados tasa de ganancia**
+
+<span>XLSX largo con economía total, industria total y subramas.</span>
+
+[Descargar XLSX](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx){.button-link}
+:::
+
+::: {.download-item}
+**Modelamiento devaluación**
 
 <span>XLSX con escenario inicial, tipo de cambio y dos escenarios modelados.</span>
 
 [Descargar XLSX](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx){.button-link}
-:::
-
-::: {.download-item}
-**Minuta integrada**
-
-<span>Documento base de resultados de devaluación y saldos de ganancia.</span>
-
-[Abrir minuta](data/docs/20260830_resultados_devaluacion_escenarios_integrados.md){.button-link}
-:::
-
-::: {.download-item}
-**Panel industria 2020-2024**
-
-<span>CSV con industria total, segmento exportador y mercado interno.</span>
-
-[Descargar CSV](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv){.button-link}
 :::
 
 ::: {.download-item}
@@ -53,8 +45,8 @@ primarios se preservan en `data/input-data/`, los scripts reproducibles en
 
 El sitio está organizado en cuatro entradas sustantivas. La primera presenta el
 trabajo de sistematización y sus antecedentes. La segunda sintetiza los
-resultados EAAE-BCU de largo plazo. La tercera integra los escenarios de
-devaluación para la industria manufacturera. La cuarta permite explorar
+resultados de tasa de ganancia EAAE-BCU de largo plazo. La tercera integra el
+modelamiento de devaluación para la industria manufacturera. La cuarta permite explorar
 simulaciones interactivas variando el cierre de la brecha cambiaria y la
 intensidad de incidencia de cada componente.
 

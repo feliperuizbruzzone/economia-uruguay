@@ -1,5 +1,5 @@
 ---
-title: "Resultados de devaluación"
+title: "Modelamiento devaluación"
 subtitle: "Escenarios integrados para industria manufacturera"
 ---
 

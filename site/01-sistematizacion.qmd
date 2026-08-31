@@ -47,9 +47,17 @@ cambio de paridad.
 
 ## Productos principales
 
-- Panel EAAE-BCU integrado con economía total, industria total y subramas.
-- Libro de resultados EAAE-BCU en formato largo.
-- Panel industrial 2020-2024 por segmentos.
-- Libro de modelamiento de devaluación con dos escenarios.
-- Minuta integrada de resultados de devaluación.
-- Sitio estático de entrega para navegación y descarga.
+- [Panel EAAE-BCU integrado](data/analysis-data/20260819_panel_eeae_bcu_total_industria_subrama.csv):
+  CSV con economía total, industria total y subramas.
+- [Libro de resultados de tasa de ganancia](data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx):
+  XLSX en formato largo.
+- [Minuta de resultados EAAE-BCU](data/docs/20260819_resultados_eaae_bcu_tres_niveles.md):
+  documento de lectura visual de los resultados.
+- [Panel industrial 2020-2024 por segmentos](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv):
+  CSV con industria total, segmento exportador y mercado interno.
+- [Libro de modelamiento devaluación](data/analysis-data/20260830_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
+  XLSX con escenario inicial y dos escenarios.
+- [Minuta integrada de modelamiento devaluación](data/docs/20260830_resultados_devaluacion_escenarios_integrados.md):
+  documento de saldos de ganancia y escenarios.
+- [Sitio estático de entrega](index.qmd): navegación y descarga de fuentes de
+  datos.

@@ -1,8 +1,9 @@
 ---
-title: "Resultados EAAE-BCU"
+title: "Tasa de ganancia"
 ---
 
-Esta sección resume la lógica argumental de la minuta de resultados EAAE-BCU.
+Esta sección resume la lógica argumental de la minuta de tasa de ganancia
+EAAE-BCU.
 El documento fuente completo está disponible para descarga desde la portada del
 sitio.
 

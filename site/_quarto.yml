@@ -9,7 +9,7 @@ project:
     - "data/docs/*"
 
 website:
-  title: "Economía Uruguay"
+  title: "Industria Uruguay"
   navbar:
     background: "#0B1F3A"
     foreground: "#FFFFFF"
@@ -18,9 +18,9 @@ website:
         href: index.qmd
       - text: "Sistematización"
         href: 01-sistematizacion.qmd
-      - text: "Resultados EAAE-BCU"
+      - text: "Tasa de ganancia"
         href: 02-resultados-eaae-bcu.qmd
-      - text: "Resultados devaluación"
+      - text: "Modelamiento devaluación"
         href: 04-resultados-devaluacion-escenarios-integrados.qmd
       - text: "Simulador devaluación"
         href: 05-modulos-interactivos-devaluacion.qmd

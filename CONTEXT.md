@@ -569,6 +569,13 @@ Decisiones del panel integrado:
   y luego `quarto render site`. El workflow
   `.github/workflows/pages.yml` realiza esos mismos pasos en GitHub Actions y
   publica `site/_site/` como artefacto de GitHub Pages.
+- **ACTUALIZACIÓN 2026-08-30:** se ajusta la nomenclatura del sitio Quarto
+  fuente: el título público pasa a ser `Industria Uruguay`, las secciones del
+  navbar quedan como `Tasa de ganancia` y `Modelamiento devaluación`, y la
+  portada conserva sólo tres accesos principales: libro XLSX de resultados de
+  tasa de ganancia, libro XLSX de modelamiento devaluación y repositorio
+  reproducible. La página de sistematización lista los productos principales
+  con enlaces descargables a las últimas fuentes publicadas en `site/data/`.
 - **ACTUALIZACIÓN 2026-08-30:** se ajusta el simulador web de devaluación en
   `site/05-modulos-interactivos-devaluacion.qmd`. Cada escenario queda con
   título Markdown estable fuera del bloque de cálculo; los controles se
