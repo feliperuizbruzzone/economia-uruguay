@@ -15,12 +15,12 @@ preparado por `command-files/analysis-command-files/15_preparar_sitio_entregable
 :::
 
 El gráfico debe leerse como una comparación contra el escenario inicial de
-cada año. El panel izquierdo muestra cuánto cambia la masa de ganancia en
-términos absolutos; el panel derecho expresa ese mismo cambio como porcentaje
-de la ganancia inicial. Una línea por encima de cero indica que la simulación
-eleva la ganancia respecto del escenario inicial; una línea por debajo de cero
-indica que la reduce. Los colores distinguen industria total, segmento
-exportador y mercado interno.
+cada año. El primer gráfico muestra cuánto cambia la masa de ganancia en
+términos absolutos; el segundo expresa ese mismo cambio como porcentaje de la
+ganancia inicial. Una línea por encima de cero indica que la simulación eleva
+la ganancia respecto del escenario inicial; una línea por debajo de cero indica
+que la reduce. Los colores distinguen industria total, segmento exportador y
+mercado interno.
 
 ## Escenario 1 - Comercio exterior
 
@@ -214,8 +214,8 @@ function lineChartSvg(data, valueKey, options) {
   const years = [...new Set(data.map(row => row.year))].sort((a, b) => a - b);
   const sectionValues = SECTIONS.map(section => section.value);
   const values = data.map(row => row[valueKey]).filter(value => Number.isFinite(value));
-  let minValue = Math.min(0, ...values);
-  let maxValue = Math.max(0, ...values);
+  let minValue = options.domain ? options.domain[0] : Math.min(0, ...values);
+  let maxValue = options.domain ? options.domain[1] : Math.max(0, ...values);
 
   if (Math.abs(maxValue - minValue) < 1e-9) {
     minValue -= 1;
@@ -306,6 +306,32 @@ function scenarioSeries(rows, state) {
     .sort((a, b) => a.year - b.year || a.section.localeCompare(b.section));
 }
 
+// DECISION: la escala vertical se fija con el rango exploratorio máximo
+// posible dentro del simulador para que las líneas se muevan visiblemente al
+// cambiar sliders, en vez de reescalar el eje en cada interacción.
+function fixedDomain(rows, valueKey) {
+  const keys = VARIABLES.map(variable => variable.key);
+  const values = [0];
+  const combinations = 2 ** keys.length;
+
+  for (let mask = 0; mask < combinations; mask += 1) {
+    const intensities = Object.fromEntries(keys.map((key, index) => [
+      key,
+      mask & (1 << index) ? 100 : 0
+    ]));
+    scenarioSeries(rows, { devaluation: 150, intensities }).forEach(row => {
+      const value = row[valueKey];
+      if (Number.isFinite(value)) values.push(value);
+    });
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min;
+  const padding = range > 0 ? range * 0.08 : 1;
+  return [min - padding, max + padding];
+}
+
 function summaryTable(series) {
   const tag = name => `<${name}>`;
   const endTag = name => `</${name}>`;
@@ -342,6 +368,10 @@ function renderModule(module, data) {
     devaluation: 0,
     intensities: Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]))
   };
+  const domains = {
+    deltaAbsBillions: fixedDomain(rows, "deltaAbsBillions"),
+    deltaPct: fixedDomain(rows, "deltaPct")
+  };
 
   container.innerHTML = `
     <div class="sim-layout">
@@ -370,6 +400,7 @@ function renderModule(module, data) {
           <button class="reset-button" type="button">Volver al escenario inicial</button>
         </div>
       </div>
+      <p class="sim-guidance">Con cierre de brecha en 0%, el gráfico reproduce el escenario inicial y las líneas quedan en cero. Para observar el efecto simulado, aumente la magnitud de cierre TCC-TCP; los sliders de incidencia ajustan cuánto pesa cada componente dentro de una escala fija.</p>
       <div class="sim-results">
         <div class="chart-row">
           <div class="chart-box">
@@ -399,9 +430,11 @@ function renderModule(module, data) {
     });
 
     container.querySelector('[data-role="delta-abs-chart"]').innerHTML = lineChartSvg(series, "deltaAbsBillions", {
+      domain: domains.deltaAbsBillions,
       formatTick: value => value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })
     });
     container.querySelector('[data-role="delta-pct-chart"]').innerHTML = lineChartSvg(series, "deltaPct", {
+      domain: domains.deltaPct,
       formatTick: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 0, minimumFractionDigits: 0 })}%`
     });
     container.querySelector('[data-role="summary-table"]').innerHTML = summaryTable(series);

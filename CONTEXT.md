@@ -590,6 +590,14 @@ Decisiones del panel integrado:
   agrega `min-width: 0` y `max-width: 100%` en los contenedores críticos; y
   conserva la reproducción vía `quarto render site` sin cambiar datos ni
   fórmulas.
+- **ACTUALIZACIÓN 2026-08-30:** se ajusta la lectura dinámica del simulador
+  web de devaluación. Los gráficos quedan apilados a ancho completo y la
+  escala vertical se fija por escenario usando el rango exploratorio máximo
+  permitido por la calculadora (`devaluación = 150%` y combinaciones extremas
+  de incidencias). Esto evita que el eje se reescale en cada interacción y
+  permite ver el movimiento de las líneas cuando se modifica el cierre de la
+  brecha TCC-TCP o la intensidad de incidencias. Se agrega una nota didáctica
+  dentro de cada módulo.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:

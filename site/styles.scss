@@ -238,6 +238,16 @@ caption {
   line-height: 1.25;
 }
 
+.sim-guidance {
+  background: var(--uy-pale);
+  border-left: 4px solid var(--uy-main);
+  color: var(--uy-navy);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.72rem 0.9rem;
+}
+
 .reset-button {
   background: var(--uy-navy);
   border: 0;
@@ -261,7 +271,7 @@ caption {
 .chart-row {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
 
@@ -306,10 +316,6 @@ caption {
 @media (max-width: 860px) {
   .sim-controls {
     grid-template-columns: 1fr;
-  }
-
-  .chart-row {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .incidence-controls {
