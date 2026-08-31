@@ -114,6 +114,8 @@ const VARIABLES = [
   }
 ];
 
+const CONTROL_VARIABLES = VARIABLES.filter(variable => variable.sign !== 0);
+
 function numberValue(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
@@ -310,15 +312,15 @@ function scenarioSeries(rows, state) {
 // posible dentro del simulador para que las líneas se muevan visiblemente al
 // cambiar sliders, en vez de reescalar el eje en cada interacción.
 function fixedDomain(rows, valueKey) {
-  const keys = VARIABLES.map(variable => variable.key);
+  const keys = CONTROL_VARIABLES.map(variable => variable.key);
   const values = [0];
   const combinations = 2 ** keys.length;
 
   for (let mask = 0; mask < combinations; mask += 1) {
-    const intensities = Object.fromEntries(keys.map((key, index) => [
-      key,
-      mask & (1 << index) ? 100 : 0
-    ]));
+    const intensities = Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]));
+    keys.forEach((key, index) => {
+      intensities[key] = mask & (1 << index) ? 100 : 0;
+    });
     scenarioSeries(rows, { devaluation: 150, intensities }).forEach(row => {
       const value = row[valueKey];
       if (Number.isFinite(value)) values.push(value);
@@ -387,7 +389,7 @@ function renderModule(module, data) {
         <div class="control-panel">
           <h4>Incidencias por componente</h4>
           <div class="incidence-controls">
-            ${VARIABLES.map(variable => `
+            ${CONTROL_VARIABLES.map(variable => `
               <div class="control-row">
                 <label>${variable.label}</label>
                 <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
@@ -400,7 +402,7 @@ function renderModule(module, data) {
           <button class="reset-button" type="button">Volver al escenario inicial</button>
         </div>
       </div>
-      <p class="sim-guidance">Con cierre de brecha en 0%, el gráfico reproduce el escenario inicial y las líneas quedan en cero. Para observar el efecto simulado, aumente la magnitud de cierre TCC-TCP; los sliders de incidencia ajustan cuánto pesa cada componente dentro de una escala fija.</p>
+      <p class="sim-guidance">Con cierre de brecha en 0%, el gráfico reproduce el escenario inicial y las líneas quedan en cero. Para observar el efecto simulado, aumente la magnitud de cierre TCC-TCP; los sliders de incidencia ajustan cuánto pesa cada componente que afecta directamente la masa de ganancia dentro de una escala fija.</p>
       <div class="sim-results">
         <div class="chart-row">
           <div class="chart-box">
@@ -425,7 +427,7 @@ function renderModule(module, data) {
     }
 
     container.querySelector('[data-value="devaluation"]').textContent = `${state.devaluation}%`;
-    VARIABLES.forEach(variable => {
+    CONTROL_VARIABLES.forEach(variable => {
       container.querySelector(`[data-value="${variable.key}"]`).textContent = `${state.intensities[variable.key]}%`;
     });
 
@@ -453,7 +455,7 @@ function renderModule(module, data) {
     state.devaluation = 0;
     VARIABLES.forEach(variable => state.intensities[variable.key] = 100);
     container.querySelector('[data-control="devaluation"]').value = 0;
-    VARIABLES.forEach(variable => {
+    CONTROL_VARIABLES.forEach(variable => {
       container.querySelector(`[data-control="${variable.key}"]`).value = 100;
     });
     update();
@@ -486,5 +488,9 @@ factor_efectivo = intensidad_devaluacion * (tipo_cambio_paridad / tipo_cambio_co
 ```
 
 Cada variable afectada usa su coeficiente de incidencia y el porcentaje elegido
-en el slider correspondiente. El stock imputado incide en el capital total
-adelantado; los intereses inciden en la ganancia post intereses.
+en el slider correspondiente. El simulador expone sólo los controles que
+modifican directamente la masa de ganancia representada en los gráficos:
+`VBP`, `consumo intermedio`, `remuneraciones` y `consumo de capital fijo`. El
+stock imputado y los intereses permanecen disponibles en el JSON y en el XLSX
+fuente, pero no se muestran como sliders porque inciden sobre la tasa de
+ganancia o la ganancia post intereses, no sobre los dos gráficos principales.

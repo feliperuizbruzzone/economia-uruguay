@@ -605,6 +605,14 @@ Decisiones del panel integrado:
   permite ver el movimiento de las líneas cuando se modifica el cierre de la
   brecha TCC-TCP o la intensidad de incidencias. Se agrega una nota didáctica
   dentro de cada módulo.
+- **ACTUALIZACIÓN 2026-08-31:** se simplifican los sliders del simulador web
+  de devaluación. La interfaz controla sólo las incidencias que afectan
+  directamente la masa de ganancia graficada: `vbp_pp`,
+  `consumo_intermedio_estimado`, `remuneraciones` y
+  `consumo_capital_fijo`. `stock_capital_imputado` e
+  `intereses_industria_pesos` se mantienen en el JSON/XLSX fuente, pero no se
+  exponen como sliders porque corresponden a tasa de ganancia o ganancia post
+  intereses, no a los gráficos principales de masa de ganancia.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
