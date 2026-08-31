@@ -613,6 +613,31 @@ Decisiones del panel integrado:
   `intereses_industria_pesos` se mantienen en el JSON/XLSX fuente, pero no se
   exponen como sliders porque corresponden a tasa de ganancia o ganancia post
   intereses, no a los gráficos principales de masa de ganancia.
+- **ACTUALIZACIÓN 2026-08-31:** se corrige el flujo reproducible del XLSX de
+  modelamiento de devaluación industrial en
+  `command-files/analysis-command-files/12_update_eaae_industria_devaluacion_segmentos.R`.
+  La variable `ganancia_pb_devaluacion` pasa a calcularse como
+  `ganancia_pb - delta_vbp_pp + delta_consumo_intermedio_estimado +
+  delta_remuneraciones + delta_consumo_capital_fijo`; se aplica la misma
+  lógica a `ganancia_pp_devaluacion` para preservar consistencia interna. En
+  consecuencia, los saldos por componente se ajustan para que sumen a
+  `saldo_sobrevaluacion_ganancia_pb`, y las hojas de escenarios dejan de
+  calcular/exportar tasas de ganancia (`tasa_*` y `variacion_tasa_*`) hasta
+  nueva definición metodológica del equipo.
+- **ACTUALIZACIÓN 2026-08-31:** se actualiza la minuta integrada de escenarios
+  desde `20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`
+  mediante
+  `command-files/analysis-command-files/14_generar_minuta_devaluacion_escenarios_integrados.R`.
+  El documento resultante
+  `docs/20260831_resultados_devaluacion_escenarios_integrados.md` elimina el
+  ejemplo de lectura basado en `Efecto TCC - TCP` y la sección redundante de
+  industria general. Cada escenario queda reducido a dos salidas: barras de
+  `delta_vbp_pp`, `delta_consumo_intermedio_estimado`,
+  `delta_remuneraciones` y `delta_consumo_capital_fijo` para el último año,
+  con VBP en signo negativo, y una línea de
+  `delta_total_ganancia_pb_pct`, calculada dentro de cada año y sección como
+  `(-delta_vbp_pp + delta_consumo_intermedio_estimado +
+  delta_remuneraciones + delta_consumo_capital_fijo) / ganancia_pb * 100`.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:

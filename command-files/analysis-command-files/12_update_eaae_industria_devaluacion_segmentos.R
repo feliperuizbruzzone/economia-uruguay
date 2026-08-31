@@ -133,67 +133,59 @@ build_scenario_sheet <- function(
         .data$intereses_industria_pesos *
         .data$incidencia_intereses_industria_pesos *
         .data$factor_devaluacion,
+      # DECISION: from 2026-08-31 the scenario columns are expressed from the
+      # overvaluation reading requested by the research team. Positive deltas
+      # are subtracted from VBP/capital components and added back to costs when
+      # reconstructing the counterfactual mass of profit.
       vbp_pp_devaluacion =
-        .data$vbp_pp + .data$delta_vbp_pp,
+        .data$vbp_pp - .data$delta_vbp_pp,
       consumo_intermedio_estimado_devaluacion =
-        .data$consumo_intermedio_estimado + .data$delta_consumo_intermedio_estimado,
+        .data$consumo_intermedio_estimado - .data$delta_consumo_intermedio_estimado,
       vab_pp_devaluacion =
-        .data$vab_pp + .data$delta_vbp_pp - .data$delta_consumo_intermedio_estimado,
+        .data$vab_pp - .data$delta_vbp_pp + .data$delta_consumo_intermedio_estimado,
       vab_pb_estimado_devaluacion =
-        .data$vab_pb_estimado + .data$delta_vbp_pp - .data$delta_consumo_intermedio_estimado,
+        .data$vab_pb_estimado - .data$delta_vbp_pp + .data$delta_consumo_intermedio_estimado,
       remuneraciones_devaluacion =
-        .data$remuneraciones + .data$delta_remuneraciones,
+        .data$remuneraciones - .data$delta_remuneraciones,
       consumo_capital_fijo_devaluacion =
-        .data$consumo_capital_fijo + .data$delta_consumo_capital_fijo,
+        .data$consumo_capital_fijo - .data$delta_consumo_capital_fijo,
       stock_capital_imputado_devaluacion =
-        .data$stock_capital_imputado + .data$delta_stock_capital_imputado,
+        .data$stock_capital_imputado - .data$delta_stock_capital_imputado,
       intereses_industria_pesos_devaluacion =
-        .data$intereses_industria_pesos + .data$delta_intereses_industria_pesos,
+        .data$intereses_industria_pesos - .data$delta_intereses_industria_pesos,
       capital_variable_adelantado_devaluacion =
-        .data$capital_variable_adelantado +
+        .data$capital_variable_adelantado -
         safe_divide(.data$delta_remuneraciones, .data$rotacion_calibrada_sobre_6_6),
       capital_circulante_constante_adelantado_devaluacion =
-        .data$capital_circulante_constante_adelantado +
+        .data$capital_circulante_constante_adelantado -
         safe_divide(.data$delta_consumo_intermedio_estimado, .data$rotacion_calibrada_sobre_6_6),
       capital_total_adelantado_devaluacion =
-        .data$capital_total_adelantado +
-        .data$delta_stock_capital_imputado +
+        .data$capital_total_adelantado -
+        .data$delta_stock_capital_imputado -
         safe_divide(
           .data$delta_remuneraciones + .data$delta_consumo_intermedio_estimado,
           .data$rotacion_calibrada_sobre_6_6
         ),
       ganancia_pb_devaluacion =
-        .data$ganancia_pb +
-        .data$delta_vbp_pp -
-        .data$delta_consumo_intermedio_estimado -
-        .data$delta_remuneraciones -
+        .data$ganancia_pb -
+        .data$delta_vbp_pp +
+        .data$delta_consumo_intermedio_estimado +
+        .data$delta_remuneraciones +
         .data$delta_consumo_capital_fijo,
       ganancia_pp_devaluacion =
-        .data$ganancia_pp +
-        .data$delta_vbp_pp -
-        .data$delta_consumo_intermedio_estimado -
-        .data$delta_remuneraciones -
+        .data$ganancia_pp -
+        .data$delta_vbp_pp +
+        .data$delta_consumo_intermedio_estimado +
+        .data$delta_remuneraciones +
         .data$delta_consumo_capital_fijo,
       ganancia_pb_desp_intereses_devaluacion =
         .data$ganancia_pb_devaluacion - .data$intereses_industria_pesos_devaluacion,
       ganancia_pp_desp_intereses_devaluacion =
         .data$ganancia_pp_devaluacion - .data$intereses_industria_pesos_devaluacion,
-      tasa_ganancia_pb_devaluacion =
-        safe_divide(.data$ganancia_pb_devaluacion, .data$capital_total_adelantado_devaluacion),
-      tasa_ganancia_pp_devaluacion =
-        safe_divide(.data$ganancia_pp_devaluacion, .data$capital_total_adelantado_devaluacion),
-      tasa_ganancia_pb_desp_intereses_devaluacion =
-        safe_divide(.data$ganancia_pb_desp_intereses_devaluacion, .data$capital_total_adelantado_devaluacion),
-      tasa_ganancia_pp_desp_intereses_devaluacion =
-        safe_divide(.data$ganancia_pp_desp_intereses_devaluacion, .data$capital_total_adelantado_devaluacion),
       variacion_ganancia_pb_pct =
         (safe_divide(.data$ganancia_pb_devaluacion, .data$ganancia_pb) - 1) * 100,
       variacion_ganancia_pp_pct =
         (safe_divide(.data$ganancia_pp_devaluacion, .data$ganancia_pp) - 1) * 100,
-      variacion_tasa_ganancia_pb_pp =
-        (.data$tasa_ganancia_pb_devaluacion - .data$tasa_ganancia_pb) * 100,
-      variacion_tasa_ganancia_pp_pp =
-        (.data$tasa_ganancia_pp_devaluacion - .data$tasa_ganancia_pp) * 100,
       variacion_ganancia_pb_desp_intereses_pct =
         (safe_divide(
           .data$ganancia_pb_desp_intereses_devaluacion,
@@ -204,12 +196,6 @@ build_scenario_sheet <- function(
           .data$ganancia_pp_desp_intereses_devaluacion,
           .data$ganancia_pp_desp_intereses
         ) - 1) * 100,
-      variacion_tasa_ganancia_pb_desp_intereses_pp =
-        (.data$tasa_ganancia_pb_desp_intereses_devaluacion -
-          .data$tasa_ganancia_pb_desp_intereses) * 100,
-      variacion_tasa_ganancia_pp_desp_intereses_pp =
-        (.data$tasa_ganancia_pp_desp_intereses_devaluacion -
-          .data$tasa_ganancia_pp_desp_intereses) * 100,
       # DECISION: expose the same analytical deltas used in the integrated
       # minute. The monetary saldo is read from the initial overvalued
       # exchange-rate setting: positive means over-perceived profit and
@@ -231,11 +217,11 @@ build_scenario_sheet <- function(
           .data$delta_ganancia_pb_desp_intereses_escenario,
           .data$ganancia_pb_desp_intereses
         ) * 100,
-      saldo_vbp = -.data$delta_vbp_pp,
-      saldo_consumo_intermedio = .data$delta_consumo_intermedio_estimado,
-      saldo_remuneraciones = .data$delta_remuneraciones,
-      saldo_consumo_capital_fijo = .data$delta_consumo_capital_fijo,
-      saldo_intereses = .data$delta_intereses_industria_pesos
+      saldo_vbp = .data$delta_vbp_pp,
+      saldo_consumo_intermedio = -.data$delta_consumo_intermedio_estimado,
+      saldo_remuneraciones = -.data$delta_remuneraciones,
+      saldo_consumo_capital_fijo = -.data$delta_consumo_capital_fijo,
+      saldo_intereses = -.data$delta_intereses_industria_pesos
     ) %>%
     select(
       "escenario",
@@ -283,12 +269,6 @@ build_scenario_sheet <- function(
       "ganancia_pp",
       "ganancia_pp_devaluacion",
       "variacion_ganancia_pp_pct",
-      "tasa_ganancia_pb",
-      "tasa_ganancia_pb_devaluacion",
-      "variacion_tasa_ganancia_pb_pp",
-      "tasa_ganancia_pp",
-      "tasa_ganancia_pp_devaluacion",
-      "variacion_tasa_ganancia_pp_pp",
       "intereses_industria_pesos",
       "intereses_industria_pesos_devaluacion",
       "delta_intereses_industria_pesos",
@@ -305,13 +285,7 @@ build_scenario_sheet <- function(
       "delta_ganancia_desp_intereses_momento2_pct",
       "ganancia_pp_desp_intereses",
       "ganancia_pp_desp_intereses_devaluacion",
-      "variacion_ganancia_pp_desp_intereses_pct",
-      "tasa_ganancia_pb_desp_intereses",
-      "tasa_ganancia_pb_desp_intereses_devaluacion",
-      "variacion_tasa_ganancia_pb_desp_intereses_pp",
-      "tasa_ganancia_pp_desp_intereses",
-      "tasa_ganancia_pp_desp_intereses_devaluacion",
-      "variacion_tasa_ganancia_pp_desp_intereses_pp"
+      "variacion_ganancia_pp_desp_intereses_pct"
     ) %>%
     arrange(.data$anno, factor(.data$seccion, levels = section_order))
 
@@ -478,16 +452,12 @@ panel_required <- c(
   "capital_total_adelantado",
   "ganancia_pb",
   "ganancia_pp",
-  "tasa_ganancia_pb",
-  "tasa_ganancia_pp",
   "intereses_industria_eaae_ajuste_90_mill_usd",
   "participacion_intereses_industria",
   "intereses_industria_pesos",
   "metodo_intereses",
   "ganancia_pb_desp_intereses",
-  "ganancia_pp_desp_intereses",
-  "tasa_ganancia_pb_desp_intereses",
-  "tasa_ganancia_pp_desp_intereses"
+  "ganancia_pp_desp_intereses"
 )
 
 assert_columns(panel, panel_required, "panel EAAE industria 2020-2024")
@@ -609,25 +579,34 @@ metodologia <- tibble::tribble(
     "sobrepercibida bajo sobrevaluación; un valor negativo indica ganancia",
     "dejada de percibir bajo sobrevaluación."
   ),
+  "resultados", "fórmula de ganancia pb devaluación",
+  paste(
+    "ganancia_pb_devaluacion = ganancia_pb - delta_vbp_pp +",
+    "delta_consumo_intermedio_estimado + delta_remuneraciones +",
+    "delta_consumo_capital_fijo. Por decisión metodológica de 2026-08-31,",
+    "el libro no calcula ni exporta tasas de ganancia en las hojas de",
+    "escenarios."
+  ),
   "resultados", "saldos por componente",
   paste(
-    "saldo_vbp = -delta_vbp_pp; los saldos de consumo intermedio,",
+    "saldo_vbp = delta_vbp_pp; los saldos de consumo intermedio,",
     "remuneraciones, consumo de capital fijo e intereses se registran con",
-    "signo positivo cuando representan ahorro de costos bajo sobrevaluación."
+    "signo negativo para que los componentes sumen al saldo de",
+    "sobrevaluación de la ganancia."
   ),
   "devaluacion", "Escenario 1 - Comercio Exterior",
   paste(
     "La apropiación de riqueza vía sobrevaluación se aplica a los componentes",
     "importados de costos y capital y a la parte exportada de la producción.",
     "El escenario recoge sólo la incidencia directa de importaciones y",
-    "exportaciones sobre la tasa de ganancia."
+    "exportaciones sobre la masa de ganancia."
   ),
   "devaluacion", "Escenario 2 - Bienes Transables",
   paste(
     "La apropiación de riqueza vía sobrevaluación alcanza mercancías cuyos",
     "precios internos se rigen por precios internacionales, aunque sean",
     "producidas localmente y vendidas en el mercado interno. Incorpora la",
-    "revaluación de esa producción local y su incidencia sobre la tasa de",
+    "revaluación de esa producción local y su incidencia sobre la masa de",
     "ganancia."
   )
 )
