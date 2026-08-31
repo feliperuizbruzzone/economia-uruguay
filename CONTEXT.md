@@ -649,6 +649,24 @@ Decisiones del panel integrado:
   componentes para el último año y línea de delta total sobre ganancia inicial,
   usando la fórmula corregida de masa de ganancia y sin controles para stock o
   intereses.
+- **DECISIÓN WEB 2026-08-31:** en las páginas públicas del sitio Quarto, las
+  secciones `Anexo` deben enlazar a los documentos fuente mediante URL
+  absolutas de GitHub (`https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/...`)
+  y no mediante rutas locales `site/data/...`. Esto permite que la persona
+  usuaria abra el documento dentro del repositorio reproducible y vea su
+  trazabilidad completa. Para `Tasa de ganancia`, usar como anexos la minuta
+  `docs/20260819_resultados_eaae_bcu_tres_niveles.md` y el libro
+  `data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx`.
+  Para `Modelamiento devaluación` y `Simulador devaluación`, usar la minuta
+  `docs/20260831_resultados_devaluacion_escenarios_integrados.md` y el libro
+  `data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`.
+  Si en futuras actualizaciones cambia el prefijo de fecha de la minuta o del
+  XLSX, actualizar simultáneamente los enlaces en
+  `site/02-resultados-eaae-bcu.qmd`,
+  `site/04-resultados-devaluacion-escenarios-integrados.qmd` y
+  `site/05-modulos-interactivos-devaluacion.qmd`; luego ejecutar
+  `Rscript command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
+  y `quarto render site`.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
