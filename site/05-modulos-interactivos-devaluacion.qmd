@@ -130,11 +130,6 @@ function moneyBillions(value) {
   return `${scaled.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })}`;
 }
 
-function pp(value) {
-  if (!Number.isFinite(value)) return "s/d";
-  return `${value.toLocaleString("es-UY", { maximumFractionDigits: 2, minimumFractionDigits: 2 })} pp`;
-}
-
 function computeScenario(row, state) {
   const factorBase = numberValue(row.tipo_cambio_paridad_pesos_usd) / numberValue(row.tipo_cambio_comercial_pesos_usd) - 1;
   const factorEffective = factorBase * state.devaluation / 100;
@@ -208,21 +203,6 @@ function computeScenario(row, state) {
     deltaPct,
     components
   };
-}
-
-function mean(values) {
-  const finite = values.filter(value => Number.isFinite(value));
-  if (finite.length === 0) return NaN;
-  return finite.reduce((total, value) => total + value, 0) / finite.length;
-}
-
-function rangeLabel(values, formatter) {
-  const finite = values.filter(value => Number.isFinite(value));
-  if (finite.length === 0) return "s/d";
-  const min = Math.min(...finite);
-  const max = Math.max(...finite);
-  if (Math.abs(max - min) < 1e-9) return formatter(max);
-  return `${formatter(min)} a ${formatter(max)}`;
 }
 
 function lineChartSvg(data, valueKey, options) {
@@ -357,7 +337,6 @@ function summaryTable(series) {
 function renderModule(module, data) {
   const scenario = module.dataset.scenario;
   const rows = data.filter(row => row.escenario === scenario && SECTIONS.some(section => section.value === row.seccion));
-  const years = [...new Set(rows.map(row => Number(row.anno)))].sort((a, b) => a - b);
   const container = module.querySelector(".sim-content");
   const state = {
     devaluation: 0,
@@ -377,20 +356,21 @@ function renderModule(module, data) {
         </div>
         <div class="control-panel">
           <h4>Incidencias por componente</h4>
-          ${VARIABLES.map(variable => `
-            <div class="control-row">
-              <label>${variable.label}</label>
-              <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
-              <div class="control-value" data-value="${variable.key}">100%</div>
-            </div>
-          `).join("")}
+          <div class="incidence-controls">
+            ${VARIABLES.map(variable => `
+              <div class="control-row">
+                <label>${variable.label}</label>
+                <input type="range" min="0" max="100" step="1" value="100" data-control="${variable.key}">
+                <div class="control-value" data-value="${variable.key}">100%</div>
+              </div>
+            `).join("")}
+          </div>
         </div>
         <div class="control-panel control-panel-action">
           <button class="reset-button" type="button">Volver al escenario inicial</button>
         </div>
       </div>
-      <div>
-        <div class="metrics-grid" data-role="metrics"></div>
+      <div class="sim-results">
         <div class="chart-row">
           <div class="chart-box">
             <h4>Delta absoluto de ganancia</h4>
@@ -409,7 +389,7 @@ function renderModule(module, data) {
   function update() {
     const series = scenarioSeries(rows, state);
     if (series.length === 0) {
-      container.querySelector('[data-role="metrics"]').innerHTML = "<p>No hay datos disponibles para la selección.</p>";
+      container.querySelector('[data-role="summary-table"]').innerHTML = "<p>No hay datos disponibles para la selección.</p>";
       return;
     }
 
@@ -417,13 +397,6 @@ function renderModule(module, data) {
     VARIABLES.forEach(variable => {
       container.querySelector(`[data-value="${variable.key}"]`).textContent = `${state.intensities[variable.key]}%`;
     });
-
-    container.querySelector('[data-role="metrics"]').innerHTML = `
-      <div class="metric-card"><span>Período</span><strong>${years[0]}-${years[years.length - 1]}</strong></div>
-      <div class="metric-card"><span>Series visibles</span><strong>${SECTIONS.length}</strong></div>
-      <div class="metric-card"><span>Factor efectivo promedio</span><strong>${percent(mean(series.map(row => row.factorEffectivePct)))}</strong></div>
-      <div class="metric-card"><span>Delta absoluto</span><strong>${rangeLabel(series.map(row => row.deltaAbs), moneyBillions)}</strong></div>
-    `;
 
     container.querySelector('[data-role="delta-abs-chart"]').innerHTML = lineChartSvg(series, "deltaAbsBillions", {
       formatTick: value => value.toLocaleString("es-UY", { maximumFractionDigits: 1, minimumFractionDigits: 1 })

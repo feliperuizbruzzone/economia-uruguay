@@ -578,6 +578,12 @@ Decisiones del panel integrado:
   total, segmento exportador y mercado interno. Los dos paneles muestran
   `ganancia_simulada - ganancia_inicial` en miles de millones de pesos
   corrientes y la misma diferencia como porcentaje de la ganancia inicial.
+- **ACTUALIZACIÓN 2026-08-30:** se reorganiza la calculadora web de
+  devaluación para que cada escenario tenga una franja horizontal inicial con
+  sliders y botón de retorno al escenario inicial, seguida por gráficos y tabla
+  a ancho completo. Se eliminan las tarjetas resumen de período, series
+  visibles, factor efectivo promedio y delta absoluto para priorizar la lectura
+  de los dos paneles temporales y la tabla de resultados.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
