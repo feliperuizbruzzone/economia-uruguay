@@ -1,6 +1,6 @@
 ---
-title: "Industria Uruguay"
-subtitle: "Sistematización de fuentes económicas y resultados para el análisis industrial"
+title: "Reporte digital"
+subtitle: "Tipo de cambio y perspectivas del desarrollo industrial en Uruguay (2000 a la actualidad)"
 ---
 
 ::: {.institutional-header}
