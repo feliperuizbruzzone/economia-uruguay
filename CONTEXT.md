@@ -650,21 +650,19 @@ Decisiones del panel integrado:
   usando la fórmula corregida de masa de ganancia y sin controles para stock o
   intereses.
 - **DECISIÓN WEB 2026-08-31:** en las páginas públicas del sitio Quarto, las
-  secciones `Anexo` deben enlazar a los documentos fuente mediante URL
-  absolutas de GitHub (`https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/...`)
-  y no mediante rutas locales `site/data/...`. Esto permite que la persona
-  usuaria abra el documento dentro del repositorio reproducible y vea su
-  trazabilidad completa. Para `Tasa de ganancia`, usar como anexos la minuta
-  `docs/20260819_resultados_eaae_bcu_tres_niveles.md` y el libro
-  `data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx`.
-  Para `Modelamiento devaluación` y `Simulador devaluación`, usar la minuta
-  `docs/20260831_resultados_devaluacion_escenarios_integrados.md` y el libro
-  `data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`.
-  Si en futuras actualizaciones cambia el prefijo de fecha de la minuta o del
-  XLSX, actualizar simultáneamente los enlaces en
-  `site/02-resultados-eaae-bcu.qmd`,
-  `site/04-resultados-devaluacion-escenarios-integrados.qmd` y
-  `site/05-modulos-interactivos-devaluacion.qmd`; luego ejecutar
+  secciones `Anexo` y las cajas de descarga deben enlazar a rutas locales del
+  sitio, no a URLs absolutas de GitHub. En los archivos `.qmd` las rutas deben
+  escribirse como `data/...`, que al renderizar corresponden a artefactos
+  generados dentro de `site/data/...`. Para que esos enlaces siempre apunten a
+  los insumos vigentes, el script reproducible
+  `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
+  limpia `site/data/` en cada ejecución y copia los artefactos fechados hacia
+  alias estables, por ejemplo
+  `site/data/docs/resultados_devaluacion_escenarios_integrados.md` y
+  `site/data/analysis-data/panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`.
+  En futuras actualizaciones de fecha, se deben cambiar los insumos fuente en
+  el objeto `paths` de ese script; los enlaces públicos de las páginas pueden
+  permanecer apuntando a los alias locales estables. Luego ejecutar
   `Rscript command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
   y `quarto render site`.
 - **ACTUALIZACIÓN WEB 2026-08-31:** en

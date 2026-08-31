@@ -52,13 +52,31 @@ if (length(missing_paths) > 0) {
   )
 }
 
-dir.create(file.path("site", "data", "analysis-data"), recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path("site", "data", "docs"), recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path("site", "assets", "figures"), recursive = TRUE, showWarnings = FALSE)
+reset_dir <- function(path) {
+  if (dir.exists(path)) {
+    unlink(path, recursive = TRUE)
+  }
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+}
+
+# DECISION: site/data and site/assets/figures are generated artifacts. Reset
+# them on each run so stale dated files cannot remain available from an older
+# build of the website.
+reset_dir(file.path("site", "data"))
+reset_dir(file.path("site", "assets", "figures"))
 
 copy_file <- function(from, to_dir) {
   dir.create(to_dir, recursive = TRUE, showWarnings = FALSE)
   to <- file.path(to_dir, basename(from))
+  ok <- file.copy(from, to, overwrite = TRUE)
+  if (!ok) {
+    stop("No se pudo copiar ", from, " hacia ", to)
+  }
+  to
+}
+
+copy_file_as <- function(from, to) {
+  dir.create(dirname(to), recursive = TRUE, showWarnings = FALSE)
   ok <- file.copy(from, to, overwrite = TRUE)
   if (!ok) {
     stop("No se pudo copiar ", from, " hacia ", to)
@@ -98,6 +116,28 @@ walk(
   copy_file,
   to_dir = file.path("site", "data", "docs")
 )
+
+# DECISION: download buttons in the Quarto pages point to stable local aliases
+# under site/data. The source files remain dated in data/analysis-data and docs,
+# while this script refreshes the aliases on every website build.
+stable_copies <- tibble::tribble(
+  ~from, ~to,
+  paths$devaluation_xlsx,
+  file.path("site", "data", "analysis-data", "panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx"),
+  paths$eaae_bcu_xlsx,
+  file.path("site", "data", "analysis-data", "resultados_eaae_bcu_total_industria_subrama.xlsx"),
+  paths$eaae_bcu_csv,
+  file.path("site", "data", "analysis-data", "panel_eeae_bcu_total_industria_subrama.csv"),
+  paths$industry_panel_csv,
+  file.path("site", "data", "analysis-data", "panel_eaae_2020_2024_industria.csv"),
+  paths$devaluation_md,
+  file.path("site", "data", "docs", "resultados_devaluacion_escenarios_integrados.md"),
+  paths$eaae_bcu_md,
+  file.path("site", "data", "docs", "resultados_eaae_bcu_tres_niveles.md"),
+  paths$methodology_md,
+  file.path("site", "data", "docs", "minuta_panel_eeae_bcu_total_industria_subrama.md")
+)
+pwalk(stable_copies, copy_file_as)
 
 invisible(copy_figure_dir(
   paths$devaluation_figures,

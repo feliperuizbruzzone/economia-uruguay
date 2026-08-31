@@ -51,7 +51,7 @@ la rentabilidad industrial.
 
 <span>Documento con explicación detallada de fuentes utilizadas, supuestos y decisiones del análisis, así como interpretación narrativa de resultados.</span>
 
-[Abrir minuta](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/20260819_resultados_eaae_bcu_tres_niveles.md){.button-link}
+[Abrir minuta](data/docs/resultados_eaae_bcu_tres_niveles.md){.button-link}
 :::
 
 ::: {.download-item}
@@ -59,7 +59,7 @@ la rentabilidad industrial.
 
 <span>Libro en formato Excel que respalda los datos y resultados en base a los que se construyen los resultados visuales presentados.</span>
 
-[Descargar XLSX](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/data/analysis-data/20260819_resultados_eaae_bcu_total_industria_subrama.xlsx){.button-link}
+[Descargar XLSX](data/analysis-data/resultados_eaae_bcu_total_industria_subrama.xlsx){.button-link}
 :::
 :::
 
