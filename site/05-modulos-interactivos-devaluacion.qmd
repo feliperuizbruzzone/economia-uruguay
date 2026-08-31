@@ -324,30 +324,36 @@ function scenarioSeries(rows, state) {
     .sort((a, b) => a.year - b.year || a.section.localeCompare(b.section));
 }
 
-// DECISION: la escala vertical se fija con el rango exploratorio máximo
-// posible dentro del simulador para que las líneas se muevan visiblemente al
-// cambiar sliders, en vez de reescalar el eje en cada interacción.
-function fixedDomain(rows, valueKey) {
-  const keys = VARIABLES.map(variable => variable.key);
-  const values = [0];
-  const combinations = 2 ** keys.length;
+// DECISION: el Gráfico 2 usa una escala Y dinámica para mejorar la lectura de
+// movimientos pequeños al cambiar sliders. La escala incluye siempre el cero;
+// por eso la comparación entre posiciones del slider debe hacerse leyendo los
+// valores del eje y no sólo la altura visual de la línea.
+function dynamicDomain(data, valueKey) {
+  const values = data
+    .map(row => row[valueKey])
+    .filter(value => Number.isFinite(value));
+  if (values.length === 0) return [-2.5, 2.5];
 
-  for (let mask = 0; mask < combinations; mask += 1) {
-    const intensities = Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]));
-    keys.forEach((key, index) => {
-      intensities[key] = mask & (1 << index) ? 100 : 0;
-    });
-    scenarioSeries(rows, { devaluation: 150, intensities }).forEach(row => {
-      const value = row[valueKey];
-      if (Number.isFinite(value)) values.push(value);
-    });
+  let min = Math.min(0, ...values);
+  let max = Math.max(0, ...values);
+  const range = max - min;
+
+  if (Math.abs(range) < 1e-9) {
+    return [-2.5, 2.5];
   }
 
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min;
-  const padding = range > 0 ? range * 0.08 : 1;
-  return [min - padding, max + padding];
+  const padding = range * 0.12;
+  min -= padding;
+  max += padding;
+
+  const minimumRange = 5;
+  if (max - min < minimumRange) {
+    const center = (min + max) / 2;
+    min = center - minimumRange / 2;
+    max = center + minimumRange / 2;
+  }
+
+  return [min, max];
 }
 
 // DECISION: el gráfico de barras usa una escala horizontal fija por escenario.
@@ -396,14 +402,13 @@ function renderModule(module, data) {
   const scenario = module.dataset.scenario;
   const rows = data.filter(row => row.escenario === scenario && SECTIONS.some(section => section.value === row.seccion));
   const container = module.querySelector(".sim-content");
+  const availableYears = rows.map(row => Number(row.anno)).filter(Number.isFinite);
+  const lastAvailableYear = availableYears.length > 0 ? Math.max(...availableYears) : "s/d";
   const state = {
     devaluation: 0,
     intensities: Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]))
   };
-  const domains = {
-    deltaTotalPct: fixedDomain(rows, "deltaTotalPct"),
-    componentLimit: fixedComponentLimit(rows)
-  };
+  const componentLimit = fixedComponentLimit(rows);
 
   container.innerHTML = `
     <div class="sim-layout">
@@ -435,7 +440,7 @@ function renderModule(module, data) {
       <p class="sim-guidance">Con cierre de brecha en 0%, el gráfico reproduce el escenario inicial y los valores quedan en cero. Para observar el efecto simulado, aumente la magnitud de cierre TCC-TCP; los sliders de incidencia ajustan cuánto pesa cada componente que afecta directamente la masa de ganancia.</p>
       <div class="sim-results">
         <div class="chart-box">
-          <h4>Gráfico 1. Monto apropiado/cedido según componente</h4>
+          <h4>Gráfico 1 (${lastAvailableYear}). Monto apropiado/cedido según componente</h4>
           <div data-role="component-chart"></div>
         </div>
         <div class="chart-box">
@@ -464,10 +469,10 @@ function renderModule(module, data) {
     });
 
     container.querySelector('[data-role="component-chart"]').innerHTML = componentBarsSvg(latestSeries, {
-      limit: domains.componentLimit
+      limit: componentLimit
     });
     container.querySelector('[data-role="delta-pct-chart"]').innerHTML = lineChartSvg(series, "deltaTotalPct", {
-      domain: domains.deltaTotalPct,
+      domain: dynamicDomain(series, "deltaTotalPct"),
       formatTick: value => `${value.toLocaleString("es-UY", { maximumFractionDigits: 0, minimumFractionDigits: 0 })}%`
     });
     container.querySelector('[data-role="summary-table"]').innerHTML = summaryTable(series);
@@ -523,6 +528,9 @@ Cada variable afectada usa su coeficiente de incidencia y el porcentaje elegido
 en el slider correspondiente. El simulador expone sólo los controles que
 modifican directamente la masa de ganancia representada en los gráficos:
 `VBP`, `consumo intermedio`, `remuneraciones` y `consumo de capital fijo`.
+En el Gráfico 2, el eje Y se ajusta dinámicamente a la selección activa para
+facilitar la lectura de movimientos pequeños; por eso las comparaciones entre
+configuraciones deben hacerse leyendo los valores del eje y la tabla.
 
 ## Anexo
 

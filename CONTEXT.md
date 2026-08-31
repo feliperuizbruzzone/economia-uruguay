@@ -676,6 +676,14 @@ Decisiones del panel integrado:
   incidencias completas) para el último año disponible. Esto evita que el eje
   se reescale en cada movimiento de slider y permite que el largo de las barras
   cambie visualmente de forma proporcional.
+- **ACTUALIZACIÓN WEB 2026-08-31:** en el simulador de devaluación, el
+  `Gráfico 1` muestra explícitamente el último año disponible en su título
+  (`2024` con la fuente vigente). El `Gráfico 2`, que reporta el delta total
+  sobre ganancia inicial, usa un eje Y dinámico recalculado con cada selección
+  de sliders, manteniendo siempre el cero y un rango mínimo para que el
+  escenario inicial no colapse visualmente. Esta decisión mejora la lectura de
+  movimientos pequeños; la comparación entre configuraciones debe hacerse con
+  los valores del eje y la tabla.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
