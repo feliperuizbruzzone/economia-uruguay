@@ -206,15 +206,22 @@ caption {
 .sim-layout {
   display: grid;
   gap: 1.1rem;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  align-items: start;
   max-width: 100%;
   min-width: 0;
 }
 
 .sim-controls {
+  align-self: start;
   display: grid;
   gap: 0.9rem;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 2.3fr) minmax(0, 0.75fr);
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
+  position: sticky;
+  top: 5.25rem;
   width: 100%;
 }
 
@@ -235,13 +242,13 @@ caption {
   background: #FFFFFF;
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: start;
 }
 
 .incidence-controls {
   display: grid;
-  gap: 0.75rem 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
 
@@ -286,6 +293,8 @@ caption {
   border-left: 4px solid var(--uy-main);
   color: var(--uy-navy);
   font-size: 0.9rem;
+  grid-column: 2;
+  grid-row: 1;
   line-height: 1.5;
   margin: 0;
   padding: 0.72rem 0.9rem;
@@ -309,6 +318,8 @@ caption {
 .sim-results {
   display: grid;
   gap: 1rem;
+  grid-column: 2;
+  grid-row: 2;
   min-width: 0;
   width: 100%;
 }
@@ -349,8 +360,22 @@ caption {
 }
 
 @media (max-width: 1080px) {
+  .sim-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .sim-controls {
+    grid-column: auto;
+    grid-row: auto;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    position: static;
+    top: auto;
+  }
+
+  .sim-guidance,
+  .sim-results {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .control-panel-action {

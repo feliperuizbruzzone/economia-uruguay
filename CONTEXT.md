@@ -709,6 +709,13 @@ Decisiones del panel integrado:
   modifica el XLSX ni el JSON fuente. La escala horizontal del gráfico se
   calcula incluyendo el total neto y los extremos posibles de suma positiva o
   negativa, para evitar desbordes cuando se modifican las incidencias.
+- **ACTUALIZACIÓN WEB 2026-09-01:** el layout de cada módulo del simulador se
+  reorganiza en dos columnas para pantallas de escritorio. La columna izquierda
+  contiene los sliders y el botón de retorno, con posición `sticky`, y la
+  columna derecha conserva el texto guía, los dos gráficos y la tabla a ancho
+  completo. Esto permite modificar controles mientras se observan las
+  visualizaciones sin reducir el tamaño de los gráficos. En pantallas menores
+  a 1080px, el módulo vuelve al layout vertical para evitar compresión.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
