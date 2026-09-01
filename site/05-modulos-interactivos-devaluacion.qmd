@@ -517,7 +517,7 @@ function renderModule(module, data) {
             <input type="range" min="0" max="150" step="1" value="0" data-control="devaluation">
             <div class="control-value" data-value="devaluation">0%</div>
           </div>
-          <p class="control-note">0%=TCC | 100%=TCP | 150%=sobrecorrección</p>
+          <p class="control-note">0%=TCC<br>100%=TCP</p>
         </div>
         <div class="control-panel">
           <h4>Incidencias por componente</h4>

@@ -688,7 +688,7 @@ Decisiones del panel integrado:
   sliders sin perder una referencia visual común.
 - **ACTUALIZACIÓN WEB 2026-09-01:** se redefine la lectura del slider general
   del simulador como `Corrección cambiaria hacia la paridad`, con nota pública
-  `0%=TCC | 100%=TCP | 150%=sobrecorrección`. El control corre entre 0 y 150:
+  `0%=TCC` y `100%=TCP` en líneas separadas. El control corre entre 0 y 150:
   `100%` representa el cierre completo de la brecha entre tipo de cambio
   comercial y tipo de cambio de paridad, mientras valores superiores permiten
   explorar una corrección por encima de la paridad. El `Gráfico 1` deja de usar
