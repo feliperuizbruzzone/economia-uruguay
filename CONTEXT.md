@@ -716,10 +716,10 @@ Decisiones del panel integrado:
   completo. Esto permite modificar controles mientras se observan las
   visualizaciones sin reducir el tamaño de los gráficos. En pantallas menores
   a 1080px, el módulo vuelve al layout vertical para evitar compresión.
-- **ACTUALIZACIÓN WEB 2026-09-01:** la página `Simulador devaluación` desactiva
-  el índice lateral `Contenidos` mediante `toc: false` sólo en su frontmatter.
-  El resto del sitio conserva el índice. Esta decisión libera ancho útil para
-  los módulos interactivos sin intervenir el layout global generado por Quarto.
+- **ACTUALIZACIÓN WEB 2026-09-01:** la página `Simulador devaluación` vuelve a
+  mostrar el índice lateral `Contenidos` mediante `toc: true` en su
+  frontmatter. El layout ancho del simulador se conserva con `page-layout:
+  full` y CSS específico para compensar el espacio ocupado por el índice.
 - **ACTUALIZACIÓN WEB 2026-09-01:** la página `Simulador devaluación` usa
   `page-layout: full` y una regla CSS acotada a `.page-layout-full` para
   ampliar el ancho máximo del cuerpo a 1440px. La decisión afecta sólo páginas

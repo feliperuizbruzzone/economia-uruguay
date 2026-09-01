@@ -27,7 +27,8 @@ body {
   max-width: 1120px;
 }
 
-.page-layout-full .content.column-page {
+.page-layout-full .content.column-page,
+.page-layout-full .content.column-page-left {
   max-width: min(1440px, calc(100vw - 2rem));
   width: 100%;
 }
