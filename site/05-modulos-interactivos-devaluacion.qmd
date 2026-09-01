@@ -2,6 +2,7 @@
 title: "Simulador devaluación"
 subtitle: "Exploración interactiva de escenarios para la industria manufacturera"
 toc: false
+page-layout: full
 ---
 
 Esta sección permite variar la corrección de la brecha entre tipo de cambio

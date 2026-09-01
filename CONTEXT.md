@@ -720,6 +720,12 @@ Decisiones del panel integrado:
   el índice lateral `Contenidos` mediante `toc: false` sólo en su frontmatter.
   El resto del sitio conserva el índice. Esta decisión libera ancho útil para
   los módulos interactivos sin intervenir el layout global generado por Quarto.
+- **ACTUALIZACIÓN WEB 2026-09-01:** la página `Simulador devaluación` usa
+  `page-layout: full` y una regla CSS acotada a `.page-layout-full` para
+  ampliar el ancho máximo del cuerpo a 1440px. La decisión afecta sólo páginas
+  renderizadas con layout completo; en la versión actual del sitio se usa para
+  que los controles, texto, gráficos y tablas del simulador tengan más aire sin
+  modificar el ancho narrativo del resto de las secciones.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:

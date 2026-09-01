@@ -27,6 +27,11 @@ body {
   max-width: 1120px;
 }
 
+.page-layout-full .content.column-page {
+  max-width: min(1440px, calc(100vw - 2rem));
+  width: 100%;
+}
+
 h1, h2, h3, h4 {
   color: var(--uy-navy);
   letter-spacing: 0;
