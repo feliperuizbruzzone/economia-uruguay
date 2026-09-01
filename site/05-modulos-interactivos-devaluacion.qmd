@@ -61,6 +61,8 @@ const COLORS = {
   navy: "#0B1F3A",
   deep: "#173B63",
   main: "#2F5F8F",
+  export: "#005EA8",
+  market: "#8AA8C5",
   steel: "#5F86AD",
   soft: "#9DB8D2",
   pale: "#DCE8F3",
@@ -72,8 +74,8 @@ const COLORS = {
 
 const SECTIONS = [
   { value: "industria-total", label: "Industria total", color: COLORS.navy },
-  { value: "exportadora", label: "Segmento exportador", color: COLORS.main },
-  { value: "mercado-interno", label: "Mercado interno", color: COLORS.steel }
+  { value: "exportadora", label: "Segmento exportador", color: COLORS.export },
+  { value: "mercado-interno", label: "Mercado interno", color: COLORS.market }
 ];
 
 const VARIABLES = [

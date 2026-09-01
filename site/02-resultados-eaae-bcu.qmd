@@ -2,10 +2,10 @@
 title: "Tasa de ganancia"
 ---
 
-Esta sección resume la lógica argumental de la minuta de tasa de ganancia
-EAAE-BCU.
+Esta sección resume el despliegue de las determinaciones de tasa de ganancia
+con base en las fuentes EAAE-BCU.
 El documento fuente completo está disponible para descarga desde la portada del
-sitio.
+sitio y en Anexo de esta sección.
 
 ## Criterio de lectura
 
@@ -21,6 +21,14 @@ evaluar representatividad de la serie EAAE frente a cuentas nacionales.
 ![Representatividad de manufactura depurada](assets/figures/eaae_bcu_tres_niveles_20260819/01b_representatividad_manufactura_depurada.png)
 
 ## Tasa de ganancia
+
+En las fuentes analizadas, la categoría precios básicos refiere al valor
+recibido por el productor, excluyendo impuestos netos sobre los productos; es
+la medida más cercana al valor generado por la actividad productiva. De otra
+parte, los precios productor incorporan esos impuestos netos sobre los
+productos, por eso suelen ser mayores y reflejan una valoración más próxima al
+precio de salida declarado por la unidad productiva. Los resultados se estiman
+usando ambas variantes de precios.
 
 ![Tasa de ganancia en tres niveles](assets/figures/eaae_bcu_tres_niveles_20260819/02_tasa_ganancia_tres_niveles.png)
 

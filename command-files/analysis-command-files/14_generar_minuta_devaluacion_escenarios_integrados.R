@@ -170,6 +170,8 @@ blue_palette <- c(
   navy = "#0B1F3A",
   deep = "#173B63",
   main = "#2F5F8F",
+  export = "#005EA8",
+  market = "#8AA8C5",
   steel = "#5F86AD",
   soft = "#9DB8D2",
   pale = "#DCE8F3",
@@ -179,8 +181,8 @@ blue_palette <- c(
 
 section_colors <- c(
   "Industria total" = blue_palette[["navy"]],
-  "Segmento exportador" = blue_palette[["main"]],
-  "Mercado interno" = blue_palette[["steel"]]
+  "Segmento exportador" = blue_palette[["export"]],
+  "Mercado interno" = blue_palette[["market"]]
 )
 
 component_colors <- c(
