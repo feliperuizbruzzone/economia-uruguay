@@ -716,6 +716,10 @@ Decisiones del panel integrado:
   completo. Esto permite modificar controles mientras se observan las
   visualizaciones sin reducir el tamaño de los gráficos. En pantallas menores
   a 1080px, el módulo vuelve al layout vertical para evitar compresión.
+- **ACTUALIZACIÓN WEB 2026-09-01:** la página `Simulador devaluación` desactiva
+  el índice lateral `Contenidos` mediante `toc: false` sólo en su frontmatter.
+  El resto del sitio conserva el índice. Esta decisión libera ancho útil para
+  los módulos interactivos sin intervenir el layout global generado por Quarto.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
