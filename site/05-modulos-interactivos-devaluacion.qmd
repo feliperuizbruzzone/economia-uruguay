@@ -26,13 +26,14 @@ se agrega como slider.
 :::
 
 El primer gráfico muestra, para el último año disponible, la pérdida o cesión
-remanente asociada a la sobrevaluación cambiaria. Por eso parte en el escenario
-observado con `0%` de corrección y se reduce hasta cero cuando la corrección
-llega a `100%`. Si el slider supera `100%`, el signo se invierte para
-representar una corrección por encima de la paridad. El segundo gráfico resume
-el delta neto contra la ganancia del escenario inicial de cada año. Una línea
-por encima de cero indica que la simulación eleva la ganancia respecto del
-escenario inicial; una línea por debajo de cero indica que la reduce.
+remanente asociada a la sobrevaluación cambiaria y agrega un `Total neto` que
+suma los componentes modelados. Por eso parte en el escenario observado con
+`0%` de corrección y se reduce hasta cero cuando la corrección llega a `100%`.
+Si el slider supera `100%`, el signo se invierte para representar una
+corrección por encima de la paridad. El segundo gráfico resume el delta neto
+contra la ganancia del escenario inicial de cada año. Una línea por encima de
+cero indica que la simulación eleva la ganancia respecto del escenario inicial;
+una línea por debajo de cero indica que la reduce.
 
 ## Escenario 1 - Comercio Exterior
 
@@ -179,7 +180,7 @@ function computeResidualOvervaluation(row, state) {
   const correctionShare = Math.max(state.devaluation, 0) / 100;
   const factorResidual = factorBase * (1 - correctionShare);
   const gainBase = numberValue(row.ganancia_pb);
-  const components = VARIABLES.map(variable => {
+  const componentsBase = VARIABLES.map(variable => {
     const base = numberValue(row[variable.key]);
     const incidence = numberValue(row[variable.incidence]);
     const intensity = state.intensities[variable.key] / 100;
@@ -193,6 +194,15 @@ function computeResidualOvervaluation(row, state) {
       pctGain: gainBase !== 0 ? value / gainBase * 100 : NaN
     };
   });
+  const totalValue = componentsBase.reduce((sum, component) => sum + component.value, 0);
+  const components = componentsBase.concat([{
+    key: "total_neto",
+    label: "Total neto",
+    value: totalValue,
+    valueBillions: totalValue / 1e9,
+    pctGain: gainBase !== 0 ? totalValue / gainBase * 100 : NaN,
+    isTotal: true
+  }]);
 
   return {
     factorBase,
@@ -203,7 +213,7 @@ function computeResidualOvervaluation(row, state) {
 
 function componentBarsSvg(data, options = {}) {
   const width = 840;
-  const panelHeight = 138;
+  const panelHeight = 162;
   const height = 88 + panelHeight * SECTIONS.length;
   const margin = { top: 38, right: 38, bottom: 36, left: 180 };
   const innerW = width - margin.left - margin.right;
@@ -227,7 +237,7 @@ function componentBarsSvg(data, options = {}) {
     const row = data.find(item => item.section === section.value);
     if (!row) return "";
     const y0 = margin.top + sectionIndex * panelHeight;
-    const componentGap = 26;
+    const componentGap = 24;
     const barHeight = 14;
     const bars = row.components.map((component, index) => {
       const y = y0 + 42 + index * componentGap;
@@ -235,12 +245,19 @@ function componentBarsSvg(data, options = {}) {
       const x1 = Math.max(zeroX, xFor(component.valueBillions));
       const labelX = component.valueBillions >= 0 ? x1 + 7 : x0 - 7;
       const anchor = component.valueBillions >= 0 ? "start" : "end";
-      const fill = component.valueBillions >= 0 ? COLORS.positive : COLORS.negative;
+      const fill = component.valueBillions >= 0
+        ? (component.isTotal ? COLORS.navy : COLORS.positive)
+        : (component.isTotal ? COLORS.steel : COLORS.negative);
+      const fontWeight = component.isTotal ? "700" : "400";
+      const separator = component.isTotal ? `
+        <line x1="${margin.left - 112}" x2="${width - margin.right}" y1="${y - 8}" y2="${y - 8}" stroke="${COLORS.grid}" stroke-width="1"></line>
+      ` : "";
       const barWidth = Math.abs(component.valueBillions) > 1e-9 ? Math.max(1, x1 - x0) : 0;
       return `
-        <text x="${margin.left - 12}" y="${y + 10}" text-anchor="end" fill="${COLORS.navy}" font-size="11">${component.label}</text>
+        ${separator}
+        <text x="${margin.left - 12}" y="${y + 10}" text-anchor="end" fill="${COLORS.navy}" font-size="11" font-weight="${fontWeight}">${component.label}</text>
         <rect x="${x0}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${fill}" rx="2"></rect>
-        <text x="${labelX}" y="${y + 11}" text-anchor="${anchor}" fill="${COLORS.grey}" font-size="10">${moneyBillions(component.value)}</text>
+        <text x="${labelX}" y="${y + 11}" text-anchor="${anchor}" fill="${COLORS.grey}" font-size="10" font-weight="${fontWeight}">${moneyBillions(component.value)}</text>
       `;
     }).join("");
 
@@ -457,7 +474,18 @@ function fixedComponentLimit(rows) {
   const intensities = Object.fromEntries(VARIABLES.map(variable => [variable.key, 100]));
   const latestSeries = residualOvervaluationSeries(rows, { devaluation: 0, intensities })
     .filter(row => row.year === lastYear);
-  const values = latestSeries.flatMap(row => row.components.map(component => component.valueBillions));
+  const values = latestSeries.flatMap(row => {
+    const components = row.components.filter(component => !component.isTotal);
+    const positiveTotal = components
+      .filter(component => component.valueBillions > 0)
+      .reduce((sum, component) => sum + component.valueBillions, 0);
+    const negativeTotal = components
+      .filter(component => component.valueBillions < 0)
+      .reduce((sum, component) => sum + component.valueBillions, 0);
+    return row.components
+      .map(component => component.valueBillions)
+      .concat([positiveTotal, negativeTotal]);
+  });
   const maxAbs = Math.max(1, ...values.map(value => Math.abs(value)).filter(Number.isFinite));
   return maxAbs * 1.12;
 }
@@ -535,7 +563,7 @@ function renderModule(module, data) {
           <button class="reset-button" type="button">Volver al escenario inicial</button>
         </div>
       </div>
-      <p class="sim-guidance">Con corrección cambiaria en 0%, el Gráfico 1 reproduce la pérdida o cesión plena asociada a la sobrevaluación observada. Al mover el control hacia 100%, esa pérdida remanente se cierra hasta el escenario de paridad; por encima de 100%, el signo de los componentes se invierte para representar una sobrecorrección. El Gráfico 2 mantiene una lectura complementaria: muestra el delta simulado contra la ganancia del escenario inicial.</p>
+      <p class="sim-guidance">Con corrección cambiaria en 0%, el Gráfico 1 reproduce la pérdida o cesión plena asociada a la sobrevaluación observada. Al mover el control hacia 100%, esa pérdida remanente se cierra hasta el escenario de paridad; por encima de 100%, el signo de los componentes se invierte para representar una sobrecorrección. La barra Total neto suma VBP, consumo intermedio, remuneraciones y consumo de capital fijo con los signos del gráfico. El Gráfico 2 mantiene una lectura complementaria: muestra el delta simulado contra la ganancia del escenario inicial.</p>
       <div class="sim-results">
         <div class="chart-box">
           <h4>Gráfico 1. Monto apropiado/cedido según componente (${lastAvailableYear})</h4>
@@ -623,6 +651,7 @@ La simulación aplica:
 factor_efectivo = correccion_cambiaria / 100 * (tipo_cambio_paridad / tipo_cambio_comercial - 1)
 delta_total_ganancia_pb = -delta_vbp_pp + delta_consumo_intermedio_estimado + delta_remuneraciones + delta_consumo_capital_fijo
 factor_residual_sobrevaluacion = (1 - correccion_cambiaria / 100) * (tipo_cambio_paridad / tipo_cambio_comercial - 1)
+total_neto_grafico_1 = VBP + consumo_intermedio + remuneraciones + consumo_capital_fijo
 ```
 
 Cada variable afectada usa su coeficiente de incidencia y el porcentaje elegido
@@ -633,6 +662,8 @@ El Gráfico 1 usa el `factor_residual_sobrevaluacion`, de modo que `0%` muestra
 la pérdida/cesión asociada al TCC observado, `100%` la elimina al llegar a TCP
 y los valores superiores a `100%` invierten el signo de los componentes para
 representar una sobrecorrección.
+La barra `Total neto` del Gráfico 1 se calcula dinámicamente como la suma de
+los cuatro componentes modelados con los signos visibles en ese gráfico.
 En el Gráfico 2, las líneas punteadas muestran el escenario de paridad plena
 como referencia. El eje Y toma ese escenario como rango estable y sólo se
 expande si la selección activa lo supera; por eso el movimiento de los sliders

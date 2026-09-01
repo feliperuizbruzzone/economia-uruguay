@@ -701,6 +701,14 @@ Decisiones del panel integrado:
   `Gráfico 2` conserva la lectura de delta contra la ganancia inicial, por lo
   que muestra el efecto acumulado del cierre cambiario y de la eventual
   sobrecorrección.
+- **ACTUALIZACIÓN WEB 2026-09-01:** el `Gráfico 1` del simulador agrega una
+  barra dinámica `Total neto` para cada sección (`industria-total`,
+  `exportadora` y `mercado-interno`). Esta barra se calcula en el navegador
+  como la suma de los cuatro componentes modelados con sus signos visuales:
+  `VBP + consumo_intermedio + remuneraciones + consumo_capital_fijo`. No
+  modifica el XLSX ni el JSON fuente. La escala horizontal del gráfico se
+  calcula incluyendo el total neto y los extremos posibles de suma positiva o
+  negativa, para evitar desbordes cuando se modifican las incidencias.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
