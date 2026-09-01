@@ -68,6 +68,7 @@ const COLORS = {
   soft: "#9DB8D2",
   pale: "#DCE8F3",
   grey: "#6C7785",
+  ink: "#111827",
   grid: "#D9E1E8",
   positive: "#173B63",
   negative: "#8AA8C5"
@@ -245,9 +246,9 @@ function componentBarsSvg(data, options = {}) {
       const x1 = Math.max(zeroX, xFor(component.valueBillions));
       const labelX = component.valueBillions >= 0 ? x1 + 7 : x0 - 7;
       const anchor = component.valueBillions >= 0 ? "start" : "end";
-      const fill = component.valueBillions >= 0
-        ? (component.isTotal ? COLORS.navy : COLORS.positive)
-        : (component.isTotal ? COLORS.steel : COLORS.negative);
+      const fill = component.isTotal
+        ? COLORS.ink
+        : (component.valueBillions >= 0 ? COLORS.positive : COLORS.negative);
       const fontWeight = component.isTotal ? "700" : "400";
       const separator = component.isTotal ? `
         <line x1="${margin.left - 112}" x2="${width - margin.right}" y1="${y - 8}" y2="${y - 8}" stroke="${COLORS.grid}" stroke-width="1"></line>
