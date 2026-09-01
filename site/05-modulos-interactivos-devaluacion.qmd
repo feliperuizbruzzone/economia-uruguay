@@ -8,6 +8,8 @@ Esta sección permite variar la corrección de la brecha entre tipo de cambio
 comercial y tipo de cambio de paridad, junto con la intensidad aplicada a cada
 coeficiente de incidencia. El valor `0%` corresponde al tipo de cambio
 comercial observado y el valor `100%` corresponde al tipo de cambio de paridad.
+Los valores superiores a `100%` permiten explorar una corrección por encima de
+la paridad.
 
 ::: {.technical-note}
 **Nota técnica**
@@ -26,10 +28,11 @@ se agrega como slider.
 El primer gráfico muestra, para el último año disponible, la pérdida o cesión
 remanente asociada a la sobrevaluación cambiaria. Por eso parte en el escenario
 observado con `0%` de corrección y se reduce hasta cero cuando la corrección
-llega a `100%`. El segundo gráfico resume el delta neto contra la ganancia del
-escenario inicial de cada año. Una línea por encima de cero indica que la
-simulación eleva la ganancia respecto del escenario inicial; una línea por
-debajo de cero indica que la reduce.
+llega a `100%`. Si el slider supera `100%`, el signo se invierte para
+representar una corrección por encima de la paridad. El segundo gráfico resume
+el delta neto contra la ganancia del escenario inicial de cada año. Una línea
+por encima de cero indica que la simulación eleva la ganancia respecto del
+escenario inicial; una línea por debajo de cero indica que la reduce.
 
 ## Escenario 1 - Comercio Exterior
 
@@ -167,10 +170,11 @@ function computeScenario(row, state) {
 // DECISION: el Gráfico 1 no muestra el delta incremental contra el escenario
 // inicial, sino la pérdida/cesión remanente por sobrevaluación. Por eso usa
 // el complemento de la corrección cambiaria: 0% = TCC observado con brecha
-// plena; 100% = TCP con brecha cerrada.
+// plena; 100% = TCP con brecha cerrada. Por encima de 100%, el remanente
+// cambia de signo para representar una sobrecorrección cambiaria.
 function computeResidualOvervaluation(row, state) {
   const factorBase = numberValue(row.tipo_cambio_paridad_pesos_usd) / numberValue(row.tipo_cambio_comercial_pesos_usd) - 1;
-  const correctionShare = Math.min(Math.max(state.devaluation, 0), 100) / 100;
+  const correctionShare = Math.max(state.devaluation, 0) / 100;
   const factorResidual = factorBase * (1 - correctionShare);
   const gainBase = numberValue(row.ganancia_pb);
   const components = VARIABLES.map(variable => {
@@ -508,10 +512,10 @@ function renderModule(module, data) {
           <h4>Corrección cambiaria hacia la paridad</h4>
           <div class="control-row">
             <label>Cierre de brecha TCC-TCP</label>
-            <input type="range" min="0" max="100" step="1" value="0" data-control="devaluation">
+            <input type="range" min="0" max="150" step="1" value="0" data-control="devaluation">
             <div class="control-value" data-value="devaluation">0%</div>
           </div>
-          <p class="control-note">0%=TCC | 100%=TCP</p>
+          <p class="control-note">0%=TCC | 100%=TCP | 150%=sobrecorrección</p>
         </div>
         <div class="control-panel">
           <h4>Incidencias por componente</h4>
@@ -529,7 +533,7 @@ function renderModule(module, data) {
           <button class="reset-button" type="button">Volver al escenario inicial</button>
         </div>
       </div>
-      <p class="sim-guidance">Con corrección cambiaria en 0%, el Gráfico 1 reproduce la pérdida o cesión plena asociada a la sobrevaluación observada. Al mover el control hacia 100%, esa pérdida remanente se cierra hasta el escenario de paridad. El Gráfico 2 mantiene una lectura complementaria: muestra el delta simulado contra la ganancia del escenario inicial.</p>
+      <p class="sim-guidance">Con corrección cambiaria en 0%, el Gráfico 1 reproduce la pérdida o cesión plena asociada a la sobrevaluación observada. Al mover el control hacia 100%, esa pérdida remanente se cierra hasta el escenario de paridad; por encima de 100%, el signo de los componentes se invierte para representar una sobrecorrección. El Gráfico 2 mantiene una lectura complementaria: muestra el delta simulado contra la ganancia del escenario inicial.</p>
       <div class="sim-results">
         <div class="chart-box">
           <h4>Gráfico 1. Monto apropiado/cedido según componente (${lastAvailableYear})</h4>
@@ -624,7 +628,9 @@ en el slider correspondiente. El simulador expone sólo los controles que
 modifican directamente la masa de ganancia representada en los gráficos:
 `VBP`, `consumo intermedio`, `remuneraciones` y `consumo de capital fijo`.
 El Gráfico 1 usa el `factor_residual_sobrevaluacion`, de modo que `0%` muestra
-la pérdida/cesión asociada al TCC observado y `100%` la elimina al llegar a TCP.
+la pérdida/cesión asociada al TCC observado, `100%` la elimina al llegar a TCP
+y los valores superiores a `100%` invierten el signo de los componentes para
+representar una sobrecorrección.
 En el Gráfico 2, las líneas punteadas muestran el escenario de paridad plena
 como referencia. El eje Y toma ese escenario como rango estable y sólo se
 expande si la selección activa lo supera; por eso el movimiento de los sliders
