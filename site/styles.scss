@@ -273,6 +273,14 @@ caption {
   line-height: 1.25;
 }
 
+.control-note {
+  color: var(--uy-grey);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.25;
+  margin: 0.45rem 0 0;
+}
+
 .sim-guidance {
   background: var(--uy-pale);
   border-left: 4px solid var(--uy-main);

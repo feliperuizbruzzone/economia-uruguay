@@ -686,6 +686,18 @@ Decisiones del panel integrado:
   con líneas punteadas tenues y sólo expande el eje Y si la selección activa
   supera ese rango. Esta decisión hace más perceptible el movimiento de los
   sliders sin perder una referencia visual común.
+- **ACTUALIZACIÓN WEB 2026-09-01:** se redefine la lectura del slider general
+  del simulador como `Corrección cambiaria hacia la paridad`, con nota pública
+  `0%=TCC | 100%=TCP`. El control queda acotado a 0-100 porque `100%`
+  representa el cierre completo de la brecha entre tipo de cambio comercial y
+  tipo de cambio de paridad. El `Gráfico 1` deja de usar el delta incremental
+  contra el escenario inicial y pasa a representar la pérdida/cesión remanente
+  por sobrevaluación: usa
+  `(1 - correccion_cambiaria / 100) * (TCP / TCC - 1)`. Por eso en `0%`
+  reproduce el gráfico estático de la minuta con la pérdida plena observada y
+  en `100%` las barras se anulan. El `Gráfico 2` conserva la lectura de delta
+  contra la ganancia inicial, por lo que muestra el efecto acumulado del cierre
+  cambiario.
 - **DECISIÓN 2026-08-28:** en la minuta integrada de escenarios de
   devaluación, la medida principal sigue siendo el saldo monetario de masa de
   ganancia asociado a la sobrevaluación:
