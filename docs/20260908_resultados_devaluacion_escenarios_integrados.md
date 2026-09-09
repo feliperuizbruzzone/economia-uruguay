@@ -4,7 +4,7 @@ Fuente de trabajo: `data/analysis-data/20260908_panel_eaae_2020_2024_industria_e
 
 ## Introducción
 
-Esta minuta actualiza la lectura de los escenarios de cierre de brecha cambiaria para la industria manufacturera uruguaya a partir del XLSX regenerado con prefijo 20260908. La unidad de análisis son tres secciones: industria total, segmento exportador y segmento orientado al mercado interno. El ejercicio se expresa en valores corrientes y se concentra en la masa de ganancia a precios básicos. Como complemento, cada escenario reincorpora un gráfico de tasa de ganancia a precios básicos calculado con la fórmula original previa a la corrección del 31/08.
+Esta minuta presenta la lectura de los escenarios de cierre de brecha cambiaria para la industria manufacturera uruguaya. La unidad de análisis son tres secciones: industria total, segmento exportador y segmento orientado al mercado interno. El ejercicio se expresa en valores corrientes y se concentra en la masa de ganancia a precios básicos.
 
 El primer escenario recoge la incidencia directa del comercio exterior. El segundo amplía el ejercicio hacia bienes transables cuyos precios internos se rigen por precios internacionales. En ambos casos, el cálculo se realiza año a año, sin efectos acumulados ni respuestas dinámicas de cantidades, productividad o estructura productiva.
 
@@ -87,7 +87,7 @@ La minuta usa cuatro coeficientes de incidencia para construir la masa de gananc
 
 La apropiación de riqueza vía sobrevaluación de la moneda se aplica a los componentes importados de costos y capital y a la parte exportada de la producción. Por tanto, recoge el efecto directo de importaciones y exportaciones sobre la masa de ganancia.
 
-El primer gráfico recupera la tasa de ganancia a precios básicos calculada con la fórmula original del ejercicio 20260828. Los gráficos siguientes mantienen la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra, para el último año disponible, el monto apropiado o cedido por componente; el otro resume el efecto neto anual como porcentaje de la ganancia a precios básicos del escenario inicial.
+El primer gráfico presenta la tasa de ganancia a precios básicos calculada con la fórmula original. Los gráficos siguientes utilizan una fórmula corregida para mostrar la apropiación actual de riqueza vía sobrevaluación de la moneda: uno muestra, para el último año disponible, el monto apropiado o cedido por componente; el otro resume el efecto neto anual como porcentaje de la ganancia a precios básicos del escenario inicial.
 
 ![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](../output/figures/devaluacion_escenarios_integrados_20260908/00_comercio_exterior_tasa_ganancia_pb_formula_original.png)
 
@@ -99,7 +99,7 @@ El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
 
 La apropiación de riqueza vía sobrevaluación alcanza al conjunto de mercancías cuyos precios internos se rigen por precios internacionales, aunque sean producidas localmente y vendidas en el mercado interno. Así, incorpora la revaluación de producción local transable y su efecto sobre la masa de ganancia.
 
-El primer gráfico recupera la tasa de ganancia a precios básicos calculada con la fórmula original del ejercicio 20260828. Los gráficos siguientes mantienen la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra, para el último año disponible, el monto apropiado o cedido por componente; el otro resume el efecto neto anual como porcentaje de la ganancia a precios básicos del escenario inicial.
+El primer gráfico presenta la tasa de ganancia a precios básicos calculada con la fórmula original. Los gráficos siguientes utilizan una fórmula corregida para mostrar la apropiación actual de riqueza vía sobrevaluación de la moneda: uno muestra, para el último año disponible, el monto apropiado o cedido por componente; el otro resume el efecto neto anual como porcentaje de la ganancia a precios básicos del escenario inicial.
 
 ![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](../output/figures/devaluacion_escenarios_integrados_20260908/00_bienes_transables_tasa_ganancia_pb_formula_original.png)
 

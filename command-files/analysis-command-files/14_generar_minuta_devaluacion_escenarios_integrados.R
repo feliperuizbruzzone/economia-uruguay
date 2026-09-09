@@ -548,12 +548,12 @@ make_rate_formula_original_plot <- function(data, spec) {
     scale_x_continuous(breaks = sort(unique(rate_data$anno))) +
     scale_y_continuous(labels = label_percent(accuracy = 1, decimal.mark = ",")) +
     scale_color_manual(values = c(
-      "Escenario inicial" = blue_palette[["main"]],
-      "Cierre de brecha - formula original" = blue_palette[["deep"]]
+      "Escenario inicial" = blue_palette[["navy"]],
+      "Cierre de brecha - formula original" = "#56B4E9"
     )) +
     labs(
       title = "Tasa de ganancia a precios básicos",
-      subtitle = paste0(spec$titulo, ". Cálculo complementario con fórmula original 20260828."),
+      subtitle = paste0(spec$titulo, ". Calculo con fórmula original."),
       x = NULL,
       y = NULL,
       color = NULL,
@@ -722,14 +722,12 @@ md <- c(
   "## Introducción",
   "",
   paste(
-    "Esta minuta actualiza la lectura de los escenarios de cierre de brecha",
-    "cambiaria para la industria manufacturera uruguaya a partir del XLSX",
-    paste0("regenerado con prefijo ", date_prefix, ". La unidad de análisis son tres secciones:"),
+    "Esta minuta presenta la lectura de los escenarios de cierre de brecha",
+    "cambiaria para la industria manufacturera uruguaya. La unidad de análisis",
+    "son tres secciones:",
     "industria total, segmento exportador y segmento orientado al mercado",
     "interno. El ejercicio se expresa en valores corrientes y se concentra en",
-    "la masa de ganancia a precios básicos. Como complemento, cada escenario",
-    "reincorpora un gráfico de tasa de ganancia a precios básicos calculado",
-    "con la fórmula original previa a la corrección del 31/08."
+    "la masa de ganancia a precios básicos."
   ),
   "",
   paste(
@@ -803,9 +801,10 @@ md <- c(
   scenario_outputs$comercio_exterior$spec$descripcion,
   "",
   paste(
-    "El primer gráfico recupera la tasa de ganancia a precios básicos calculada",
-    "con la fórmula original del ejercicio 20260828. Los gráficos siguientes",
-    "mantienen la fórmula corregida vigente para los deltas de masa de ganancia:",
+    "El primer gráfico presenta la tasa de ganancia a precios básicos calculada",
+    "con la fórmula original. Los gráficos siguientes utilizan una fórmula",
+    "corregida para mostrar la apropiación actual de riqueza vía sobrevaluación",
+    "de la moneda:",
     "uno muestra, para el último año disponible, el monto apropiado o cedido por",
     "componente; el otro resume el efecto neto anual como porcentaje de la",
     "ganancia a precios básicos del escenario inicial."
@@ -834,9 +833,10 @@ md <- c(
   scenario_outputs$bienes_transables$spec$descripcion,
   "",
   paste(
-    "El primer gráfico recupera la tasa de ganancia a precios básicos calculada",
-    "con la fórmula original del ejercicio 20260828. Los gráficos siguientes",
-    "mantienen la fórmula corregida vigente para los deltas de masa de ganancia:",
+    "El primer gráfico presenta la tasa de ganancia a precios básicos calculada",
+    "con la fórmula original. Los gráficos siguientes utilizan una fórmula",
+    "corregida para mostrar la apropiación actual de riqueza vía sobrevaluación",
+    "de la moneda:",
     "uno muestra, para el último año disponible, el monto apropiado o cedido por",
     "componente; el otro resume el efecto neto anual como porcentaje de la",
     "ganancia a precios básicos del escenario inicial."
