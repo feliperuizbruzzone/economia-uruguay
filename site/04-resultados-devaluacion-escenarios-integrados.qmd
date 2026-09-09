@@ -7,7 +7,9 @@ Esta sección presenta una lectura integrada de los dos escenarios de cierre de
 brecha cambiaria construidos para la industria manufacturera uruguaya. La
 unidad de análisis son tres secciones: industria total, segmento exportador y
 segmento orientado al mercado interno. El ejercicio se expresa en valores
-corrientes y se concentra en la masa de ganancia a precios básicos.
+corrientes y se concentra en la masa de ganancia a precios básicos. Como
+complemento, cada escenario recupera un gráfico de tasa de ganancia a precios
+básicos calculado con la fórmula original previa a la corrección del 31/08.
 
 ## Supuestos y fuentes
 
@@ -26,7 +28,7 @@ factor de devaluación se define como:
 tipo_cambio_paridad_pesos_usd / tipo_cambio_comercial_pesos_usd - 1
 ```
 
-![Brecha cambiaria modelada](assets/figures/devaluacion_escenarios_integrados_20260831/00_factor_devaluacion_2020_2024.png)
+![Brecha cambiaria modelada](assets/figures/devaluacion_escenarios_integrados_20260908/00_factor_devaluacion_2020_2024.png)
 
 ## Coeficientes de incidencia
 
@@ -36,7 +38,7 @@ incidencia para construir la masa de ganancia: VBP, consumo intermedio,
 remuneraciones y consumo de capital fijo. En los gráficos de componentes, VBP
 se expresa con signo negativo; los demás deltas se expresan con signo positivo.
 
-![Coeficientes de incidencia sobre la masa de ganancia](assets/figures/devaluacion_escenarios_integrados_20260831/00_coeficientes_incidencia_masa_ganancia.png)
+![Coeficientes de incidencia sobre la masa de ganancia](assets/figures/devaluacion_escenarios_integrados_20260908/00_coeficientes_incidencia_masa_ganancia.png)
 
 ## Escenario 1 - Comercio Exterior
 
@@ -45,13 +47,18 @@ componentes importados de costos y capital y a la parte exportada de la
 producción. Por tanto, sólo recoge el efecto directo de importaciones y
 exportaciones sobre la masa de ganancia.
 
-El primer gráfico muestra, para el último año disponible, el monto apropiado o
-cedido por componente en cada sección. El segundo resume el efecto neto anual
-como porcentaje de la ganancia a precios básicos del escenario inicial.
+El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
+la fórmula original del ejercicio 20260828. Los gráficos siguientes mantienen
+la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra,
+para el último año disponible, el monto apropiado o cedido por componente; el
+otro resume el efecto neto anual como porcentaje de la ganancia a precios
+básicos del escenario inicial.
 
-![Gráfico 1. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260831/01_comercio_exterior_monto_apropiado_cedido_componentes_2024.png)
+![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](assets/figures/devaluacion_escenarios_integrados_20260908/00_comercio_exterior_tasa_ganancia_pb_formula_original.png)
 
-![Gráfico 2. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260831/02_comercio_exterior_delta_total_ganancia_inicial.png)
+![Gráfico 2. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260908/01_comercio_exterior_monto_apropiado_cedido_componentes_2024.png)
+
+![Gráfico 3. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260908/02_comercio_exterior_delta_total_ganancia_inicial.png)
 
 ## Escenario 2 - Bienes Transables
 
@@ -61,13 +68,18 @@ producidas localmente y vendidas en el mercado interno. Así, incorpora también
 la revaluación de esa producción local y su incidencia sobre la masa de
 ganancia.
 
-El primer gráfico muestra, para el último año disponible, el monto apropiado o
-cedido por componente en cada sección. El segundo resume el efecto neto anual
-como porcentaje de la ganancia a precios básicos del escenario inicial.
+El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
+la fórmula original del ejercicio 20260828. Los gráficos siguientes mantienen
+la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra,
+para el último año disponible, el monto apropiado o cedido por componente; el
+otro resume el efecto neto anual como porcentaje de la ganancia a precios
+básicos del escenario inicial.
 
-![Gráfico 1. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260831/01_bienes_transables_monto_apropiado_cedido_componentes_2024.png)
+![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](assets/figures/devaluacion_escenarios_integrados_20260908/00_bienes_transables_tasa_ganancia_pb_formula_original.png)
 
-![Gráfico 2. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260831/02_bienes_transables_delta_total_ganancia_inicial.png)
+![Gráfico 2. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260908/01_bienes_transables_monto_apropiado_cedido_componentes_2024.png)
+
+![Gráfico 3. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260908/02_bienes_transables_delta_total_ganancia_inicial.png)
 
 ## Anexo
 
@@ -77,7 +89,7 @@ como porcentaje de la ganancia a precios básicos del escenario inicial.
 
 <span>Documento con explicación detallada de fuentes utilizadas, supuestos y decisiones del análisis, así como interpretación narrativa de resultados.</span>
 
-[Abrir minuta](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/20260831_resultados_devaluacion_escenarios_integrados.md){.button-link}
+[Abrir minuta](https://github.com/feliperuizbruzzone/economia-uruguay/blob/main/docs/20260908_resultados_devaluacion_escenarios_integrados.md){.button-link}
 :::
 
 ::: {.download-item}

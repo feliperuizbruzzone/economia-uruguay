@@ -23,17 +23,19 @@ descargar insumos y usar el simulador de escenarios de devaluación:
 
 ## Resultados Brecha Cambiaria Industria 2020-2024
 
-- [20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260831_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
+- [20260908_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx](data/analysis-data/20260908_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx):
   último libro de modelamiento del cierre de brecha cambiaria para industria
   total, segmento exportador y segmento mercado interno, con dos escenarios y
-  deltas explícitos sobre masa de ganancia.
+  deltas explícitos sobre masa de ganancia y hoja complementaria de tasa de
+  ganancia con fórmula original.
 - [20260826_panel_eaae_2020_2024_industria.csv](data/analysis-data/20260826_panel_eaae_2020_2024_industria.csv):
   panel base 2020-2024 de industria total y grupos de subramas industriales,
   actualizado con distribución de intereses por microdatos CIU.
-- [20260831_resultados_devaluacion_escenarios_integrados.md](docs/20260831_resultados_devaluacion_escenarios_integrados.md):
+- [20260908_resultados_devaluacion_escenarios_integrados.md](docs/20260908_resultados_devaluacion_escenarios_integrados.md):
   última minuta integrada de comparación de escenarios, centrada en monto
-  apropiado/cedido por componente y delta total sobre ganancia inicial.
-- [Figuras integradas de escenarios 20260831](output/figures/devaluacion_escenarios_integrados_20260831/):
+  apropiado/cedido por componente, delta total sobre ganancia inicial y tasa de
+  ganancia complementaria con fórmula original.
+- [Figuras integradas de escenarios 20260908](output/figures/devaluacion_escenarios_integrados_20260908/):
   figuras respaldadas para la última minuta integrada.
 - [20260828-coeficientes-efecto-devaluacion.csv](data/input-data/mussi/20260828-coeficientes-efecto-devaluacion.csv):
   última tabla consolidada de coeficientes de incidencia por escenario,

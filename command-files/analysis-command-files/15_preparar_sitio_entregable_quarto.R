@@ -5,7 +5,7 @@ suppressPackageStartupMessages({
   library(readxl)
 })
 
-today <- "20260831"
+today <- "20260908"
 
 paths <- list(
   devaluation_xlsx = file.path(

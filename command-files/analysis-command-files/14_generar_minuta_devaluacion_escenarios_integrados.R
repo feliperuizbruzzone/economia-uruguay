@@ -214,7 +214,8 @@ theme_report <- theme_minimal(base_size = 11) +
     legend.text = element_text(color = blue_palette[["navy"]], size = 9)
   )
 
-required_sheets <- c("escenario-inicial", "tipo-cambio", scenario_specs$sheet)
+rate_sheet_name <- "tasa_ganancia_fórmula_original"
+required_sheets <- c("escenario-inicial", "tipo-cambio", scenario_specs$sheet, rate_sheet_name)
 missing_sheets <- setdiff(required_sheets, excel_sheets(input_xlsx))
 if (length(missing_sheets) > 0) {
   stop("Missing sheets in workbook: ", paste(missing_sheets, collapse = ", "))
@@ -237,6 +238,27 @@ required_scenario_cols <- c(
   "incidencia_consumo_intermedio_estimado",
   "incidencia_remuneraciones",
   "incidencia_consumo_capital_fijo"
+)
+
+required_rate_cols <- c(
+  "escenario",
+  "anno",
+  "seccion",
+  "descripcion_nivel",
+  "factor_devaluacion",
+  "rotacion_calibrada_sobre_6_6",
+  "delta_vbp_pp",
+  "delta_consumo_intermedio_estimado",
+  "delta_remuneraciones",
+  "delta_consumo_capital_fijo",
+  "delta_stock_capital_imputado",
+  "ganancia_pb",
+  "ganancia_pb_formula_original",
+  "capital_total_adelantado",
+  "capital_total_adelantado_formula_original",
+  "tasa_ganancia_pb",
+  "tasa_ganancia_pb_formula_original",
+  "variacion_tasa_ganancia_pb_pp_formula_original"
 )
 
 check_no_rate_cols <- function(data, sheet) {
@@ -292,15 +314,74 @@ read_scenario <- function(sheet_name) {
   data
 }
 
+read_rate_sheet <- function() {
+  data <- read_excel(input_xlsx, sheet = rate_sheet_name)
+  missing_cols <- setdiff(required_rate_cols, names(data))
+  if (length(missing_cols) > 0) {
+    stop("Missing columns in ", rate_sheet_name, ": ", paste(missing_cols, collapse = ", "))
+  }
+
+  data <- data %>%
+    filter(!is.na(.data$anno), !is.na(.data$seccion)) %>%
+    mutate(
+      escenario_spec = recode(
+        .data$escenario,
+        "Escenario 1 - Comercio Exterior" = "comercio_exterior",
+        "Escenario 2 - Bienes Transables" = "bienes_transables",
+        .default = NA_character_
+      ),
+      seccion_label = recode(.data$seccion, !!!section_labels),
+      seccion_label = factor(.data$seccion_label, levels = unname(section_labels)),
+      tasa_ganancia_pb_formula_original_calc =
+        .data$ganancia_pb_formula_original /
+        .data$capital_total_adelantado_formula_original,
+      variacion_tasa_ganancia_pb_pp_formula_original_calc =
+        (
+          .data$tasa_ganancia_pb_formula_original_calc -
+          .data$tasa_ganancia_pb
+        ) * 100
+    )
+
+  if (any(is.na(data$escenario_spec))) {
+    stop("Hay escenarios no reconocidos en ", rate_sheet_name, ".")
+  }
+
+  rate_diff <- max(
+    abs(data$tasa_ganancia_pb_formula_original - data$tasa_ganancia_pb_formula_original_calc),
+    na.rm = TRUE
+  )
+  if (is.na(rate_diff) || rate_diff > 1e-10) {
+    stop("tasa_ganancia_pb_formula_original no cierra. Max error: ", rate_diff)
+  }
+
+  variation_diff <- max(
+    abs(
+      data$variacion_tasa_ganancia_pb_pp_formula_original -
+      data$variacion_tasa_ganancia_pb_pp_formula_original_calc
+    ),
+    na.rm = TRUE
+  )
+  if (is.na(variation_diff) || variation_diff > 1e-8) {
+    stop("variacion_tasa_ganancia_pb_pp_formula_original no cierra. Max error: ", variation_diff)
+  }
+
+  data
+}
+
 escenario_inicial <- read_excel(input_xlsx, sheet = "escenario-inicial")
 check_no_rate_cols(escenario_inicial, "escenario-inicial")
 
 tipo_cambio <- read_excel(input_xlsx, sheet = "tipo-cambio")
 coeficientes <- read_csv(coeficientes_path, show_col_types = FALSE)
 escenarios <- bind_rows(lapply(scenario_specs$sheet, read_scenario))
+tasa_ganancia_formula_original <- read_rate_sheet()
 
 if (nrow(escenarios) != 30L) {
   stop("Se esperaban 30 filas de escenarios: 2 escenarios x 5 años x 3 secciones.")
+}
+
+if (nrow(tasa_ganancia_formula_original) != 30L) {
+  stop("Se esperaban 30 filas en tasa_ganancia_fórmula_original.")
 }
 
 if (any(is.na(escenarios$delta_total_ganancia_pb_pct))) {
@@ -430,6 +511,60 @@ ggplot(coeficientes_plot_data, aes(
   theme(axis.text.x = element_text(angle = 25, hjust = 1))
 ggsave(fig_coef_path, width = 11.5, height = 5.2, dpi = 160)
 
+make_rate_formula_original_plot <- function(data, spec) {
+  rate_data <- data %>%
+    filter(.data$escenario_spec == !!spec$escenario) %>%
+    transmute(
+      anno = .data$anno,
+      seccion_label = .data$seccion_label,
+      `Escenario inicial` = .data$tasa_ganancia_pb,
+      `Cierre de brecha - formula original` = .data$tasa_ganancia_pb_formula_original
+    ) %>%
+    pivot_longer(
+      cols = c("Escenario inicial", "Cierre de brecha - formula original"),
+      names_to = "serie",
+      values_to = "tasa"
+    ) %>%
+    mutate(
+      serie = factor(
+        .data$serie,
+        levels = c("Escenario inicial", "Cierre de brecha - formula original")
+      )
+    )
+
+  fig_path <- file.path(
+    figures_dir,
+    paste0("00_", spec$escenario, "_tasa_ganancia_pb_formula_original.png")
+  )
+
+  ggplot(rate_data, aes(
+    x = .data$anno,
+    y = .data$tasa,
+    color = .data$serie
+  )) +
+    geom_line(linewidth = 0.9) +
+    geom_point(size = 2) +
+    facet_wrap(vars(.data$seccion_label), nrow = 1) +
+    scale_x_continuous(breaks = sort(unique(rate_data$anno))) +
+    scale_y_continuous(labels = label_percent(accuracy = 1, decimal.mark = ",")) +
+    scale_color_manual(values = c(
+      "Escenario inicial" = blue_palette[["main"]],
+      "Cierre de brecha - formula original" = blue_palette[["deep"]]
+    )) +
+    labs(
+      title = "Tasa de ganancia a precios básicos",
+      subtitle = paste0(spec$titulo, ". Cálculo complementario con fórmula original 20260828."),
+      x = NULL,
+      y = NULL,
+      color = NULL,
+      caption = caption_fuente
+    ) +
+    theme_report
+  ggsave(fig_path, width = 10.5, height = 4.8, dpi = 160)
+
+  fig_path
+}
+
 make_component_plot <- function(data, spec, last_year) {
   component_data <- data %>%
     filter(.data$anno == !!last_year, .data$escenario == !!spec$escenario) %>%
@@ -554,6 +689,8 @@ scenario_outputs <- lapply(seq_len(nrow(scenario_specs)), function(i) {
   spec <- scenario_specs[i, ]
   list(
     spec = spec,
+    rate_formula_original_plot =
+      make_rate_formula_original_plot(tasa_ganancia_formula_original, spec),
     component_plot = make_component_plot(escenarios, spec, last_year),
     delta_total_plot = make_delta_total_plot(escenarios, spec)
   )
@@ -587,10 +724,12 @@ md <- c(
   paste(
     "Esta minuta actualiza la lectura de los escenarios de cierre de brecha",
     "cambiaria para la industria manufacturera uruguaya a partir del XLSX",
-    "regenerado con prefijo 20260831. La unidad de análisis son tres secciones:",
+    paste0("regenerado con prefijo ", date_prefix, ". La unidad de análisis son tres secciones:"),
     "industria total, segmento exportador y segmento orientado al mercado",
     "interno. El ejercicio se expresa en valores corrientes y se concentra en",
-    "la masa de ganancia a precios básicos, no en tasas de ganancia."
+    "la masa de ganancia a precios básicos. Como complemento, cada escenario",
+    "reincorpora un gráfico de tasa de ganancia a precios básicos calculado",
+    "con la fórmula original previa a la corrección del 31/08."
   ),
   "",
   paste(
@@ -610,7 +749,8 @@ md <- c(
     "de paridad; microdatos del CIU para distribuir intereses industriales en el",
     "XLSX fuente; y la clasificación operativa de subramas industriales",
     "2020-2024 para separar industria exportadora, mercado interno y combustible.",
-    "Esta minuta no reporta tasas de ganancia ni efectos sobre stock o intereses."
+    "La tasa complementaria se calcula desde una hoja separada del XLSX para no",
+    "reemplazar los resultados corregidos de masa de ganancia."
   ),
   "",
   paste(
@@ -663,20 +803,28 @@ md <- c(
   scenario_outputs$comercio_exterior$spec$descripcion,
   "",
   paste(
-    "El primer gráfico muestra, para el último año disponible, el monto",
-    "apropiado o cedido por componente en cada sección. El segundo resume el",
-    "efecto neto anual como porcentaje de la ganancia a precios básicos del",
-    "escenario inicial."
+    "El primer gráfico recupera la tasa de ganancia a precios básicos calculada",
+    "con la fórmula original del ejercicio 20260828. Los gráficos siguientes",
+    "mantienen la fórmula corregida vigente para los deltas de masa de ganancia:",
+    "uno muestra, para el último año disponible, el monto apropiado o cedido por",
+    "componente; el otro resume el efecto neto anual como porcentaje de la",
+    "ganancia a precios básicos del escenario inicial."
   ),
   "",
   paste0(
-    "![Gráfico 1. Monto apropiado/cedido según componente](",
+    "![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](",
+    fig_rel(scenario_outputs$comercio_exterior$rate_formula_original_plot),
+    ")"
+  ),
+  "",
+  paste0(
+    "![Gráfico 2. Monto apropiado/cedido según componente](",
     fig_rel(scenario_outputs$comercio_exterior$component_plot),
     ")"
   ),
   "",
   paste0(
-    "![Gráfico 2. Delta total sobre ganancia escenario inicial](",
+    "![Gráfico 3. Delta total sobre ganancia escenario inicial](",
     fig_rel(scenario_outputs$comercio_exterior$delta_total_plot),
     ")"
   ),
@@ -686,20 +834,28 @@ md <- c(
   scenario_outputs$bienes_transables$spec$descripcion,
   "",
   paste(
-    "El primer gráfico muestra, para el último año disponible, el monto",
-    "apropiado o cedido por componente en cada sección. El segundo resume el",
-    "efecto neto anual como porcentaje de la ganancia a precios básicos del",
-    "escenario inicial."
+    "El primer gráfico recupera la tasa de ganancia a precios básicos calculada",
+    "con la fórmula original del ejercicio 20260828. Los gráficos siguientes",
+    "mantienen la fórmula corregida vigente para los deltas de masa de ganancia:",
+    "uno muestra, para el último año disponible, el monto apropiado o cedido por",
+    "componente; el otro resume el efecto neto anual como porcentaje de la",
+    "ganancia a precios básicos del escenario inicial."
   ),
   "",
   paste0(
-    "![Gráfico 1. Monto apropiado/cedido según componente](",
+    "![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](",
+    fig_rel(scenario_outputs$bienes_transables$rate_formula_original_plot),
+    ")"
+  ),
+  "",
+  paste0(
+    "![Gráfico 2. Monto apropiado/cedido según componente](",
     fig_rel(scenario_outputs$bienes_transables$component_plot),
     ")"
   ),
   "",
   paste0(
-    "![Gráfico 2. Delta total sobre ganancia escenario inicial](",
+    "![Gráfico 3. Delta total sobre ganancia escenario inicial](",
     fig_rel(scenario_outputs$bienes_transables$delta_total_plot),
     ")"
   ),
@@ -726,10 +882,20 @@ md <- c(
   "delta_total_sobre_ganancia_inicial = delta_total_ganancia_pb / ganancia_pb * 100",
   "```",
   "",
+  "La hoja `tasa_ganancia_fórmula_original` del XLSX conserva el cálculo complementario de tasa usado sólo para el primer gráfico de cada escenario:",
+  "",
+  "```text",
+  "ganancia_pb_formula_original = ganancia_pb + delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones - delta_consumo_capital_fijo",
+  "capital_total_adelantado_formula_original = capital_total_adelantado + delta_stock_capital_imputado + (delta_remuneraciones + delta_consumo_intermedio_estimado) / rotacion_calibrada_sobre_6_6",
+  "tasa_ganancia_pb_formula_original = ganancia_pb_formula_original / capital_total_adelantado_formula_original",
+  "```",
+  "",
   paste(
     "El XLSX fuente mantiene otros campos para trazabilidad del modelo, pero",
-    "esta minuta se restringe a la masa de ganancia a precios básicos y a los",
-    "cuatro deltas solicitados. No se calculan ni reportan tasas de ganancia."
+    "los resultados principales de esta minuta se restringen a la masa de",
+    "ganancia a precios básicos y a los cuatro deltas solicitados. La tasa de",
+    "ganancia se reporta únicamente como gráfico complementario con la fórmula",
+    "original 20260828."
   )
 )
 

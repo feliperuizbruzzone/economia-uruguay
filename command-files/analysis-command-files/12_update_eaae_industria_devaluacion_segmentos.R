@@ -516,6 +516,73 @@ scenario_sheets <- lapply(
 )
 names(scenario_sheets) <- scenario_names
 
+tasa_ganancia_formula_original <- bind_rows(scenario_sheets) %>%
+  mutate(
+    # DECISION: keep the corrected 2026-08-31 scenario sheets unchanged and
+    # calculate the pre-correction 2026-08-28 profit-rate formula in a separate
+    # worksheet, only for the complementary chart requested by the team.
+    ganancia_pb_formula_original =
+      .data$ganancia_pb +
+      .data$delta_vbp_pp -
+      .data$delta_consumo_intermedio_estimado -
+      .data$delta_remuneraciones -
+      .data$delta_consumo_capital_fijo,
+    capital_total_adelantado_formula_original =
+      .data$capital_total_adelantado +
+      .data$delta_stock_capital_imputado +
+      safe_divide(
+        .data$delta_remuneraciones + .data$delta_consumo_intermedio_estimado,
+        .data$rotacion_calibrada_sobre_6_6
+      ),
+    tasa_ganancia_pb =
+      safe_divide(.data$ganancia_pb, .data$capital_total_adelantado),
+    tasa_ganancia_pb_formula_original =
+      safe_divide(
+        .data$ganancia_pb_formula_original,
+        .data$capital_total_adelantado_formula_original
+      ),
+    variacion_tasa_ganancia_pb_pp_formula_original =
+      (.data$tasa_ganancia_pb_formula_original - .data$tasa_ganancia_pb) * 100
+  ) %>%
+  select(
+    "escenario",
+    "anno",
+    "nivel_panel",
+    "seccion",
+    "grupo_clasificacion",
+    "descripcion_nivel",
+    "tipo_cambio_comercial_pesos_usd",
+    "tipo_cambio_paridad_pesos_usd",
+    "factor_devaluacion",
+    "rotacion_calibrada_sobre_6_6",
+    "incidencia_vbp_pp",
+    "incidencia_consumo_intermedio_estimado",
+    "incidencia_remuneraciones",
+    "incidencia_consumo_capital_fijo",
+    "incidencia_stock_capital_imputado",
+    "delta_vbp_pp",
+    "delta_consumo_intermedio_estimado",
+    "delta_remuneraciones",
+    "delta_consumo_capital_fijo",
+    "delta_stock_capital_imputado",
+    "ganancia_pb",
+    "ganancia_pb_formula_original",
+    "capital_total_adelantado",
+    "capital_total_adelantado_formula_original",
+    "tasa_ganancia_pb",
+    "tasa_ganancia_pb_formula_original",
+    "variacion_tasa_ganancia_pb_pp_formula_original"
+  ) %>%
+  arrange(
+    factor(.data$escenario, levels = scenario_names),
+    .data$anno,
+    factor(.data$seccion, levels = coeficientes_secciones_requeridas)
+  )
+
+if (any(is.na(tasa_ganancia_formula_original$tasa_ganancia_pb_formula_original))) {
+  stop("Hay faltantes en tasa_ganancia_pb_formula_original.")
+}
+
 metodologia <- tibble::tribble(
   ~seccion, ~item, ~detalle,
   "estructura", "alcance del libro",
@@ -583,9 +650,19 @@ metodologia <- tibble::tribble(
   paste(
     "ganancia_pb_devaluacion = ganancia_pb - delta_vbp_pp +",
     "delta_consumo_intermedio_estimado + delta_remuneraciones +",
-    "delta_consumo_capital_fijo. Por decisión metodológica de 2026-08-31,",
-    "el libro no calcula ni exporta tasas de ganancia en las hojas de",
-    "escenarios."
+    "delta_consumo_capital_fijo. Esta es la fórmula corregida vigente desde",
+    "la decisión metodológica de 2026-08-31."
+  ),
+  "resultados", "hoja tasa_ganancia_fórmula_original",
+  paste(
+    "La hoja tasa_ganancia_fórmula_original conserva un cálculo paralelo con",
+    "la fórmula original previa a la corrección del 31/08: ganancia_pb +",
+    "delta_vbp_pp - delta_consumo_intermedio_estimado - delta_remuneraciones -",
+    "delta_consumo_capital_fijo; y capital_total_adelantado +",
+    "delta_stock_capital_imputado + (delta_remuneraciones +",
+    "delta_consumo_intermedio_estimado) / rotacion_calibrada_sobre_6_6. Esta",
+    "hoja se usa sólo para el gráfico complementario de tasa de ganancia a",
+    "precios básicos."
   ),
   "resultados", "saldos por componente",
   paste(
@@ -659,7 +736,8 @@ write_xlsx_workbook(
       `escenario-inicial` = escenario_inicial,
       `tipo-cambio` = tipo_cambio
     ),
-    scenario_sheets
+    scenario_sheets,
+    list(`tasa_ganancia_fórmula_original` = tasa_ganancia_formula_original)
   ),
   title = "Resultados corrientes grupos industria Mussi"
 )

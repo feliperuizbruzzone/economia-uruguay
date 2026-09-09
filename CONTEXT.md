@@ -638,6 +638,23 @@ Decisiones del panel integrado:
   `delta_total_ganancia_pb_pct`, calculada dentro de cada año y sección como
   `(-delta_vbp_pp + delta_consumo_intermedio_estimado +
   delta_remuneraciones + delta_consumo_capital_fijo) / ganancia_pb * 100`.
+- **ACTUALIZACIÓN 2026-09-08:** se regenera el XLSX de modelamiento como
+  `data/analysis-data/20260908_panel_eaae_2020_2024_industria_escenario_devaluacion.xlsx`
+  y se agrega la hoja `tasa_ganancia_fórmula_original`. Esta hoja recupera
+  literalmente la fórmula previa del ejercicio 20260828 para uso gráfico:
+  `ganancia_pb_formula_original = ganancia_pb + delta_vbp_pp -
+  delta_consumo_intermedio_estimado - delta_remuneraciones -
+  delta_consumo_capital_fijo` y
+  `capital_total_adelantado_formula_original = capital_total_adelantado +
+  delta_stock_capital_imputado + (delta_remuneraciones +
+  delta_consumo_intermedio_estimado) / rotacion_calibrada_sobre_6_6`. La tasa
+  complementaria se calcula como
+  `tasa_ganancia_pb_formula_original = ganancia_pb_formula_original /
+  capital_total_adelantado_formula_original`. Las hojas de escenarios
+  conservan los resultados de masa de ganancia corregidos el 31/08; la fórmula
+  original queda aislada en esa hoja y sólo alimenta el gráfico complementario
+  `Tasa de ganancia a precios básicos` en la minuta integrada 20260908 y en el
+  sitio Quarto.
 - **ACTUALIZACIÓN 2026-08-31:** se actualiza el sitio Quarto en `site/` y el
   preparador reproducible
   `command-files/analysis-command-files/15_preparar_sitio_entregable_quarto.R`
