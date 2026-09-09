@@ -48,7 +48,7 @@ producción. Por tanto, sólo recoge el efecto directo de importaciones y
 exportaciones sobre la masa de ganancia.
 
 El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
-la fórmula original del ejercicio 20260828. Los gráficos siguientes mantienen
+la fórmula original. Los gráficos siguientes mantienen
 la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra,
 para el último año disponible, el monto apropiado o cedido por componente; el
 otro resume el efecto neto anual como porcentaje de la ganancia a precios
@@ -69,7 +69,7 @@ la revaluación de esa producción local y su incidencia sobre la masa de
 ganancia.
 
 El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
-la fórmula original del ejercicio 20260828. Los gráficos siguientes mantienen
+la fórmula original. Los gráficos siguientes mantienen
 la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra,
 para el último año disponible, el monto apropiado o cedido por componente; el
 otro resume el efecto neto anual como porcentaje de la ganancia a precios
