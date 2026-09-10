@@ -615,7 +615,7 @@ make_component_plot <- function(data, spec, last_year) {
     scale_x_continuous(expand = expansion(mult = c(0.18, 0.18))) +
     labs(
       title = "Monto apropiado/cedido según componente",
-      subtitle = paste0(spec$titulo, ". Año ", last_year, ". VBP se expresa con signo negativo."),
+      subtitle = paste0(spec$titulo, ". Escenario base ", last_year, ". VBP se expresa con signo negativo."),
       x = "Miles de millones de pesos corrientes",
       y = NULL,
       fill = NULL,

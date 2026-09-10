@@ -7,14 +7,12 @@ Esta sección presenta una lectura integrada de los dos escenarios de cierre de
 brecha cambiaria construidos para la industria manufacturera uruguaya. La
 unidad de análisis son tres secciones: industria total, segmento exportador y
 segmento orientado al mercado interno. El ejercicio se expresa en valores
-corrientes y se concentra en la masa de ganancia a precios básicos. Como
-complemento, cada escenario recupera un gráfico de tasa de ganancia a precios
-básicos calculado con la fórmula original previa a la corrección del 31/08.
+corrientes y se concentra en la masa de ganancia a precios básicos.
 
 ## Supuestos y fuentes
 
-Las fuentes usadas son EAAE para VBP, VAB, remuneraciones, consumo intermedio
-estimado y consumo de capital fijo; Oyanthabal, con base en la metodología de
+Las fuentes usadas son EAAE para VBP vía exportaciones, VAB, remuneraciones,
+consumo intermedio estimado y consumo de capital fijo; Oyanthabal (2023), con base en la metodología de
 Iñigo Carrera (2007), para los tipos de cambio comercial y de paridad;
 microdatos del CIU para distribuir intereses industriales en el XLSX fuente; y
 la clasificación operativa de subramas industriales 2020-2024 para separar
@@ -47,18 +45,33 @@ componentes importados de costos y capital y a la parte exportada de la
 producción. Por tanto, sólo recoge el efecto directo de importaciones y
 exportaciones sobre la masa de ganancia.
 
-El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
-la fórmula original. Los gráficos siguientes mantienen
-la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra,
-para el último año disponible, el monto apropiado o cedido por componente; el
-otro resume el efecto neto anual como porcentaje de la ganancia a precios
-básicos del escenario inicial.
+La sobrevaluación de la moneda tiene un efecto contradictorio. Por un lado,
+reduce el ingreso en moneda nacional de los exportadores al aplicar la
+mediación cambiaria, lo que deja un remanente pendiente de apropiación, y
+afecta negativamente el valor del VBP del segmento exportador. Por otro lado,
+abaratando las mercancías importadas, genera un ahorro en el consumo
+intermedio, en las remuneraciones y en el consumo de capital fijo, en este
+último caso, mediante el abaratamiento de la maquinaria importada.
 
-![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](assets/figures/devaluacion_escenarios_integrados_20260908/00_comercio_exterior_tasa_ganancia_pb_formula_original.png)
+![Gráfico 1. Monto apropiado/cedido según componente - Escenario base](assets/figures/devaluacion_escenarios_integrados_20260908/01_comercio_exterior_monto_apropiado_cedido_componentes_2024.png)
 
-![Gráfico 2. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260908/01_comercio_exterior_monto_apropiado_cedido_componentes_2024.png)
+Para visualizar el impacto de la mediación cambiaria en la rentabilidad
+industrial, el siguiente gráfico presenta la evolución de la tasa de ganancia
+a precios básicos en el período 2020-2024. El análisis contrasta la trayectoria
+del escenario inicial con una simulación de «cierre de brecha» (calculada
+mediante la fórmula original), desglosando los resultados para la industria en
+su conjunto, el segmento exportador y el mercado interno.
 
-![Gráfico 3. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260908/02_comercio_exterior_delta_total_ganancia_inicial.png)
+La comparativa de ambas curvas evidencia un impacto desigual según la
+orientación productiva. Mientras que en el segmento exportador el cierre de la
+brecha eleva de forma notoria la tasa de ganancia, al suprimir la cesión de
+valor sobre las ventas externas, en el mercado interno sucede a la inversa.
+Para los sectores orientados al consumo local, el escenario inicial (con
+sobrevaluación) resulta más rentable, lo que refleja los beneficios de
+apropiación generados por el abaratamiento de los insumos y bienes de capital
+importados.
+
+![Gráfico 2. Tasa de ganancia a precios básicos - fórmula original](assets/figures/devaluacion_escenarios_integrados_20260908/00_comercio_exterior_tasa_ganancia_pb_formula_original.png)
 
 ## Escenario 2 - Bienes Transables
 
@@ -68,18 +81,34 @@ producidas localmente y vendidas en el mercado interno. Así, incorpora también
 la revaluación de esa producción local y su incidencia sobre la masa de
 ganancia.
 
-El primer gráfico recupera la tasa de ganancia a precios básicos calculada con
-la fórmula original. Los gráficos siguientes mantienen
-la fórmula corregida vigente para los deltas de masa de ganancia: uno muestra,
-para el último año disponible, el monto apropiado o cedido por componente; el
-otro resume el efecto neto anual como porcentaje de la ganancia a precios
-básicos del escenario inicial.
+La sobrevaluación de la moneda también alcanza a las mercancías transables
+producidas localmente y vendidas en el mercado interno. Por un lado, reduce el
+ingreso en moneda nacional de los exportadores al aplicar la mediación
+cambiaria, lo que deja un remanente pendiente de apropiación, y afecta
+negativamente el valor del VBP del segmento exportador. Por otro lado, al
+abaratar las mercancías importadas y considerar la revaluación de la
+producción local transable, genera efectos sobre el consumo intermedio, las
+remuneraciones y el consumo de capital fijo, en este último caso mediante el
+abaratamiento de la maquinaria importada.
 
-![Gráfico 1. Tasa de ganancia a precios básicos - fórmula original](assets/figures/devaluacion_escenarios_integrados_20260908/00_bienes_transables_tasa_ganancia_pb_formula_original.png)
+![Gráfico 1. Monto apropiado/cedido según componente - Escenario base](assets/figures/devaluacion_escenarios_integrados_20260908/01_bienes_transables_monto_apropiado_cedido_componentes_2024.png)
 
-![Gráfico 2. Monto apropiado/cedido según componente](assets/figures/devaluacion_escenarios_integrados_20260908/01_bienes_transables_monto_apropiado_cedido_componentes_2024.png)
+Para visualizar el impacto de la mediación cambiaria en la rentabilidad
+industrial, el siguiente gráfico presenta la evolución de la tasa de ganancia
+a precios básicos en el período 2020-2024. El análisis contrasta la trayectoria
+del escenario inicial con una simulación de «cierre de brecha» (calculada
+mediante la fórmula original), desglosando los resultados para la industria en
+su conjunto, el segmento exportador y el mercado interno.
 
-![Gráfico 3. Delta total sobre ganancia escenario inicial](assets/figures/devaluacion_escenarios_integrados_20260908/02_bienes_transables_delta_total_ganancia_inicial.png)
+La comparativa de ambas curvas evidencia un impacto desigual según la
+orientación productiva. En el segmento exportador, el cierre de la brecha puede
+elevar la tasa de ganancia al reducir la cesión de valor sobre las ventas
+externas. En el mercado interno, la incidencia adicional de los bienes
+transables modifica el resultado según el peso relativo de la revaluación de la
+producción local y del abaratamiento de los insumos y bienes de capital
+importados.
+
+![Gráfico 2. Tasa de ganancia a precios básicos - fórmula original](assets/figures/devaluacion_escenarios_integrados_20260908/00_bienes_transables_tasa_ganancia_pb_formula_original.png)
 
 ## Anexo
 
